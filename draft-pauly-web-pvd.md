@@ -55,6 +55,11 @@ by the web services.
 
 Introduce the protocol.
 
+Provisioning Domains (PvDs) are defined as consistent sets of network configuration information {{!RFC7556}}.
+This information includes configuration for how a client host should issue DNS queries and
+route its traffic. Traditionally, a PvD is defined by a local network element (such as a router) or
+by a VPN server. Routers can provide multiple PvDs, as defined in {{!I-D.ietf-intarea-provisioning-domains}}.
+
 ## Specification of Requirements
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -66,6 +71,10 @@ they appear in all capitals, as shown here.
 # Protocol
 
 Define the protocol.
+
+# Client Behavior
+
+Web PvDs
 
 # Security Considerations
 
