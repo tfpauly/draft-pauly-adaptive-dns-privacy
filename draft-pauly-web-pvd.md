@@ -93,7 +93,6 @@ how to reach an encrypted DNS service that can resolve subdomains within "exampl
 provide access to keys to use for ESNI, and define how clients can optimally access hosts
 for "example.com".
 
-
 ## Specification of Requirements
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
@@ -102,13 +101,55 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 {{?RFC2119}} {{?RFC8174}} when, and only when,
 they appear in all capitals, as shown here.
 
+# Terminology
+
+This document uses specific terms to identify the sets of configuration information
+provisioned by network entities and used by clients.
+
+PvD:
+: A Provisioning Domain is a consistent set of network configuration information
+as defined in {{!RFC7556}}.
+
+Direct PvD:
+: A Direct PvD is any set of PvD information made known to a client via a local
+router (such as through DHCP or IPv6 Router Advertisements), or via a VPN
+configuration.
+
+Web PvD:
+: A Web PvD is any set of PvD information fetched indirectly by a client that
+specifies access to a set of servers based on domains.
+
+Authoritative PvD:
+: A PvD is authoritative for a specific domain when the information it contains
+is signed and authenticated by a valid certificate for the the domain.
+
 # Protocol
 
 Define the protocol.
 
 # Client Behavior
 
-Web PvDs
+When establishing a secure connection to a certain hostname, clients need
+to first determine which PvD ought to be used for DNS resolution and connection
+establishment. Given a specific hostname, and assuming that no other PvD or
+interface selection requirement has been specified, the order of preference for which
+PvD to use SHOULD be:
+
+1. A Direct PvD with domain rules that is known to be authoritative for the
+domain containing the hostname.
+
+2. The most specific Web PvD that is known to be authoritative for the domain
+containing the hostname.
+
+3. A trusted Web PvD that is not authoritative for the hostname, but offers
+encryption for DNS.
+
+4. The default Direct PvD.
+
+Web PvD information MAY be used for resolving hostnames for connections
+that will be insecure (such as HTTP requests in cleartext). However, since the
+metadata and content of such requests is already visible to on-path observers,
+securing only the DNS step does not add significant benefit.
 
 # Security Considerations
 
