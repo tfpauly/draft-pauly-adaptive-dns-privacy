@@ -74,15 +74,16 @@ to it.
 
 Client systems are left with choosing between one of the following stances:
 
-1. Send all user DNS queries to a particular encrypted DNS service, which requires establishing 
+1. Send all user DNS queries to a particular encrypted DNS service, which requires establishing
 user trust of the service. This can lead to resolution failures for private enterprise domains.
 
 2. Allow the user or another entity to configure local policy for which domains to send to local,
-private, or encrypted resolvers. This provides more granularity, but increases the burden on
-the user.
+private, or encrypted resolvers. This provides more granularity, but increases user burden.
 
-3. Only use locally configured DNS servers, opportunistically using encrypted DNS to the
-local server when available. This provides little benefit over not using encrypted DNS at all.
+3. Only use locally configured DNS servers, opportunistically using encrypted DNS to local servers
+when deemed available. (Clients may learn of encrypted transport support by actively probing such
+resolvers.) This provides little benefit over not using encrypted DNS at all, especially if clients
+have no means of authenticating local servers.
 
 This document defines a protocol to allow servers to dynamically provision clients with
 available PvD configurations to resolve and route traffic for which the servers are authoritative.
@@ -111,8 +112,8 @@ PvD:
 as defined in {{!RFC7556}}.
 
 Direct PvD:
-: A Direct PvD is any set of PvD information made known to a client via a local
-router (such as through DHCP or IPv6 Router Advertisements), or via a VPN
+: A Direct PvD is any locally-defined set of PvD information made known to a client
+via a local router (such as through DHCP or IPv6 Router Advertisements), or via a VPN
 configuration.
 
 Web PvD:
@@ -125,7 +126,7 @@ is signed and authenticated by a valid certificate for the the domain.
 
 # Protocol
 
-Define the protocol.
+((TODO: https://github.com/tfpauly/draft-pauly-web-pvd/issues/1))
 
 # Client Behavior
 
@@ -139,10 +140,14 @@ PvD to use SHOULD be:
 domain containing the hostname.
 
 2. The most specific Web PvD that is known to be authoritative for the domain
-containing the hostname.
+containing the hostname, i.e., the Web PvD which is authoritative for the longest
+matching prefix of the hostname. For example, given two Web PvDs, one for
+foo.example.com and another example.com, clients connecting to bar.foo.example.com
+should use the former.
 
 3. A trusted Web PvD that is not authoritative for the hostname, but offers
 encryption for DNS.
+((TODO: https://github.com/tfpauly/draft-pauly-web-pvd/issues/2))
 
 4. The default Direct PvD.
 
