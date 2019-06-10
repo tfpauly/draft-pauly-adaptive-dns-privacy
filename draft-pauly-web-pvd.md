@@ -108,9 +108,10 @@ PvD:
 as defined in {{!RFC7556}}.
 
 Direct PvD:
-: A Direct PvD is any locally-defined set of PvD information made known to a client
-via a local router (such as through DHCP or IPv6 Router Advertisements), or via a VPN
-configuration.
+: A Direct PvD is any defined set of PvD information made known to a client
+via a provisioning protocol that provides physical or virtual or network access.
+Examples include local routers (such as through DHCP or IPv6 Router Advertisements),
+or VPN configurations.
 
 Web PvD:
 : A Web PvD is any set of PvD information fetched indirectly by a client that
@@ -129,7 +130,8 @@ exclusively.
 Privacy-Sensitive Connections:
 : Connections made by clients that are explicitly Privacy-Sensitive are treated differently
 from connections made for generic system behavior, such as non-user-initiated maintenance
-connections.
+connections. This distinction is only relevant on the client host, and does not get communicated
+to other network entities.
 
 # Client Behavior
 
