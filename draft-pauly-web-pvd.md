@@ -37,10 +37,6 @@ author:
     country: United States of America
     email: cawood@apple.com
 
-informative:
-  RFC2119:
-  RFC8174:
-
 --- abstract
 
 This document defines a mechanism for web services, such as HTTP servers
@@ -124,11 +120,20 @@ Authoritative PvD:
 : A PvD is authoritative for a specific domain when the information it contains
 is signed and authenticated by a valid certificate for the the domain.
 
-# Protocol
+Exclusive PvD:
+: A PvD is exclusive for a specific domain it prohibits any other PvD from being used
+for the domain. For example, a VPN may prohibit the use of any other PvD for accessing
+a private domain. Only Direct PvDs can be exclusive. Web PvDs MUST NOT be used
+exclusively.
 
-((TODO: https://github.com/tfpauly/draft-pauly-web-pvd/issues/1))
+Privacy-Sensitive Connections:
+: Connections made by clients that are explicitly Privacy-Sensitive are treated differently
+from connections made for generic system behavior, such as non-user-initiated maintenance
+connections.
 
 # Client Behavior
+
+## Hostname Resolution
 
 When establishing a secure connection to a certain hostname, clients need
 to first determine which PvD ought to be used for DNS resolution and connection
@@ -136,25 +141,38 @@ establishment. Given a specific hostname, and assuming that no other PvD or
 interface selection requirement has been specified, the order of preference for which
 PvD to use SHOULD be:
 
-1. A Direct PvD with domain rules that is known to be authoritative for the
-domain containing the hostname.
+1. An Exclusive Direct PvD, such as a VPN, with domain rules that is known 
+to be authoritative for the domain containing the hostname. If the resolution
+fails, the connection will fail.
 
-2. The most specific Web PvD that is known to be authoritative for the domain
+2. A Direct PvD, such as a local router, with domain rules that is known to be
+authoritative for the domain containing the hostname. If the resolution fails,
+the conneciton will try the next PvD.
+
+3. The most specific Web PvD that is known to be authoritative for the domain
 containing the hostname, i.e., the Web PvD which is authoritative for the longest
 matching prefix of the hostname. For example, given two Web PvDs, one for
 foo.example.com and another example.com, clients connecting to bar.foo.example.com
-should use the former.
+should use the former. If the resolution fails, the connection will try an obfuscated
+query.
 
-3. A trusted Web PvD that is not authoritative for the hostname, but offers
-encryption for DNS.
-((TODO: https://github.com/tfpauly/draft-pauly-web-pvd/issues/2))
+4. Obfuscated queries using multiple Web PvDs ({{obfuscation}}). If this resolution fails,
+Privacy-Sensitive Connections will fail. All other connections will use the last resort,
+the default Direct PvD.
 
-4. The default Direct PvD.
+5. The default Direct PvD, generally the local router, is used as the last resort for any
+connection that is not explicitly Privacy-Sensitive.
 
 Web PvD information MAY be used for resolving hostnames for connections
 that will be insecure (such as HTTP requests in cleartext). However, since the
 metadata and content of such requests is already visible to on-path observers,
 securing only the DNS step does not add significant benefit.
+
+# Protocol
+
+((TODO: https://github.com/tfpauly/draft-pauly-web-pvd/issues/1))
+
+## Obfuscated Hostname Resolution {#obfuscation}
 
 # Security Considerations
 
