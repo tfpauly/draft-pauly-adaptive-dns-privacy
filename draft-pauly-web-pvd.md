@@ -122,7 +122,7 @@ Authoritative PvD:
 is signed and authenticated by a valid certificate for the the domain.
 
 Exclusive PvD:
-: A PvD is exclusive for a specific domain it prohibits any other PvD from being used
+: A PvD is exclusive for a specific domain if it prohibits any other PvD from being used
 for the domain. For example, a VPN may prohibit the use of any other PvD for accessing
 a private domain. Only Direct PvDs can be exclusive. Web PvDs MUST NOT be used
 exclusively.
