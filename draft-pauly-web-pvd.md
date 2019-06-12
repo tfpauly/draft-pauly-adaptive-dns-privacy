@@ -1,6 +1,6 @@
 ---
 title: Web Provisioning Domains
-abbrev: QUIC Datagrams
+abbrev: Web PvD
 docname: draft-pauly-web-pvd-latest
 date:
 category: std
