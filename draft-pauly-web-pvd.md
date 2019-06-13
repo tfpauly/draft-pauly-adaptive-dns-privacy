@@ -119,8 +119,8 @@ specifies access to a set of servers based on domains.
 
 Web PvD Configuration:
 : A Web PvD Configuration is a container of information that describes how a client
-can access Web resources, such as encrypted DNS servers, connection coalescing rules,
-supported protocols, and proxies.
+can access Web resources, such as DNS servers supporting encryption and 
+obfuscation, connection coalescing rules, supported protocols, and proxies.
 
 Authoritative PvD:
 : A PvD is authoritative for a specific domain when the information it contains
@@ -137,6 +137,17 @@ Privacy-Sensitive Connections:
 from connections made for generic system behavior, such as non-user-initiated maintenance
 connections. This distinction is only relevant on the client host, and does not get communicated
 to other network entities.
+
+Adaptive DNS:
+: Adaptive DNS is a technique to provide an encrypted transport for DNS queries that can either
+be asked directly to a server, or use a server to proxy the query and obfuscate the client address.
+
+Obfuscation Proxy:
+: A resolution server that proxies encrypted client DNS queries to another resolution server that
+will be able to decrypt the query (the Obfuscation Target).
+
+Obfuscation Target:
+: A resolution server that receives encrypted client DNS queries via an Obfuscation Proxy.
 
 # Client Behavior
 
@@ -195,7 +206,7 @@ in order to determine support. For example, PvD A can be whitelisted once it has
 to pass through an obfuscated query to PvD B; and has also been used to receive a query that was
 passed through PvD A.
 
-Clients SHOULD continue to use a variety of Web PvDs, in rotation, for hostname resolution of
+Clients SHOULD continue to use a variety of Web PvDs, rotating in random order, for hostname resolution of
 domains that do not have authoritative Web PvDs.
 
 ### Domain Authority  {#domain-authority}
@@ -243,7 +254,7 @@ Web PvDs can support multiple protocols and encryption schemes to transmit messa
 for hostname resolution. Any such protocol MUST be encrypted and authenticated; and MUST
 be able to transmit standard DNS messages {{!RFC1035}}.
 
-While clients are SHOULD only use a given resolution server for resolution of hostnames for which
+While clients SHOULD only use a given resolution server for resolution of hostnames for which
 the Web PvD is authoritative, the server SHOULD perform generic recursive DNS lookups even
 when it is not the owner of the domain.
 
@@ -258,10 +269,11 @@ Adaptive DNS (aDNS) is a protocol that allows clients to use a single secure tra
 to send both direct DNS queries to a server and encrypted DNS queries that are destined to another
 DNS server, to be proxied through the directly connected server. The direct queries are used
 for hostnames for which the server is known to be authoritative, while the obfuscated queries
-are used for all other hostnames.
+are used for all other hostnames. Clients SHOULD use multiple aDNS connections to
+different servers simultaneously or in quick succession to be able to distribute obfuscated queries.
 
 The description of aDNS in this document refers to the use of TLS and TCP, but the protocol
-can function more generally over any transport that provides an encypted reliable byte stream for
+can function more generally over any transport that provides an encrypted reliable byte stream for
 the TLS functionality, or an unencrypted reliable byte stream for the TCP functionality.
 
 aDNS clients establish TLS {{!RFC8446}} connections to a resolution server that supports aDNS.
@@ -298,8 +310,8 @@ Defined message types include:
 - DIRECT_QUERY (0x1)
 - DIRECT_ANSWER (0x2)
 - PROXY_QUERY (0x3)
-- SIGNED_QUERY (0x4)
-- SIGNED_ANSWER (0x5)
+- ENCRYPTED_QUERY (0x4)
+- ENCRYPTED_ANSWER (0x5)
 
 When a client begins any hostname resolution, it first generates a unique Query ID. This
 is a random 32-bit value. This Query ID is used on requests and responses between the client
@@ -359,8 +371,8 @@ via the Obfuscation Proxy.
 
 Any query that may be proxied through a server, for the purposes of obfuscation, cannot
 directly send its DNS message without encrypting it further. Such messages are encoded as
-PROXY_QUERY and SIGNED_QUERY messages. A client can send a PROXY_QUERY message
-to the Obfuscation Proxy, which can in turn send a SIGNED_QUERY to the Obfuscation Target.
+PROXY_QUERY and ENCRYPTED_QUERY messages. A client can send a PROXY_QUERY message
+to the Obfuscation Proxy, which can in turn send a ENCRYPTED_QUERY to the Obfuscation Target.
 
 Query IDs generated Clients are random values that only are exposed to the Obfuscation
 Proxy. The Obfuscation Proxy MUST generate new Query ID values (Query ID Prime values)
@@ -408,7 +420,8 @@ for an IPv4 address or 128-bits for an IPv6 address.
 Encrypted Message:
 
 : The encrypted message is encrypted with a resolution server's public key, and contains
-two fields, the Client Symmetric Key and the DNS Message.
+two fields, the Client Symmetric Key and the DNS Message. The Client Symmetric Key
+MUST be a freshly generated and random symmetric key for each ENCRYPTED_QUERY.
 
 ~~~
  0                   1                   2                   3
@@ -423,15 +436,15 @@ two fields, the Client Symmetric Key and the DNS Message.
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
-{: #adns-encrypted-format title="aDNS PROXY_QUERY and SIGNED_QUERY Encrypted Message Format"}
+{: #adns-encrypted-format title="aDNS PROXY_QUERY and ENCRYPTED_QUERY Encrypted Message Format"}
 
-SIGNED_QUERY messages are sent by the Obfuscation Proxy to the Obfuscation
+ENCRYPTED_QUERY messages are sent by the Obfuscation Proxy to the Obfuscation
 Target, and are the same as PROXY_QUERY without any proxy address
 or port fields. The Query ID MUST be different from the original Query ID, as described
 in {{obfuscation}}. The Encrypted Message is the same as the one in the PROXY_QUERY
 message.
 
-Since SIGNED_QUERY messages are already encrypted, they do not need to be sent
+Since ENCRYPTED_QUERY messages are already encrypted, they do not need to be sent
 over a TLS connection, but can be sent directly over TCP between the Obfuscation
 Proxy and Obfuscation Target.
 
@@ -450,11 +463,11 @@ Proxy and Obfuscation Target.
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
-{: #adns-signed-query-format title="aDNS SIGNED_QUERY Message Format"}
+{: #adns-encrypted-query-format title="aDNS ENCRYPTED_QUERY Message Format"}
 
-Whenever a Obfuscation Target receives a SIGNED_QUERY message, it decrypts the Encrytped
+Whenever a Obfuscation Target receives a ENCRYPTED_QUERY message, it decrypts the Encrytped
 Message using its private key, and extracts the client symmetric key and the DNS
-Message. It then sends a SIGNED_ANSWER back to the Obfuscation Proxy, which
+Message. It then sends a ENCRYPTED_ANSWER back to the Obfuscation Proxy, which
 has the following format:
 
 ~~~
@@ -472,7 +485,7 @@ has the following format:
 |                                                               |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
-{: #adns-signed-answer-format title="aDNS SIGNED_ANSWER Message Format"}
+{: #adns-encrypted-answer-format title="aDNS ENCRYPTED_ANSWER Message Format"}
 
 The Obfuscation Proxy will recieve this answer, translate the Query ID to the correct
 value for the Client, and pass the message along in the TLS connection to the Client,
