@@ -307,11 +307,17 @@ Message Type:
 
 Defined message types include:
 
-- DIRECT_QUERY (0x1)
-- DIRECT_ANSWER (0x2)
-- PROXY_QUERY (0x3)
-- ENCRYPTED_QUERY (0x4)
-- ENCRYPTED_ANSWER (0x5)
+~~~
+| Value   | Type                |
+|:--------|:--------------------|
+| 0x1     | DIRECT_QUERY        |
+| 0x2     | DIRECT_ANSWER       |
+| 0x3     | PROXY_QUERY         |
+| 0x4     | ENCRYPTED_QUERY     |
+| 0x5     | ENCRYPTED_ANSWER    |
+~~~
+{: #adns-message-types title="aDNS Message Types"}
+
 
 When a client begins any hostname resolution, it first generates a unique Query ID. This
 is a random 32-bit value. This Query ID is used on requests and responses between the client
@@ -378,6 +384,9 @@ Query IDs generated Clients are random values that only are exposed to the Obfus
 Proxy. The Obfuscation Proxy MUST generate new Query ID values (Query ID Prime values)
 to use for messages sent on to the Obfuscation Target. When the Obfuscation Target answers,
 the Query ID is translated back into the original Query ID before being passed to the Client.
+The result of this is that a Query ID is only ever exposed to two parties (the Client and
+the Obfuscation Proxy, or the Obfuscation Proxy and the Obfuscation Target), and never the
+entire resolution chain.
 
 PROXY_QUERY messages are formatted as follows:
 
