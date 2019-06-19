@@ -140,7 +140,7 @@ to other network entities.
 
 Adaptive DNS:
 : Adaptive DNS is a technique to provide an encrypted transport for DNS queries that can either
-be asked directly to a server, or use a server to proxy the query and obfuscate the client address.
+be sent directly to a server, or use a server to proxy the query and obfuscate the client address.
 
 Obfuscation Proxy:
 : A resolution server that proxies encrypted client DNS queries to another resolution server that
