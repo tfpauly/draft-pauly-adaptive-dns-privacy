@@ -190,7 +190,7 @@ securing only the DNS step does not add significant benefit.
 
 Clients MUST NOT use Web PvDs for direct hostname resolution, or any other capability
 advertised by the Web PvD Configuration, until that Web PvD has been whitelisted for a
-domain. There are two steps that are prerequisites to whitelisting:
+domain. There are two prerequisites for whitelisting a Web PvD:
 
 1. Validate that the Web PvD provides obfuscation support ({{obfuscation-support}}).
 2. Validate that the Web PvD is authoritative for the domain ({{domain-authority}}).
@@ -204,7 +204,7 @@ the network of Web PvDs that allow a client to protect its identity when resolvi
 It is sufficient to use a given Web PvD once as a Obfuscation Proxy and once as an Obfuscation Target
 in order to determine support. For example, PvD A can be whitelisted once it has been used
 to pass through an obfuscated query to PvD B; and has also been used to receive a query that was
-passed through PvD A.
+passed through another PvD with a target of PvD A.
 
 Clients SHOULD continue to use a variety of Web PvDs, rotating in random order, for hostname resolution of
 domains that do not have authoritative Web PvDs.
