@@ -119,7 +119,7 @@ specifies access to a set of servers based on domains.
 
 Web PvD Configuration:
 : A Web PvD Configuration is a container of information that describes how a client
-can access Web resources, such as DNS servers supporting encryption and 
+can access Web resources, such as DNS servers supporting encryption and
 obfuscation, connection coalescing rules, supported protocols, and proxies.
 
 Authoritative PvD:
@@ -159,7 +159,7 @@ establishment. Given a specific hostname, and assuming that no other PvD or
 interface selection requirement has been specified, the order of preference for which
 PvD to use SHOULD be:
 
-1. An Exclusive Direct PvD, such as a VPN, with domain rules that is known 
+1. An Exclusive Direct PvD, such as a VPN, with domain rules that is known
 to be authoritative for the domain containing the hostname. If the resolution
 fails, the connection will fail.
 
@@ -197,11 +197,11 @@ domain. There are two prerequisites for whitelisting a Web PvD:
 
 ### Obfuscation Support  {#obfuscation-support}
 
-Obfuscation support ({{obfuscation}}) MUST be proved before any domains are whitelisted 
+Obfuscation support ({{obfuscation}}) MUST be proved before any domains are whitelisted
 for a Web PvD. This is done to ensure that Web PvD providers are willing to participate in
 the network of Web PvDs that allow a client to protect its identity when resolving hostnames.
 
-It is sufficient to use a given Web PvD once as a Obfuscation Proxy and once as an Obfuscation Target
+It is sufficient to use a given Web PvD once as an Obfuscation Proxy and once as an Obfuscation Target
 in order to determine support. For example, PvD A can be whitelisted once it has been used
 to pass through an obfuscated query to PvD B; and has also been used to receive a query that was
 passed through another PvD with a target of PvD A.
@@ -474,7 +474,7 @@ Proxy and Obfuscation Target.
 ~~~
 {: #adns-encrypted-query-format title="aDNS ENCRYPTED_QUERY Message Format"}
 
-Whenever a Obfuscation Target receives a ENCRYPTED_QUERY message, it decrypts the Encrytped
+Whenever an Obfuscation Target receives a ENCRYPTED_QUERY message, it decrypts the Encrypted
 Message using its private key, and extracts the client symmetric key and the DNS
 Message. It then sends a ENCRYPTED_ANSWER back to the Obfuscation Proxy, which
 has the following format:
@@ -496,7 +496,7 @@ has the following format:
 ~~~
 {: #adns-encrypted-answer-format title="aDNS ENCRYPTED_ANSWER Message Format"}
 
-The Obfuscation Proxy will recieve this answer, translate the Query ID to the correct
+The Obfuscation Proxy will receive this answer, translate the Query ID to the correct
 value for the Client, and pass the message along in the TLS connection to the Client,
 otherwise unmodified.
 
