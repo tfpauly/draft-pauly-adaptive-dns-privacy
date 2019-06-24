@@ -496,7 +496,7 @@ has the following format:
 ~~~
 {: #adns-encrypted-answer-format title="aDNS ENCRYPTED_ANSWER Message Format"}
 
-The Obfuscation Proxy will recieve this answer, translate the Query ID to the correct
+The Obfuscation Proxy will receive this answer, translate the Query ID to the correct
 value for the Client, and pass the message along in the TLS connection to the Client,
 otherwise unmodified.
 
