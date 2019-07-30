@@ -52,12 +52,11 @@ informative:
 --- abstract
 
 This document defines an architecture that allows client hosts to dynamically
-discover trusted resolvers that offer encrypted DNS services, and use them
+discover authoritative resolvers that offer encrypted DNS services, and use them
 in an adaptive way that improves privacy while co-existing with locally
-provisioned resolvers. These trusted resolvers can be used directly whenever
-a trusted association is established between a domain name and the resolver.
-These resolvers also provide the ability to proxy encrypted queries, thus
-obfuscating the identity of the client requesting resolution.
+provisioned resolvers. These resolvers can be used directly when
+looking up names for which they are authoritative. These resolvers also provide the ability
+to proxy encrypted queries, thus obfuscating the identity of the client requesting resolution.
 
 --- middle
 
@@ -100,13 +99,13 @@ and enterprise resolver.
 
 This architecture is composed of several mechanisms:
 
-- A DNS RRTYPE that indicates a trusted resolver associated with a name ({{RRTYPE}})
+- A DNS RRTYPE that indicates an authoritative DoH resolver associated with a name ({{RRTYPE}})
 
 - An extension to DoH that allows queries to be obfuscated ({{OBFUSCATION}})
 
-- A trusted resolver configuration that defines protocols and keys supported by a resolver ({{configuration}})
+- A DoH resolver configuration that defines protocols and keys supported by a resolver ({{configuration}})
 
-- Client behavior rules for how to resolve names using a combination of trusted resolvers, obfuscated queries, and local resollvers ({{client}})
+- Client behavior rules for how to resolve names using a combination of authoritative DoH resolvers, obfuscated queries, and local resollvers ({{client}})
 
 ## Specification of Requirements
 
@@ -120,15 +119,25 @@ they appear in all capitals, as shown here.
 
 This document defines the following terms:
 
-Privacy-Sensitive Connections:
-: Connections made by clients that are explicitly Privacy-Sensitive are treated differently
-from connections made for generic system behavior, such as non-user-initiated maintenance
-connections. This distinction is only relevant on the client host, and does not get communicated
-to other network entities.
-
 Adaptive DNS:
-: Adaptive DNS is a technique to provide an encrypted transport for DNS queries that can either
-be sent directly to a server, or use a server to proxy the query and obfuscate the client address.
+: Adaptive DNS is a technique to provide an encrypted transport for DNS queries that can
+be sent directly to an Authoritative DoH Server, use Obfuscated DoH to hide the client
+IP address, or use Direct Resolvers when required or appropriate.
+
+Authoritative DoH Server:
+: A DNS resolver that provides connectivity over HTTPS (DoH) that is known to be authoritative
+for a given domain.
+
+Direct Resolver:
+: A DNS resolver using any transport that is provisioned directly by a local router or a VPN.
+
+Exclusive Direct Resolver:
+: A Direct Resolver that requires the client to use it exclusively for a given set of domains, such
+as private domains managed by a VPN. This status is governed by local system policy.
+
+Obfuscated DoH:
+: A technique that uses multiple DoH servers to proxy queries in a way that obfuscates
+the client's IP address.
 
 Obfuscation Proxy:
 : A resolution server that proxies encrypted client DNS queries to another resolution server that
@@ -137,13 +146,81 @@ will be able to decrypt the query (the Obfuscation Target).
 Obfuscation Target:
 : A resolution server that receives encrypted client DNS queries via an Obfuscation Proxy.
 
+Privacy-Sensitive Connections:
+: Connections made by clients that are explicitly Privacy-Sensitive are treated differently
+from connections made for generic system behavior, such as non-user-initiated maintenance
+connections. This distinction is only relevant on the client host, and does not get communicated
+to other network entities. Certain applications, such as browsers, can choose to treat
+all connections as privacy-sensitive.
+
 # Client Behavior {#client}
 
 Adaptive DNS allows client systems and applications to improve the privacy
-of their DNS queries and connections by requiring both confidentiality
-and authority.
+of their DNS queries and connections both by requiring confidentiality via encryption
+and by limiting the ability to correlate client IP addresses with query contents.
+Specifically, the goal for client queries is to achieve the following properties:
 
-## Hostname Resolution Algorithm
+- Eavesdroppers on the local network or elsewhere on the path will not be able to
+read the names being queried by the client or the answers being returned
+by the resolver.
+- Only an authoritative DNS resolver that is associated with the deployment that is also
+hosting content will be able to read both the client IP address and queried names for
+Privacy-Sensitive Connections.
+- Clients will be able to comply with policies required by VPNs and local networks that
+are authoritative for private domains.
+
+The algorithm for determining how to resolve a given name in a manner that satisfies
+these properties is described in {{resolution-algorithm}}.
+
+## Discovering Authoritative DoH Servers {#authoritative-discovery}
+
+All direct (non-obfuscated) queries for names in privacy-sensitive connections MUST be sent to a
+server that both provides encryption and is known to be authoritative for the domain.
+
+Clients dynamically build and maintain a set of known Authoritative DoH Servers. The information
+that is required to be associated with each server is:
+
+- The URI Template of the DoH server
+- The public key of the DoH server used for proxied obfuscated queries
+- A list of domains for which the DoH server is authoritative
+
+This information can be retrieved from several different sources. The primary source
+for discovering Authoritative DoH Server configurations is the NS2 DNS Record
+{{RRTYPE}}. This record provides the URI Template of the server and the public
+obfuscation key for a specific domain.
+
+When a client resolves a name (based on the order in {{resolution-algorithm}}) is SHOULD
+issue a query for the NS2 record for any name that does not fall within known Authoritative
+DoH Server's configuration. The client MAY also issue queries for the NS2 record for
+more specific names to discover further Authoritative DoH Servers.
+
+In order to bootstrap discovery of Authoritative DoH Servers, client systems SHOULD
+have some saved list of at least two names that they use consistently to perform
+NS2 record queries on the Direct Resolvers configured by the local network. Since
+these queries are likely not private, they SHOULD NOT be associated with user
+action or contain user-identifying content. Rather, the expection is that all client
+systems of the same version and configuration would issue the same bootstrapping
+queries when joining a network for the first time when the list of Authoritative
+DoH Servers is empty.
+
+### Whitelisting Authoritative DoH Servers  {#whitelisting}
+
+Prior to using an Authoritative DoH Server for direct name queries on privacy-sensitive
+connections, clients MUST whitelist the server.
+
+The requirements for whitelisting are:
+
+- Support for acting as an Obfuscation Proxy
+- Support for acting as an Obfuscation Target
+- Signature/secondary cert by a trusted auditors
+
+Clients MAY further choose to restrict the whitelist by other local policy
+
+## Discovering Local Resolvers {#local-discovery}
+
+## Obfuscated Resolution
+
+## Hostname Resolution Algorithm {#resolution-algorithm}
 
 When establishing a secure connection to a certain hostname, clients need
 to first determine which resolver configuration ought to be used for DNS resolution.
@@ -151,35 +228,27 @@ Given a specific hostname, and assuming that no other PvD or interface selection
 requirement has been specified, the order of preference for which resolver to use
 SHOULD be:
 
-1. An Exclusive Direct PvD, such as a VPN, with domain rules that is known
-to be authoritative for the domain containing the hostname. If the resolution
+1. An Exclusive Direct Resolver, such as a resolver provisioned by a VPN,
+domain rules that include the hostname being resolved. If the resolution
 fails, the connection will fail.
 
-2. A Direct PvD, such as a local router, with domain rules that is known to be
+2. A Direct Resolver, such as a local router, with domain rules that is known to be
 authoritative for the domain containing the hostname. If the resolution fails,
-the connection will try the next PvD based on this list.
+the connection will try the next resolver configuration based on this list.
 
-3. The most specific Trusted Resolver that has been whitelisted ({{whitelisting}}) for the domain
-containing the hostname, i.e., the Trusted Resolver which is authoritative for the longest
-matching prefix of the hostname. For example, given two Trusted Resolvers, one for
+3. The most specific Authoritative DoH Server that has been whitelisted ({{whitelisting}}) for the domain
+containing the hostname, i.e., the DoH server which is authoritative for the longest
+matching prefix of the hostname. For example, given two Authoritative DoH Servers, one for
 foo.example.com and another example.com, clients connecting to bar.foo.example.com
 should use the former. If the resolution fails, the connection will try an obfuscated
 query.
 
-4. Obfuscated queries using multiple Trusted Resolvers ({{OBFUSCATION}}). If this resolution fails,
+4. Obfuscated queries using multiple DoH Servers ({{OBFUSCATION}}). If this resolution fails,
 Privacy-Sensitive Connections will fail. All other connections will use the last resort,
-the default Direct PvD.
+the default Direct Resolvers.
 
-5. The default direct or local resolver, generally the resolver provisioned by the local router,
+5. The default Direct Resolver, generally the resolver provisioned by the local router,
 is used as the last resort for any connection that is not explicitly Privacy-Sensitive.
-
-## Discovering Trusted Resolvers {#trusted-discovery}
-
-### Whitelisting Trusted Resolvers  {#whitelisting}
-
-## Discovering Local Resolvers {#local-discovery}
-
-## Obfuscated Resolution
 
 # Server Requirements {#server}
 
@@ -191,7 +260,7 @@ is used as the last resort for any connection that is not explicitly Privacy-Sen
 
 ### Keying Material
 
-## Advertising Trusted Resolvers
+## Advertising DoH Resolvers
 
 ## Associating Configuration {#configuration}
 
