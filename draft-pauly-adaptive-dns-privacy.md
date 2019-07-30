@@ -36,6 +36,18 @@ author:
     city: Cupertino, California 95014
     country: United States of America
     email: cawood@apple.com
+    
+informative:
+    RRTYPE:
+      title: Associated Trusted Resolver Records
+      authors:
+        -
+          T. Pauly
+    OBFUSCATION:
+      title: Obfuscated DNS Over HTTPS
+      authors:
+        -
+          T. Pauly
 
 --- abstract
 
@@ -88,13 +100,13 @@ and enterprise resolver.
 
 This architecture is composed of several mechanisms:
 
-- A new DNS RRTYPE that indicates a trusted resolver associated with a name ({{rrtype}})
+- A DNS RRTYPE that indicates a trusted resolver associated with a name ({{RRTYPE}})
+
+- An extension to DoH that allows queries to be obfuscated ({{OBFUSCATION}})
 
 - A trusted resolver configuration that defines protocols and keys supported by a resolver ({{configuration}})
 
-- An extension to DoH that allows queries to be obfuscated ({{obfuscation}})
-
-- Client behavior rules for how to resolve names using trusted resolvers ({{client}})
+- Client behavior rules for how to resolve names using a combination of trusted resolvers, obfuscated queries, and local resollvers ({{client}})
 
 ## Specification of Requirements
 
@@ -127,19 +139,63 @@ Obfuscation Target:
 
 # Client Behavior {#client}
 
-## Hostname Resolution
+Adaptive DNS allows client systems and applications to improve the privacy
+of their DNS queries and connections by requiring both confidentiality
+and authority.
 
-## Discovering Trusted Resolvers {#discovery}
+## Hostname Resolution Algorithm
 
-### Verifying Obfuscation Support  {#obfuscation-support}
+When establishing a secure connection to a certain hostname, clients need
+to first determine which resolver configuration ought to be used for DNS resolution.
+Given a specific hostname, and assuming that no other PvD or interface selection
+requirement has been specified, the order of preference for which resolver to use
+SHOULD be:
 
-### Mapping Domain Authority  {#domain-authority}
+1. An Exclusive Direct PvD, such as a VPN, with domain rules that is known
+to be authoritative for the domain containing the hostname. If the resolution
+fails, the connection will fail.
 
-# Trusted Resolver Configuration {#configuration}
+2. A Direct PvD, such as a local router, with domain rules that is known to be
+authoritative for the domain containing the hostname. If the resolution fails,
+the connection will try the next PvD based on this list.
 
-# Associated Trusted Resolver Records {#rrtype}
+3. The most specific Trusted Resolver that has been whitelisted ({{whitelisting}}) for the domain
+containing the hostname, i.e., the Trusted Resolver which is authoritative for the longest
+matching prefix of the hostname. For example, given two Trusted Resolvers, one for
+foo.example.com and another example.com, clients connecting to bar.foo.example.com
+should use the former. If the resolution fails, the connection will try an obfuscated
+query.
 
-# Obfuscated Hostname Resolution in DoH {#obfuscation}
+4. Obfuscated queries using multiple Trusted Resolvers ({{OBFUSCATION}}). If this resolution fails,
+Privacy-Sensitive Connections will fail. All other connections will use the last resort,
+the default Direct PvD.
+
+5. The default direct or local resolver, generally the resolver provisioned by the local router,
+is used as the last resort for any connection that is not explicitly Privacy-Sensitive.
+
+## Discovering Trusted Resolvers {#trusted-discovery}
+
+### Whitelisting Trusted Resolvers  {#whitelisting}
+
+## Discovering Local Resolvers {#local-discovery}
+
+## Obfuscated Resolution
+
+# Server Requirements {#server}
+
+## DNS Over HTTPS Server
+
+### Obfuscated DoH Proxy
+
+### Obfuscated DoH Target
+
+### Keying Material
+
+## Advertising Trusted Resolvers
+
+## Associating Configuration {#configuration}
+
+# Local Resolver Deployment Considerations
 
 # Security Considerations
 
