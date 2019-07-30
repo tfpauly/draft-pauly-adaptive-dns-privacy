@@ -210,11 +210,19 @@ connections, clients MUST whitelist the server.
 
 The requirements for whitelisting are:
 
-- Support for acting as an Obfuscation Proxy
-- Support for acting as an Obfuscation Target
-- Signature/secondary cert by a trusted auditors
+- Support for acting as an Obfuscation Proxy. Each Authoritative DoH Server is
+expected to support acting as a proxy for Obfuscation. A client MUST issue at
+least one query that is proxied through the server before sending direct queries
+to the server.
+- Support for acting as an Obfuscation Target. Each Authoritative DoH Server is
+expected to support acting as a target for Obfuscation. A client MUST issue at
+least one query that is targetd at the server through a proxy before sending direct queries
+to the server.
+- Signature/secondary cert by a trusted auditors. [TODO]
 
-Clients MAY further choose to restrict the whitelist by other local policy
+Clients MAY further choose to restrict the whitelist by other local policy. For example,
+a client system can have a list of trusted resolver configurations, and it can limit
+the whitelist of Authoritative DoH Servers to configurations that match this list.
 
 ## Discovering Local Resolvers {#local-discovery}
 
