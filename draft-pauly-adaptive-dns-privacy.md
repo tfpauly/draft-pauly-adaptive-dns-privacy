@@ -226,8 +226,6 @@ the whitelist of Authoritative DoH Servers to configurations that match this lis
 
 ## Discovering Local Resolvers {#local-discovery}
 
-## Obfuscated Resolution
-
 ## Hostname Resolution Algorithm {#resolution-algorithm}
 
 When establishing a secure connection to a certain hostname, clients need
@@ -251,12 +249,42 @@ foo.example.com and another example.com, clients connecting to bar.foo.example.c
 should use the former. If the resolution fails, the connection will try an obfuscated
 query.
 
-4. Obfuscated queries using multiple DoH Servers ({{OBFUSCATION}}). If this resolution fails,
+4. Obfuscated queries using multiple DoH Servers ({{obfuscation}}). If this resolution fails,
 Privacy-Sensitive Connections will fail. All other connections will use the last resort,
 the default Direct Resolvers.
 
 5. The default Direct Resolver, generally the resolver provisioned by the local router,
 is used as the last resort for any connection that is not explicitly Privacy-Sensitive.
+
+## Obfuscated Resolution {#obfuscation}
+
+For all privacy-sensitive connection queries for names that do not correspond
+to an Authoritative DoH Server, the client SHOULD use obfuscation to help
+conceal its IP address from local eavesdroppers and untrusted resolvers.
+
+DNS obfuscation is achieved by using Obfuscated DoH ({{OBFUSCATION}}). This
+extension to DoH allows a client to encrypt a query with a target DoH server's public
+key, and proxy the query through another server. The query is packaged with a unique
+client-defined symmetric key that is used to sign the DNS answer, which is sent
+back to the client via the proxy.
+
+All DoH Servers that are used as Authoritative DoH Servers by the client
+MUST support being both an Obfuscation Proxy and an Obfuscation Target,
+as described in the server requirements ({{server}}).
+
+Since each Authoritative DoH Server can act as one of two roles in an
+obfuscated exchange, there are (N) * (N - 1) / 2 possible pairs of servers, where
+N is the number of whitelisted servers. While clients SHOULD use a variety of
+server pairs in rotation to decrease the ability for any given server to track
+client queries, it is not expected that all possible combinations will be used.
+Some combinations will be able to handle more load than other, and will have
+better latency properties than others. To optimize performance, clients SHOULD
+maintain statistics to track the performance characteristics and success rates of
+particular pairs.
+
+Clients that are performing obfuscated resolution SHOULD fall back to another
+pair of servers if a first query times out, with a locally-determined limit for the
+number of fallback attempts that will be performed.
 
 # Server Requirements {#server}
 
