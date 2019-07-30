@@ -46,7 +46,7 @@ of client addresses via proxying.
 
 # Introduction
 
-
+[TODO] Describe Obfuscated DoH
 
 ## Specification of Requirements
 
@@ -76,6 +76,10 @@ Unlike direct resolution, obfuscated hostname resolution involves three parties:
 and passes them on to another resolution server.
 3. The Obfuscation Target, which is a resolution server that receives proxied queries from the client
 via the Obfuscation Proxy.
+
+[TODO] Describe how to proxy (probably like HTTP proxying)
+
+[TODO] Describe how to pack in client symmetric key
 
 # Keying Material
 
