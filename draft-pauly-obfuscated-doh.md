@@ -40,7 +40,9 @@ author:
 --- abstract
 
 This document describes an extension to DNS Over HTTPS (DoH) that allows Obfuscation
-of client addresses via proxying.
+of client addresses via proxying. This improves privacy of DNS operations by not allowing
+any one server entity to be aware of both the client IP address and the content of DNS
+queries and answers.
 
 --- middle
 
@@ -95,3 +97,6 @@ via the Obfuscation Proxy.
 # IANA Considerations
 
 # Acknowledgments
+
+This work is inspired by Oblivious DNS {{?I-D.annee-dprive-oblivious-dns}}. Thanks to all of the
+authors of that document.
