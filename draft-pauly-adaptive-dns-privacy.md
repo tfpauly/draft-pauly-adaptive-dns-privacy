@@ -333,19 +333,37 @@ described below.
 
 ## Provide a DoH Server
 
-
+Each server node is primarily defined by a DoH server {{!RFC8484}} that both is authoritative
+for a set of domains, and provides Obfuscated DoH functionality. As such, the DoH servers
+MUST be able to act as recursive resolvers that accept queries for records and domains beyond
+those for which the servers are authoritative.
 
 ### Obfuscated DoH Proxy
 
+The DoH servers MUST be able to act as Obfuscation Proxies. In this function, they will proxy
+encrypted queries and answers between clients and Obfuscation Target DoH servers.
+
 ### Obfuscated DoH Target
+
+The DoH servers MUST be able to act as Obfuscation Targets. In this function, they will accept
+encrypted proxied queries from clients via Obfuscation Proxy DoH servers, and provide encrypted
+answers using client keys.
 
 ### Keying Material
 
+In order to support acting as an Obfuscation Target, a DoH server needs to generate a public key
+that can be used to encrypt client queries. This key is advertised in the NS2 record.
+
+DoH servers also SHOULD provide an ESNI key to help encrypt the Server Name Indication field
+in TLS handshakes to the DoH server.
+
 ## Advertise the DoH Server
 
-- Add DoH URI template to NS2 records
-- Add Obfuscation public key to NS2 records
-- Sign them with DNSSEC
+The primary mechanism for advertising an Authoritative DoH Server is the NS2 DNS Record {{RRTYPE}}.
+This record MUST contain both the URI Template of the DoH Server as well as the Obfuscation Public
+Key. It MAY contain the ESNI key.
+
+Servers MUST ensure that the NS2 records are signed with DNSSEC.
 
 ## Provide Extended Configuration as a Web PvD {#configuration}
 
