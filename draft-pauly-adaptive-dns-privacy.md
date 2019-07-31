@@ -225,11 +225,15 @@ to the server.
 expected to support acting as a target for Obfuscation. A client MUST issue at
 least one query that is targetd at the server through a proxy before sending direct queries
 to the server.
-- Signature/secondary cert by a trusted auditors.
 
 Clients MAY further choose to restrict the whitelist by other local policy. For example,
 a client system can have a list of trusted resolver configurations, and it can limit
 the whitelist of Authoritative DoH Servers to configurations that match this list.
+Alternatively, a client system can check a server against a list of audited and approved
+DoH Servers that have properties that the client approves.
+
+Clients SHOULD NOT whitelist authority mappings for top-level domains (TLDs), such
+as ".com".
 
 ### Accessing Extended Information
 
