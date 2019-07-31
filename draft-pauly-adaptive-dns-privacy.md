@@ -153,6 +153,10 @@ connections. This distinction is only relevant on the client host, and does not 
 to other network entities. Certain applications, such as browsers, can choose to treat
 all connections as privacy-sensitive.
 
+Web PvD:
+: A Web Provisioning Domain, or Web PvD, represents the configuration of resolvers, proxies,
+and other information that a server deployment makes available to clients. See {{configuration}}.
+
 # Client Behavior {#client}
 
 Adaptive DNS allows client systems and applications to improve the privacy
@@ -180,7 +184,7 @@ server that both provides encryption and is known to be authoritative for the do
 Clients dynamically build and maintain a set of known Authoritative DoH Servers. The information
 that is required to be associated with each server is:
 
-- The URI Template of the DoH server
+- The URI Template of the DoH server {{!RFC8484}}
 - The public key of the DoH server used for proxied obfuscated queries
 - A list of domains for which the DoH server is authoritative
 
@@ -221,13 +225,39 @@ to the server.
 expected to support acting as a target for Obfuscation. A client MUST issue at
 least one query that is targetd at the server through a proxy before sending direct queries
 to the server.
-- Signature/secondary cert by a trusted auditors. [TODO]
+- Signature/secondary cert by a trusted auditors.
 
 Clients MAY further choose to restrict the whitelist by other local policy. For example,
 a client system can have a list of trusted resolver configurations, and it can limit
 the whitelist of Authoritative DoH Servers to configurations that match this list.
 
+### Accessing Extended Information
+
+When an Authoritative DoH Server is discovered, clients SHOULD also check to see
+if this server provides an extended configuration in the form of a Web PvD {{configuration}}.
+To do this, the client performs a lookup of https://\<DoH Server\>/.well-known/pvd, requesting
+a media type of “application/pvd+json”.
+
+If the retrieved JSON contains a "dnsZones" array, the client SHOULD perform an NS2 lookup
+of each of the listed zones on the DoH server and validate that the DoH server is authoritative
+for the domain; and if it is, add the domain to the local configuration.
+
 ## Discovering Local Resolvers {#local-discovery}
+
+If the local network provides configuration with an Explicit Provisioning Domain (PvD), as
+defined by {{!I-D.ietf-intarea-provisioning-domains}}, clients can learn about domains
+for which the local network's resolver is authoritative.
+
+If an RA provided by the router on the network defines an Explicit PvD that has additional
+information, and this additional information JSON dictionary contains the key "dohTemplate" {{iana}},
+then the client SHOULD add this DoH server to its list of known DoH configurations. The
+domains that the DoH server claims authority for are listed in the "dnsZones" key. Clients
+MUST peform an NS2 record query to the locally-provisioned DoH server and validate
+the answer with DNSSEC before creating a mapping from the domain to the server.
+Once this has been validated, clients can use this server for resolution as described in
+step 2 of {{resolution-algorithm}}.
+
+See {{local-deployment}} for local deployment considerations.
 
 ## Hostname Resolution Algorithm {#resolution-algorithm}
 
@@ -239,7 +269,7 @@ SHOULD be:
 
 1. An Exclusive Direct Resolver, such as a resolver provisioned by a VPN,
 domain rules that include the hostname being resolved. If the resolution
-fails, the connection will fail.
+fails, the connection will fail. See {{local-discovery}} and {{local-deployment}}.
 
 2. A Direct Resolver, such as a local router, with domain rules that is known to be
 authoritative for the domain containing the hostname. If the resolution fails,
@@ -291,7 +321,19 @@ number of fallback attempts that will be performed.
 
 # Server Requirements {#server}
 
-## DNS Over HTTPS Server
+Any server deployment that provides a set of services within one or more domains,
+such as a CDN, can run a server node that allows clients to run Adaptive DNS.
+A new server node can be added at any time, and can be used once it is
+advertised to clients and can be validated and whitelisted. The system overall
+is intended to scale and provide improved performance as more nodes become
+available.
+
+The basic requirements to participate as a server node in this architecture are
+described below.
+
+## Provide a DoH Server
+
+
 
 ### Obfuscated DoH Proxy
 
@@ -299,22 +341,109 @@ number of fallback attempts that will be performed.
 
 ### Keying Material
 
-## Advertising DoH Resolvers
+## Advertise the DoH Server
 
 - Add DoH URI template to NS2 records
 - Add Obfuscation public key to NS2 records
 - Sign them with DNSSEC
 
-## Extended Configuration {#configuration}
+## Provide Extended Configuration as a Web PvD {#configuration}
 
-- JSON PvD-style blob
-- Lists the default domains that the server for which the authoritative
-- Also allows configuring proxies, etc
+Beyond providing basic DoH server functionality, server nodes SHOULD
+offer a set of extended configuration to help clients discover the default
+set of domains for which the server is authoritative, as well as other
+capabilities offered by the server deployment.
 
-# Local Resolver Deployment Considerations
+This set of extended configuration information is referred to as a
+Web Provisioning Domain, or a Web PvD. Provisioning Domains are
+sets of consistent information that clients can use to access networks,
+including rules for resolution and proxying. Generally, these PvDs are
+provisioned directly, such as by a local router or a VPN.
+{{!I-D.ietf-intarea-provisioning-domains}} defines an extensible configuration
+dictionary that can be used to add information to local PvD configurations.
+Web PvDs share the same JSON configuration format, and share the
+registry of keys defined as "Additional Information PvD Keys".
+
+If present, the PvD JSON configuration MUST be available at the URI
+with the format https://\<DoH Server\>/.well-known/pvd, using the well-known URI
+format defined in {{!I-D.ietf-intarea-provisioning-domains}}. HTTP requests and responses
+for the extended configuration information use the “application/pvd+json” media type.
+Clients SHOULD include this media type as an Accept header in their GET requests,
+and servers MUST mark this media type as their Content-Type header in responses.
+
+The "identifer" key SHOULD be the hostname of the DoH Server itself.
+
+For Web PvDs, the "prefixes" key within the JSON configuration SHOULD contain
+an empty array.
+
+The key "dnsZones", which contains an array of domains as strings, indicates the
+zones that belong to the PvD. Any zone that is listed in this array for a Web PvD
+MUST have a corresponding NS2 record that defines the DoH server as authoritative
+for the zone. Servers SHOULD include in this array any names that are considered
+default or well-known for the deployment, but is not required or expected to list
+all zones or domains for which it is authoritative. The trade-off here is that zones
+that are listed can be fetched and validated automatically by clients, thus removing
+a bootstrapping step in discovering mappings from domains to Authoritative
+DoH Servers.
+
+Client that retrieve the Web PvD JSON dictionary SHOULD perform an NS2 record
+query for each of the entries in the "dnsZones" array in order to populate the
+mappings of domains. These MAY be performed in an obfuscated fashion, but
+MAY also be queried directly on the DoH server (since the information is not user-specific,
+but in response to generic server-driven content). Once clients retrieve the PvD JSON
+information, servers MAY pre-populate the client cache by sending an HTTP Server
+Push for the NS2 records for the entries in the "dnsZones" array.
+
+This document also registers one new key in the Additional Information PvD Keys registry,
+to identify the URI Template for the DoH server {{iana}}. When included in Web PvDs, this URI
+MUST match the template in the NS2 DNS Record.
+
+Beyond providing resolution configuration, the Web PvD configuration can be extended
+to offer information about proxies and other services offered by the server deployment.
+Such keys are not defined in this document.
+
+# Local Resolver Deployment Considerations {#local-deployment}
+
+A key goal of Adaptive DNS is that clients will be able to use Authoritative DoH Servers
+to improve the privacy of queries, without entirely bypassing local network authority and
+policy. For example, if a client host is attached to an enterprise Wi-Fi network that provides
+access and resolution for private names not generally accessible on the Internet, such
+names will only be usable when a local resolver is used.
+
+In order to achieve this, a local network can advertise itself as authoritative for a domain,
+allowing it to be used prior to external servers in the client resolution algorithm {{resolution-algorithm}}.
+
+## Local Authoritative DoH Servers
+
+If a local network wants to have clients send queries for a set of private domains to its own resolver,
+it needs to define an explicit provisioning domain, as defined in {{!I-D.ietf-intarea-provisioning-domains}}.
+The PvD RA option SHOULD set the H-flag to indicate that Additional Information is available.
+This Additional Information JSON object SHOULD include both the "dohTemplate" and "dnsZones"
+keys to define the local DoH server and which domains it claims authority over.
 
 # Security Considerations
 
-# IANA Considerations
+In order to avoid interception and modification of the information retrieved by clients
+using Adaptive DNS, all exchanges between clients and servers are performed over
+TLS connections.
+
+Clients must also be careful in determining which DoH servers they send queries to
+directly, without obfuscation. In order to avoid the possibility of a spoofed NS2
+record defining a malicious DoH server as authoritiative, clients MUST ensure that
+such records validate using DNSSEC. Even servers that are officially registered
+as authoritative can risk leaking or logging information about client lookups.
+Such risk can be mitigated by validating that the DoH servers can present proof
+of logging audits, or by a local whitelist of servers maintained by a client.
+
+# IANA Considerations {#iana}
+
+This document adds a key to the "Additional Information PvD Keys" registry, defined
+by {{!I-D.ietf-intarea-provisioning-domains}}.
+
+| JSON key | Description         | Type      | Example      |
+|:------------|:-----------------------|:---------------------|:------------|
+| dohTemplate     | DoH URI Template {{!RFC8484}} | String | "https://dnsserver.example.net/dns-query{?dns}" |
 
 # Acknowledgments
+
+Thanks to Erik Nygren, Lorenzo Colitti, and Patrick McManus for their input on this approach.
