@@ -99,11 +99,11 @@ and enterprise resolver.
 
 This architecture is composed of several mechanisms:
 
-- A DNS RRTYPE that indicates an authoritative DoH resolver associated with a name ({{RRTYPE}})
+- A DNS RRTYPE that indicates an authoritative DoH server associated with a name ({{RRTYPE}})
 
 - An extension to DoH that allows queries to be obfuscated ({{OBFUSCATION}})
 
-- A DoH resolver configuration that defines protocols and keys supported by a resolver ({{configuration}})
+- A DoH server that responds to queries directly and supports proxying ({{server}})
 
 - Client behavior rules for how to resolve names using a combination of authoritative DoH resolvers, obfuscated queries, and local resollvers ({{client}})
 
@@ -193,6 +193,9 @@ When a client resolves a name (based on the order in {{resolution-algorithm}}) i
 issue a query for the NS2 record for any name that does not fall within known Authoritative
 DoH Server's configuration. The client MAY also issue queries for the NS2 record for
 more specific names to discover further Authoritative DoH Servers.
+
+Any NS2 record MUST be validated using DNSSEC before a client uses the information
+about the authoritative DoH Servers.
 
 In order to bootstrap discovery of Authoritative DoH Servers, client systems SHOULD
 have some saved list of at least two names that they use consistently to perform
@@ -298,7 +301,15 @@ number of fallback attempts that will be performed.
 
 ## Advertising DoH Resolvers
 
-## Associating Configuration {#configuration}
+- Add DoH URI template to NS2 records
+- Add Obfuscation public key to NS2 records
+- Sign them with DNSSEC
+
+## Extended Configuration {#configuration}
+
+- JSON PvD-style blob
+- Lists the default domains that the server for which the authoritative
+- Also allows configuring proxies, etc
 
 # Local Resolver Deployment Considerations
 
