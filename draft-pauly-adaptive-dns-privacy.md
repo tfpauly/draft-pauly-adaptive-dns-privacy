@@ -37,7 +37,7 @@ author:
     country: United States of America
     email: cawood@apple.com
     
-informative:
+normative:
     RRTYPE:
       title: Associated Trusted Resolver Records
       authors:
@@ -198,7 +198,7 @@ issue a query for the NS2 record for any name that does not fall within known Au
 DoH Server's configuration. The client MAY also issue queries for the NS2 record for
 more specific names to discover further Authoritative DoH Servers.
 
-Any NS2 record MUST be validated using DNSSEC before a client uses the information
+Any NS2 record MUST be validated using DNSSEC {{!RFC4033}} before a client uses the information
 about the authoritative DoH Servers.
 
 In order to bootstrap discovery of Authoritative DoH Servers, client systems SHOULD
@@ -257,7 +257,7 @@ information, and this additional information JSON dictionary contains the key "d
 then the client SHOULD add this DoH server to its list of known DoH configurations. The
 domains that the DoH server claims authority for are listed in the "dnsZones" key. Clients
 MUST peform an NS2 record query to the locally-provisioned DoH server and validate
-the answer with DNSSEC before creating a mapping from the domain to the server.
+the answer with DNSSEC {{!RFC4033}} before creating a mapping from the domain to the server.
 Once this has been validated, clients can use this server for resolution as described in
 step 2 of {{resolution-algorithm}}.
 
@@ -367,7 +367,7 @@ The primary mechanism for advertising an Authoritative DoH Server is the NS2 DNS
 This record MUST contain both the URI Template of the DoH Server as well as the Obfuscation Public
 Key. It MAY contain the ESNI key {{!I-D.ietf-tls-esni}}.
 
-Servers MUST ensure that the NS2 records are signed with DNSSEC.
+Servers MUST ensure that the NS2 records are signed with DNSSEC {{!RFC4033}}.
 
 ## Provide Extended Configuration as a Web PvD {#configuration}
 
@@ -452,7 +452,7 @@ TLS connections.
 Clients must also be careful in determining which DoH servers they send queries to
 directly, without obfuscation. In order to avoid the possibility of a spoofed NS2
 record defining a malicious DoH server as authoritiative, clients MUST ensure that
-such records validate using DNSSEC. Even servers that are officially registered
+such records validate using DNSSEC {{!RFC4033}}. Even servers that are officially registered
 as authoritative can risk leaking or logging information about client lookups.
 Such risk can be mitigated by validating that the DoH servers can present proof
 of logging audits, or by a local whitelist of servers maintained by a client.

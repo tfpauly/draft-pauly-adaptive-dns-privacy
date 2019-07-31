@@ -39,7 +39,7 @@ author:
 
 --- abstract
 
-This document describes an extension to DNS Over HTTPS (DoH) that allows Obfuscation
+This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation
 of client addresses via proxying. This improves privacy of DNS operations by not allowing
 any one server entity to be aware of both the client IP address and the content of DNS
 queries and answers.
