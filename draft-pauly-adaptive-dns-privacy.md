@@ -70,7 +70,7 @@ However, privacy-sensitive client hosts often would prefer to use a encrypted DN
 than the one locally provisioned in order to prevent interception or modification by untrusted parties along
 the network path and centralized profiling by a single local resolver. Protocols that can improve the privacy
 stance of a client when using DNS or creating TLS connections include DNS-over-TLS {{!RFC7858}},
-DNS-over-HTTPS {{!RFC8484}}, and encrypted Server Name Indication (ENSI) {{!I-D.ietf-tls-esni}}.
+DNS-over-HTTPS {{!RFC8484}}, and encrypted Server Name Indication (ESNI) {{!I-D.ietf-tls-esni}}.
 
 There are several concerns around a client host using such privacy-enhancing mechanisms
 for generic system traffic. A remote service that provides encrypted DNS may not provide
@@ -361,7 +361,7 @@ in TLS handshakes to the DoH server.
 
 The primary mechanism for advertising an Authoritative DoH Server is the NS2 DNS Record {{RRTYPE}}.
 This record MUST contain both the URI Template of the DoH Server as well as the Obfuscation Public
-Key. It MAY contain the ESNI key.
+Key. It MAY contain the ESNI key {{!I-D.ietf-tls-esni}}.
 
 Servers MUST ensure that the NS2 records are signed with DNSSEC.
 
