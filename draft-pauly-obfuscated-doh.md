@@ -36,6 +36,18 @@ author:
     city: Cupertino, California 95014
     country: United States of America
     email: ekinnear@apple.com
+    
+normative:
+    ADNS:
+      title: "Adaptive DNS: Improving Privacy of Name Resolution"
+      authors:
+        -
+          T. Pauly
+    RRTYPE:
+      title: Associated Trusted Resolver Records
+      authors:
+        -
+          T. Pauly
 
 --- abstract
 
@@ -48,7 +60,24 @@ queries and answers.
 
 # Introduction
 
-[TODO] Describe Obfuscated DoH
+DNS Over HTTPS (DoH) {{!RFC8484}} defines a mechanism to allow DNS messages to be
+transmitted in encrypted HTTP messages. This provides improved confidentiality and authentication
+for DNS interactions in various circumstances.
+
+While DoH can prevent eavesdroppers from directly reading the contents of DNS exchanges, it does
+not allow clients to send DNS queries and receive answers from servers without revealing
+their local IP address, and thus information about the identity or location of the client.
+
+Proposals such as Oblivious DNS ({{?I-D.annee-dprive-oblivious-dns}}) allow increased privacy
+by not allowing any single DNS server to be aware of both the client IP address and the
+message contents.
+
+This document defines an Obfuscated DoH, an extension to DoH that allows for a proxied mode
+of resolution, in which DNS messages are encrypted in such a way that no DoH server
+can independently read both the client IP address and the DNS message contents.
+
+This mechanism is intended to be used as one option for resolving privacy-sensitive content
+in a broader context of Adaptive DNS {{ADNS}}.
 
 ## Specification of Requirements
 
@@ -69,6 +98,19 @@ will be able to decrypt the query (the Obfuscation Target).
 Obfuscation Target:
 : A resolution server that receives encrypted client DNS queries via an Obfuscation Proxy.
 
+# Deployment Requirements
+
+Obfuscated DoH requires, at a minimum:
+
+- Two DoH servers, where one can act as an Obfuscation Proxy, and the other can act as an
+Obfuscation Target.
+- Public keys for encrypt DNS queries that are passed from a client through a proxy
+to a target.
+- Client ability to generate one-time-use symmetric keys to encrypt DNS responses.
+
+One mechanism for discovering and privisioning the DoH URI Templates and public keys
+is a DNS resource record, NS2 {{RRTYPE}}.
+
 # HTTP Exchange
 
 Unlike direct resolution, obfuscated hostname resolution over DoH involves three parties:
@@ -78,8 +120,6 @@ Unlike direct resolution, obfuscated hostname resolution over DoH involves three
 and passes them on to another resolution server.
 3. The Obfuscation Target, which is a resolution server that receives proxied queries from the client
 via the Obfuscation Proxy.
-
-[TODO] Describe how to proxy (probably like HTTP proxying)
 
 ## HTTP Request
 
