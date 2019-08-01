@@ -92,7 +92,36 @@ they appear in all capitals, as shown here.
 The NS2 RR contains two pieces of information in its RDATA:
 
 - The URI Template of the DoH server {{!RFC8484}}
-- The public key of the DoH server used for proxied obfuscated queries {{OBFUSCATION}}
+- The optional public key of the DoH server used for proxied obfuscated queries {{OBFUSCATION}}
+
+The RDATA is formatted as follows:
+
+~~~
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-------------------------------+-------------------------------+
+|      URI Template Length      |       Public Key Length       |
++-------------------------------+-------------------------------+
+~                URI Template (Variable Length)                 ~
++---------------------------------------------------------------+
+~                  Public Key (Variable Length)                 ~
++---------------------------------------------------------------+
+~~~
+
+URI Template Length:
+: A 16-bit unsigned integer, in network byte order, that indicates the length of the URI
+Template field.
+
+Public Key Length:
+: A 16-bit unsigned integer, in network byte order, that indicates the length of the Public
+Key field.
+
+URI Template:
+: The URI Template for the Authoritative DoH Server, as defined in {{!RFC8484}}. This is
+a string encoded as UTF-8 characters.
+
+Public Key:
+: A public key used for Obfuscated DoH, as defined in {{OBFUSCATION}}.
 
 # Security Considerations
 
