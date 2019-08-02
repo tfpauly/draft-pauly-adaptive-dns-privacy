@@ -171,7 +171,7 @@ by the resolver.
 2. Only an authoritative DNS resolver associated with the deployment that is also
 hosting content will be able to read both the client IP address and queried names for
 Privacy-Sensitive Connections. For example, a resolver owned and operated by the same
-provider which hosts example.com may link queries for example.com to specific clients
+provider which hosts "example.com" would be able to link queries for "example.com" to specific clients
 (by their IP address), since the server ultimately has this capability once clients subsequently
 establish secure (e.g., TLS) connections to an address to which "example.com" resolves.
 
