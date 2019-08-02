@@ -179,11 +179,10 @@ establish secure (e.g., TLS) connections to an address to which "example.com" re
 are authoritative for private domains.
 
 An algorithm for determining how to resolve a given name in a manner that satisfies
-these properties is described in {{resolution-algorithm}}. Note: this algorithm does not
-prevent adversarial resolvers from redirecting targeted clients to addresses of its 
-choosing via DNS answers without DNSSEC signatures. Privacy-Sensitive Connections concerned 
-about this attack SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or some other 
-tunneling mechanism.
+these properties is described in {{resolution-algorithm}}. Note that this algorithm 
+does not guarantee that responses that are not signed with DNSSEC are valid, and clients 
+that establish connections to unsigned addresses may still expose their local IP addresses 
+to an attacker.
 
 ## Discovering Authoritative DoH Servers {#authoritative-discovery}
 
@@ -466,6 +465,13 @@ such records validate using DNSSEC {{!RFC4033}}. Even servers that are officiall
 as authoritative can risk leaking or logging information about client lookups.
 Such risk can be mitigated by validating that the DoH servers can present proof
 of logging audits, or by a local whitelist of servers maintained by a client.
+
+Clients should take caution when using obfuscated responses from resolvers that do not
+carry DNSSEC signatures. An adversarial Target resolver that wishes to learn the IP address 
+of clients requesting resolution for sensitive domains can redirect clients to addresses
+of its choosing. Clients that use these answers to open direct connections to the server
+may then leak their local IP address. Privacy-Sensitive Connections concerned about this attack
+SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or some other tunneling mechanism.
 
 # IANA Considerations {#iana}
 
