@@ -168,7 +168,7 @@ Specifically, the goal for client queries is to achieve the following properties
 learn the names being queried by the client or the answers being returned
 by the resolver.
 
-2. Only an authoritative DNS resolver that is associated with the deployment that is also
+2. Only an authoritative DNS resolver associated with the deployment that is also
 hosting content will be able to read both the client IP address and queried names for
 Privacy-Sensitive Connections. For example, a resolver owned and operated by the same
 provider which hosts example.com may link queries for example.com to specific clients
