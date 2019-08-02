@@ -13,14 +13,6 @@ pi: [toc, sortrefs, symrefs]
 
 author:
   -
-    ins: T. Pauly
-    name: Tommy Pauly
-    org: Apple Inc.
-    street: One Apple Park Way
-    city: Cupertino, California 95014
-    country: United States of America
-    email: tpauly@apple.com
-  -
     ins: E. Kinnear
     name: Eric Kinnear
     org: Apple Inc.
@@ -28,6 +20,14 @@ author:
     city: Cupertino, California 95014
     country: United States of America
     email: ekinnear@apple.com
+  - 
+    ins: T. Pauly
+    name: Tommy Pauly
+    org: Apple Inc.
+    street: One Apple Park Way
+    city: Cupertino, California 95014
+    country: United States of America
+    email: tpauly@apple.com
   -
     ins: C. Wood
     name: Chris Wood
@@ -38,16 +38,16 @@ author:
     email: cawood@apple.com
     
 normative:
-    RRTYPE:
-      title: Associated Trusted Resolver Records
-      authors:
-        -
-          T. Pauly
-    OBFUSCATION:
-      title: Obfuscated DNS Over HTTPS
-      authors:
-        -
-          T. Pauly
+  RRTYPE:
+    title: Associated Trusted Resolver Records
+    authors:
+      -
+        T. Pauly
+  OBFUSCATION:
+    title: Obfuscated DNS Over HTTPS
+    authors:
+      -
+        T. Pauly
 
 --- abstract
 
@@ -66,8 +66,8 @@ When client hosts need to resolve names into addresses in order to establish net
 they traditionally use by default the DNS resolver that is provisioned by the local router, or by
 a tunneling server such as a VPN.
 
-However, privacy-sensitive client hosts often would prefer to use a encrypted DNS service other
-than the one locally provisioned in order to prevent interception or modification by untrusted parties along
+However, privacy-sensitive client hosts often would prefer to use an encrypted DNS service other
+than the one locally provisioned in order to prevent interception or modification by adversaries along
 the network path and centralized profiling by a single local resolver. Protocols that can improve the privacy
 stance of a client when using DNS or creating TLS connections include DNS-over-TLS {{!RFC7858}},
 DNS-over-HTTPS {{!RFC8484}}, and encrypted Server Name Indication (ESNI) {{!I-D.ietf-tls-esni}}.
@@ -75,18 +75,18 @@ DNS-over-HTTPS {{!RFC8484}}, and encrypted Server Name Indication (ESNI) {{!I-D.
 There are several concerns around a client host using such privacy-enhancing mechanisms
 for generic system traffic. A remote service that provides encrypted DNS may not provide
 correct answers for locally available resources, or private resources (such as domains only
-accessible over a private network). A remote service may also itself be untrusted from a
-privacy perspective: while encryption will prevent on-path observers from seeing hostnames,
-the client host needs to trust the encrypted DNS service to not store or misuse queries made
-to it.
+accessible over a private network). Remote services may also be untrusted from a privacy 
+perspective: while encryption will prevent on-path observers from seeing hostnames,
+client systems must trust the encrypted DNS service to not store or misuse queries made to it.
 
 Client systems are left with choosing between one of the following stances:
 
 1. Send all application DNS queries to a particular encrypted DNS service, which requires establishing
-user trust of the service. This can lead to resolution failures for local or private enterprise domains.
+user trust of the service. This may lead to resolution failures for local or private enterprise domains
+absent heuristics or other workarounds for detecting managed networks.
 
 2. Allow the user or another entity to configure local policy for which domains to send to local,
-private, or encrypted resolvers. This provides more granularity, but increases user burden.
+private, or encrypted resolvers. This provides more granularity while increasing user burden.
 
 3. Only use locally-provisioned resolvers, and opportunistically use encrypted DNS to these resolvers
 when possible. (Clients may learn of encrypted transport support by actively probing such
@@ -95,17 +95,17 @@ have no means of authenticating or trusting local resolvers.
 
 This document defines an architecture that allows clients to improve the privacy of their
 DNS queries without requiring user intervention, and allowing coexistence with local, private,
-and enterprise resolver.
+and enterprise resolvers.
 
 This architecture is composed of several mechanisms:
 
-- A DNS RRTYPE that indicates an authoritative DoH server associated with a name ({{RRTYPE}})
+- A DNS RRTYPE that indicates an authoritative DoH server associated with a name ({{RRTYPE}});
 
-- An extension to DoH that allows queries to be obfuscated ({{OBFUSCATION}})
+- An extension to DoH that allows queries to be obfuscated ({{OBFUSCATION}});
 
-- A DoH server that responds to queries directly and supports proxying ({{server}})
+- A DoH server that responds to queries directly and supports proxying ({{server}});
 
-- Client behavior rules for how to resolve names using a combination of authoritative DoH resolvers, obfuscated queries, and local resollvers ({{client}})
+- and client behavior rules for how to resolve names using a combination of authoritative DoH resolvers, obfuscated queries, and local resollvers ({{client}}).
 
 ## Specification of Requirements
 
@@ -164,17 +164,26 @@ of their DNS queries and connections both by requiring confidentiality via encry
 and by limiting the ability to correlate client IP addresses with query contents.
 Specifically, the goal for client queries is to achieve the following properties:
 
-- Eavesdroppers on the local network or elsewhere on the path will not be able to
-read the names being queried by the client or the answers being returned
+1. Eavesdroppers on the local network or elsewhere on the path can not
+learn the names being queried by the client or the answers being returned
 by the resolver.
-- Only an authoritative DNS resolver that is associated with the deployment that is also
+
+2. Only an authoritative DNS resolver that is associated with the deployment that is also
 hosting content will be able to read both the client IP address and queried names for
-Privacy-Sensitive Connections.
-- Clients will be able to comply with policies required by VPNs and local networks that
+Privacy-Sensitive Connections. For example, a resolver owned and operated by the same
+provider which hosts example.com may link queries for example.com to specific clients
+(by their IP address), since they ultimately have this capability when clients subsequently
+open secure (e.g., TLS) connections to an address to which example.com resolves.
+
+3. Clients will be able to comply with policies required by VPNs and local networks that
 are authoritative for private domains.
 
-The algorithm for determining how to resolve a given name in a manner that satisfies
-these properties is described in {{resolution-algorithm}}.
+An algorithm for determining how to resolve a given name in a manner that satisfies
+these properties is described in {{resolution-algorithm}}. Note: this algorithm does not
+prevent adversarial resolvers from redirecting targeted clients to addresses of its 
+choosing via unsigned DNS answers. Privacy-Sensitive Connections concerned about this 
+attack SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or some other 
+tunneling mechanism.
 
 ## Discovering Authoritative DoH Servers {#authoritative-discovery}
 
@@ -185,7 +194,7 @@ Clients dynamically build and maintain a set of known Authoritative DoH Servers.
 that is required to be associated with each server is:
 
 - The URI Template of the DoH server {{!RFC8484}}
-- The public key of the DoH server used for proxied obfuscated queries
+- The public HPKE {{!I-D.irtf-cfrg-hpke}} key of the DoH server used for proxied obfuscated queries
 - A list of domains for which the DoH server is authoritative
 
 This information can be retrieved from several different sources. The primary source
@@ -355,11 +364,12 @@ answers using client keys.
 
 ### Keying Material
 
-In order to support acting as an Obfuscation Target, a DoH server needs to generate a public key
-that can be used to encrypt client queries. This key is advertised in the NS2 record.
+In order to support acting as an Obfuscation Target, a DoH server needs to provide a public 
+HPKE {{!I-D.irtf-cfrg-hpke}} key that can be used to encrypt client queries. This key is advertised 
+in the NS2 record, and encoded according to {{OBFUSCATION}}.
 
-DoH servers also SHOULD provide an ESNI key to help encrypt the Server Name Indication field
-in TLS handshakes to the DoH server.
+DoH servers also SHOULD provide an ESNI {{!I-D.ietf-tls-esni}} key to help encrypt the Server 
+Name Indication field in TLS handshakes to the DoH server.
 
 ## Advertise the DoH Server
 
