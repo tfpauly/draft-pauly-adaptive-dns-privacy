@@ -13,6 +13,14 @@ pi: [toc, sortrefs, symrefs]
 
 author:
   -
+    ins: E. Kinnear
+    name: Eric Kinnear
+    org: Apple Inc.
+    street: One Apple Park Way
+    city: Cupertino, California 95014
+    country: United States of America
+    email: ekinnear@apple.com
+  -
     ins: T. Pauly
     name: Tommy Pauly
     org: Apple Inc.
@@ -28,14 +36,6 @@ author:
     city: Cupertino, California 95014
     country: United States of America
     email: cawood@apple.com
-  -
-    ins: E. Kinnear
-    name: Eric Kinnear
-    org: Apple Inc.
-    street: One Apple Park Way
-    city: Cupertino, California 95014
-    country: United States of America
-    email: ekinnear@apple.com
     
 normative:
     ADNS:
