@@ -172,7 +172,7 @@ by the resolver.
 hosting content will be able to read both the client IP address and queried names for
 Privacy-Sensitive Connections. For example, a resolver owned and operated by the same
 provider which hosts example.com may link queries for example.com to specific clients
-(by their IP address), since they ultimately have this capability when clients subsequently
+(by their IP address), since the server ultimately has this capability once clients subsequently
 open secure (e.g., TLS) connections to an address to which example.com resolves.
 
 3. Clients will be able to comply with policies required by VPNs and local networks that
