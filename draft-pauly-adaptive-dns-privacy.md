@@ -103,7 +103,7 @@ This architecture is composed of several mechanisms:
 
 - an extension to DoH that allows queries to be obfuscated ({{OBFUSCATION}});
 
-- A DoH server that responds to queries directly and supports proxying ({{server}});
+- a DoH server that responds to queries directly and supports proxying ({{server}});
 
 - and client behavior rules for how to resolve names using a combination of authoritative DoH resolvers, obfuscated queries, and local resollvers ({{client}}).
 
