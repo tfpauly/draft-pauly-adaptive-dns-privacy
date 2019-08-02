@@ -77,7 +77,7 @@ for generic system traffic. A remote service that provides encrypted DNS may not
 correct answers for locally available resources, or private resources (such as domains only
 accessible over a private network). Remote services may also be untrusted from a privacy 
 perspective: while encryption will prevent on-path observers from seeing hostnames,
-client systems must trust the encrypted DNS service to not store or misuse queries made to it.
+client systems need to trust the encrypted DNS service to not store or misuse queries made to it.
 
 Client systems are left with choosing between one of the following stances:
 
