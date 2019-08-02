@@ -82,7 +82,7 @@ client systems need to trust the encrypted DNS service to not store or misuse qu
 Client systems are left with choosing between one of the following stances:
 
 1. Send all application DNS queries to a particular encrypted DNS service, which requires establishing
-user trust of the service. This may lead to resolution failures for local or private enterprise domains
+user trust of the service. This can lead to resolution failures for local or private enterprise domains
 absent heuristics or other workarounds for detecting managed networks.
 
 2. Allow the user or another entity to configure local policy for which domains to send to local,
