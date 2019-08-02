@@ -181,8 +181,8 @@ are authoritative for private domains.
 An algorithm for determining how to resolve a given name in a manner that satisfies
 these properties is described in {{resolution-algorithm}}. Note: this algorithm does not
 prevent adversarial resolvers from redirecting targeted clients to addresses of its 
-choosing via unsigned DNS answers. Privacy-Sensitive Connections concerned about this 
-attack SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or some other 
+choosing via DNS answers without DNSSEC signatures. Privacy-Sensitive Connections concerned 
+about this attack SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or some other 
 tunneling mechanism.
 
 ## Discovering Authoritative DoH Servers {#authoritative-discovery}

@@ -229,7 +229,7 @@ these meessage bodies are constructed.
 Obfuscated DNS Query messages must carry the following information:
 
 1. A symmetric key and ciphersuite under which the DNS response will be encrypted.
-2. A DNS query name which the client wishes to resolve.
+2. A DNS query message which the client wishes to resolve.
 
 And is encoded as follows:
 
@@ -237,18 +237,18 @@ And is encoded as follows:
 struct {
    uint16 aead_id;
    opaque symmetric_key<1..2^16-1>;
-   opaque dns_name<1..2^16-1>;
+   opaque dns_message<1..2^16-1>;
 } ObfuscatedDNSQueryBody;
 ~~~
 
-When sending an Obfuscated DNS Query for name N to an Obfuscation Target with 
-ObfuscatedDNSKey key pk, a client does the following:
+Let M be a DNS message a client wishes to send obfuscated. When sending an Obfuscated DNS Query 
+for resolving M to an Obfuscation Target with ObfuscatedDNSKey key pk, a client does the following:
 
 1. Generate a random 64-bit query_id and random symmetric_key whose length matches
 that of the AEAD ciphersuite in pk.aead_id. (All randomness must be generated 
 according to {{!RFC4086}}.)
 2. Create a ObfuscatedDNSQueryBody structure, carrying pk.aead_id, symmetric_key,
-and the name N, to produce pt.
+and the message M, to produce pt.
 3. Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.
 4. Compute the encrypted message blob as blob = encrypt_query_body(pkR, query_id, pt).
 (See definition for encrypt_query_body below.)
@@ -285,7 +285,7 @@ corresponding to this public key, or one chosen for trial decryption.
 2. Compute pt, error = decrypt_query_body(Q.encrypted_message). (See definition
 for decrypt_query_body below.)
 3. If no error was returned, process pt as a ObfuscatedDNSQueryBody Qb. 
-4. Resolve ObfuscatedDNSQueryBody.dns_name as needed, yielding answer Rb.
+4. Resolve ObfuscatedDNSQueryBody.dns_message as needed, yielding answer Rb.
 5. Compute R_encrypted = encrypt_response_body(Q.query_id, Rb). (See definition 
 for encrypt_response_body below.)
 6. Output a ObfuscatedDNSMessage message R where R.message_type = 0x02, 
