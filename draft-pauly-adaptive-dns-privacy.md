@@ -86,7 +86,7 @@ user trust of the service. This may lead to resolution failures for local or pri
 absent heuristics or other workarounds for detecting managed networks.
 
 2. Allow the user or another entity to configure local policy for which domains to send to local,
-private, or encrypted resolvers. This provides more granularity while increasing user burden.
+private, or encrypted resolvers. This provides more granularity at the cost of increasing user burden.
 
 3. Only use locally-provisioned resolvers, and opportunistically use encrypted DNS to these resolvers
 when possible. (Clients may learn of encrypted transport support by actively probing such
