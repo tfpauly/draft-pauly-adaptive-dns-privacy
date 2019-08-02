@@ -101,7 +101,7 @@ This architecture is composed of several mechanisms:
 
 - A DNS RRTYPE that indicates an authoritative DoH server associated with a name ({{RRTYPE}});
 
-- An extension to DoH that allows queries to be obfuscated ({{OBFUSCATION}});
+- an extension to DoH that allows queries to be obfuscated ({{OBFUSCATION}});
 
 - A DoH server that responds to queries directly and supports proxying ({{server}});
 
