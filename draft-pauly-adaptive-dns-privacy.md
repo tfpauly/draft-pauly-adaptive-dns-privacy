@@ -164,7 +164,7 @@ of their DNS queries and connections both by requiring confidentiality via encry
 and by limiting the ability to correlate client IP addresses with query contents.
 Specifically, the goal for client queries is to achieve the following properties:
 
-1. Eavesdroppers on the local network or elsewhere on the path can not
+1. Eavesdroppers on the local network or elsewhere on the path cannot
 learn the names being queried by the client or the answers being returned
 by the resolver.
 
