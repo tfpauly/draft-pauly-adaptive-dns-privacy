@@ -1,6 +1,6 @@
 ---
-title: "Encrypted Authoritative Resolver Records"
-abbrev: Encrypted NS Records
+title: "Designated Encrypted Resolver Records"
+abbrev: Designated Encrypted Resolver Records
 docname: draft-pauly-encrypted-ns
 date:
 category: std
@@ -36,7 +36,7 @@ author:
     city: Cupertino, California 95014
     country: United States of America
     email: cawood@apple.com
-    
+
 normative:
     ADNS:
       title: "Adaptive DNS: Improving Privacy of Name Resolution"
@@ -52,7 +52,7 @@ normative:
 --- abstract
 
 This document defines a DNS resource record, NS2, that identifies
-an authoritative name server that provides DNS Over HTTPS (DoH)
+a designated name server that provides DNS Over HTTPS (DoH)
 access to clients and recursive resolvers. The record also contains
 associated data required to use the name server.
 
@@ -69,13 +69,14 @@ is not generally peformed over encrypted channels, however, since the
 location of authoritative servers in NS resource records (RRs) does not
 indicate that these servers provide support of protocols like DoH.
 
-Discovering authoritative DNS servers that provide access over DoH can
-also be used directly by client hosts. Adaptive DNS ({{ADNS}}) defines an
+Discovering DNS servers that provide access over DoH can
+also be used directly by client hosts. These servers can be specifically designated
+as the correct resolvers to use for a given zone. Adaptive DNS ({{ADNS}}) defines an
 algorithm that clients can use to improve their privacy stance by using
 multiple DoH servers for resolution, and only resolving with a server directly
-when that server is known to be authoritative for the domain that is being resolved.
+when that server is specifically designated for the zone that is being resolved.
 
-This document defines a new RR, NS2, to indicate the location of an authoritative
+This document defines a new RR, NS2, to indicate the location of an designated
 DNS server that is accessible over DoH, along with information necessary
 for clients to use the server.
 
@@ -117,7 +118,7 @@ Public Key Length:
 Key field.
 
 URI Template:
-: The URI Template for the Authoritative DoH Server, as defined in {{!RFC8484}}. This is
+: The URI Template for the Designated DoH Server, as defined in {{!RFC8484}}. This is
 a string encoded as UTF-8 characters.
 
 Public Key:
@@ -136,7 +137,7 @@ Record (RR) TYPEs registry:
 
 | TYPE | Meaning         | Reference      |
 |:------------|:-----------------------|:---------------------|:------------|
-| NS2     | Authoritative Encrypted Name Server | (This document) |
+| NS2     | Designated Encrypted Name Server | (This document) |
 
 # Acknowledgments
 

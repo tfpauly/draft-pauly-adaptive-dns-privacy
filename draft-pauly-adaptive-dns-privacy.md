@@ -20,7 +20,7 @@ author:
     city: Cupertino, California 95014
     country: United States of America
     email: ekinnear@apple.com
-  - 
+  -
     ins: T. Pauly
     name: Tommy Pauly
     org: Apple Inc.
@@ -36,7 +36,7 @@ author:
     city: Cupertino, California 95014
     country: United States of America
     email: cawood@apple.com
-    
+
 normative:
   RRTYPE:
     title: Associated Trusted Resolver Records
@@ -52,10 +52,10 @@ normative:
 --- abstract
 
 This document defines an architecture that allows client hosts to dynamically
-discover authoritative resolvers that offer encrypted DNS services, and use them
+discover designated resolvers that offer encrypted DNS services, and use them
 in an adaptive way that improves privacy while co-existing with locally
 provisioned resolvers. These resolvers can be used directly when
-looking up names for which they are authoritative. These resolvers also provide the ability
+looking up names for which they are designated. These resolvers also provide the ability
 to proxy encrypted queries, thus obfuscating the identity of the client requesting resolution.
 
 --- middle
@@ -75,7 +75,7 @@ DNS-over-HTTPS {{!RFC8484}}, and encrypted Server Name Indication (ESNI) {{!I-D.
 There are several concerns around a client host using such privacy-enhancing mechanisms
 for generic system traffic. A remote service that provides encrypted DNS may not provide
 correct answers for locally available resources, or private resources (such as domains only
-accessible over a private network). Remote services may also be untrusted from a privacy 
+accessible over a private network). Remote services may also be untrusted from a privacy
 perspective: while encryption will prevent on-path observers from seeing hostnames,
 client systems need to trust the encrypted DNS service to not store or misuse queries made to it.
 
@@ -99,13 +99,13 @@ and enterprise resolvers.
 
 This architecture is composed of several mechanisms:
 
-- A DNS RRTYPE that indicates an authoritative DoH server associated with a name ({{RRTYPE}});
+- A DNS RRTYPE that indicates a designated DoH server associated with a name ({{RRTYPE}});
 
 - an extension to DoH that allows queries to be obfuscated ({{OBFUSCATION}});
 
 - a DoH server that responds to queries directly and supports proxying ({{server}});
 
-- and client behavior rules for how to resolve names using a combination of authoritative DoH resolvers, obfuscated queries, and local resollvers ({{client}}).
+- and client behavior rules for how to resolve names using a combination of designated DoH resolvers, obfuscated queries, and local resollvers ({{client}}).
 
 ## Specification of Requirements
 
@@ -121,12 +121,12 @@ This document defines the following terms:
 
 Adaptive DNS:
 : Adaptive DNS is a technique to provide an encrypted transport for DNS queries that can
-be sent directly to an Authoritative DoH Server, use Obfuscated DoH to hide the client
+be sent directly to a Designated DoH Server, use Obfuscated DoH to hide the client
 IP address, or use Direct Resolvers when required or appropriate.
 
-Authoritative DoH Server:
-: A DNS resolver that provides connectivity over HTTPS (DoH) that is known to be authoritative
-for a given domain.
+Designated DoH Server:
+: A DNS resolver that provides connectivity over HTTPS (DoH) that is designated as a
+responsible resolver for a given domain or zone.
 
 Direct Resolver:
 : A DNS resolver using any transport that is provisioned directly by a local router or a VPN.
@@ -168,7 +168,7 @@ Specifically, the goal for client queries is to achieve the following properties
 learn the names being queried by the client or the answers being returned
 by the resolver.
 
-2. Only an authoritative DNS resolver associated with the deployment that is also
+2. Only a designated DNS resolver associated with the deployment that is also
 hosting content will be able to read both the client IP address and queried names for
 Privacy-Sensitive Connections. For example, a resolver owned and operated by the same
 provider which hosts "example.com" would be able to link queries for "example.com" to specific clients
@@ -179,64 +179,64 @@ establish secure (e.g., TLS) connections to an address to which "example.com" re
 are authoritative for private domains.
 
 An algorithm for determining how to resolve a given name in a manner that satisfies
-these properties is described in {{resolution-algorithm}}. Note that this algorithm 
-does not guarantee that responses that are not signed with DNSSEC are valid, and clients 
-that establish connections to unsigned addresses may still expose their local IP addresses 
+these properties is described in {{resolution-algorithm}}. Note that this algorithm
+does not guarantee that responses that are not signed with DNSSEC are valid, and clients
+that establish connections to unsigned addresses may still expose their local IP addresses
 to an attacker.
 
-## Discovering Authoritative DoH Servers {#authoritative-discovery}
+## Discovering Designated DoH Servers {#designated-discovery}
 
 All direct (non-obfuscated) queries for names in privacy-sensitive connections MUST be sent to a
-server that both provides encryption and is known to be authoritative for the domain.
+server that both provides encryption and is designated for the domain.
 
-Clients dynamically build and maintain a set of known Authoritative DoH Servers. The information
+Clients dynamically build and maintain a set of known Designated DoH Servers. The information
 that is required to be associated with each server is:
 
 - The URI Template of the DoH server {{!RFC8484}}
 - The public HPKE {{!I-D.irtf-cfrg-hpke}} key of the DoH server used for proxied obfuscated queries
-- A list of domains for which the DoH server is authoritative
+- A list of domains for which the DoH server is designated
 
 This information can be retrieved from several different sources. The primary source
-for discovering Authoritative DoH Server configurations is the NS2 DNS Record
+for discovering Designated DoH Server configurations is the NS2 DNS Record
 {{RRTYPE}}. This record provides the URI Template of the server and the public
 obfuscation key for a specific domain.
 
 When a client resolves a name (based on the order in {{resolution-algorithm}}) is SHOULD
-issue a query for the NS2 record for any name that does not fall within known Authoritative
+issue a query for the NS2 record for any name that does not fall within known Designated
 DoH Server's configuration. The client MAY also issue queries for the NS2 record for
-more specific names to discover further Authoritative DoH Servers.
+more specific names to discover further Designated DoH Servers.
 
 Any NS2 record MUST be validated using DNSSEC {{!RFC4033}} before a client uses the information
-about the authoritative DoH Servers.
+about the designated DoH Servers.
 
-In order to bootstrap discovery of Authoritative DoH Servers, client systems SHOULD
+In order to bootstrap discovery of Designated DoH Servers, client systems SHOULD
 have some saved list of at least two names that they use consistently to perform
 NS2 record queries on the Direct Resolvers configured by the local network. Since
 these queries are likely not private, they SHOULD NOT be associated with user
 action or contain user-identifying content. Rather, the expection is that all client
 systems of the same version and configuration would issue the same bootstrapping
-queries when joining a network for the first time when the list of Authoritative
+queries when joining a network for the first time when the list of Designated
 DoH Servers is empty.
 
-### Whitelisting Authoritative DoH Servers  {#whitelisting}
+### Whitelisting Designated DoH Servers  {#whitelisting}
 
-Prior to using an Authoritative DoH Server for direct name queries on privacy-sensitive
+Prior to using a Designated DoH Server for direct name queries on privacy-sensitive
 connections, clients MUST whitelist the server.
 
 The requirements for whitelisting are:
 
-- Support for acting as an Obfuscation Proxy. Each Authoritative DoH Server is
+- Support for acting as an Obfuscation Proxy. Each Designated DoH Server is
 expected to support acting as a proxy for Obfuscation. A client MUST issue at
 least one query that is proxied through the server before sending direct queries
 to the server.
-- Support for acting as an Obfuscation Target. Each Authoritative DoH Server is
+- Support for acting as an Obfuscation Target. Each Designated DoH Server is
 expected to support acting as a target for Obfuscation. A client MUST issue at
 least one query that is targetd at the server through a proxy before sending direct queries
 to the server.
 
 Clients MAY further choose to restrict the whitelist by other local policy. For example,
 a client system can have a list of trusted resolver configurations, and it can limit
-the whitelist of Authoritative DoH Servers to configurations that match this list.
+the whitelist of Designated DoH Servers to configurations that match this list.
 Alternatively, a client system can check a server against a list of audited and approved
 DoH Servers that have properties that the client approves.
 
@@ -245,14 +245,14 @@ as ".com".
 
 ### Accessing Extended Information
 
-When an Authoritative DoH Server is discovered, clients SHOULD also check to see
+When a Designated DoH Server is discovered, clients SHOULD also check to see
 if this server provides an extended configuration in the form of a Web PvD {{configuration}}.
 To do this, the client performs a lookup of https://\<DoH Server\>/.well-known/pvd, requesting
 a media type of “application/pvd+json”.
 
 If the retrieved JSON contains a "dnsZones" array, the client SHOULD perform an NS2 lookup
-of each of the listed zones on the DoH server and validate that the DoH server is authoritative
-for the domain; and if it is, add the domain to the local configuration.
+of each of the listed zones on the DoH server and validate that the DoH server is a designated
+server for the domain; and if it is, add the domain to the local configuration.
 
 ## Discovering Local Resolvers {#local-discovery}
 
@@ -287,9 +287,9 @@ fails, the connection will fail. See {{local-discovery}} and {{local-deployment}
 authoritative for the domain containing the hostname. If the resolution fails,
 the connection will try the next resolver configuration based on this list.
 
-3. The most specific Authoritative DoH Server that has been whitelisted ({{whitelisting}}) for the domain
-containing the hostname, i.e., the DoH server which is authoritative for the longest
-matching prefix of the hostname. For example, given two Authoritative DoH Servers, one for
+3. The most specific Designated DoH Server that has been whitelisted ({{whitelisting}}) for the domain
+containing the hostname, i.e., the designated DoH server which is associated with the longest
+matching prefix of the hostname. For example, given two Designated DoH Servers, one for
 foo.example.com and another example.com, clients connecting to bar.foo.example.com
 should use the former. If the resolution fails, the connection will try an obfuscated
 query.
@@ -304,7 +304,7 @@ is used as the last resort for any connection that is not explicitly Privacy-Sen
 ## Obfuscated Resolution {#obfuscation}
 
 For all privacy-sensitive connection queries for names that do not correspond
-to an Authoritative DoH Server, the client SHOULD use obfuscation to help
+to a Designated DoH Server, the client SHOULD use obfuscation to help
 conceal its IP address from local eavesdroppers and untrusted resolvers.
 
 DNS obfuscation is achieved by using Obfuscated DoH ({{OBFUSCATION}}). This
@@ -313,11 +313,11 @@ key, and proxy the query through another server. The query is packaged with a un
 client-defined symmetric key that is used to sign the DNS answer, which is sent
 back to the client via the proxy.
 
-All DoH Servers that are used as Authoritative DoH Servers by the client
+All DoH Servers that are used as Designated DoH Servers by the client
 MUST support being both an Obfuscation Proxy and an Obfuscation Target,
 as described in the server requirements ({{server}}).
 
-Since each Authoritative DoH Server can act as one of two roles in an
+Since each Designated DoH Server can act as one of two roles in an
 obfuscated exchange, there are (N) * (N - 1) / 2 possible pairs of servers, where
 N is the number of whitelisted servers. While clients SHOULD use a variety of
 server pairs in rotation to decrease the ability for any given server to track
@@ -345,10 +345,10 @@ described below.
 
 ## Provide a DoH Server
 
-Each server node is primarily defined by a DoH server {{!RFC8484}} that both is authoritative
-for a set of domains, and provides Obfuscated DoH functionality. As such, the DoH servers
+Each server node is primarily defined by a DoH server {{!RFC8484}} that is designated
+for a set of domains, and also provides Obfuscated DoH functionality. As such, the DoH servers
 MUST be able to act as recursive resolvers that accept queries for records and domains beyond
-those for which the servers are authoritative.
+those for which the servers are specifically designated.
 
 ### Obfuscated DoH Proxy
 
@@ -363,16 +363,16 @@ answers using client keys.
 
 ### Keying Material
 
-In order to support acting as an Obfuscation Target, a DoH server needs to provide a public 
-HPKE {{!I-D.irtf-cfrg-hpke}} key that can be used to encrypt client queries. This key is advertised 
+In order to support acting as an Obfuscation Target, a DoH server needs to provide a public
+HPKE {{!I-D.irtf-cfrg-hpke}} key that can be used to encrypt client queries. This key is advertised
 in the NS2 record, and encoded according to {{OBFUSCATION}}.
 
-DoH servers also SHOULD provide an ESNI {{!I-D.ietf-tls-esni}} key to help encrypt the Server 
+DoH servers also SHOULD provide an ESNI {{!I-D.ietf-tls-esni}} key to help encrypt the Server
 Name Indication field in TLS handshakes to the DoH server.
 
 ## Advertise the DoH Server
 
-The primary mechanism for advertising an Authoritative DoH Server is the NS2 DNS Record {{RRTYPE}}.
+The primary mechanism for advertising a Designated DoH Server is the NS2 DNS Record {{RRTYPE}}.
 This record MUST contain both the URI Template of the DoH Server as well as the Obfuscation Public
 Key. It MAY contain the ESNI key {{!I-D.ietf-tls-esni}}.
 
@@ -382,7 +382,7 @@ Servers MUST ensure that the NS2 records are signed with DNSSEC {{!RFC4033}}.
 
 Beyond providing basic DoH server functionality, server nodes SHOULD
 offer a set of extended configuration to help clients discover the default
-set of domains for which the server is authoritative, as well as other
+set of domains for which the server is designated, as well as other
 capabilities offered by the server deployment.
 
 This set of extended configuration information is referred to as a
@@ -409,12 +409,12 @@ an empty array.
 
 The key "dnsZones", which contains an array of domains as strings, indicates the
 zones that belong to the PvD. Any zone that is listed in this array for a Web PvD
-MUST have a corresponding NS2 record that defines the DoH server as authoritative
+MUST have a corresponding NS2 record that defines the DoH server as designated
 for the zone. Servers SHOULD include in this array any names that are considered
 default or well-known for the deployment, but is not required or expected to list
-all zones or domains for which it is authoritative. The trade-off here is that zones
+all zones or domains for which it is designated. The trade-off here is that zones
 that are listed can be fetched and validated automatically by clients, thus removing
-a bootstrapping step in discovering mappings from domains to Authoritative
+a bootstrapping step in discovering mappings from domains to Designated
 DoH Servers.
 
 Client that retrieve the Web PvD JSON dictionary SHOULD perform an NS2 record
@@ -435,7 +435,7 @@ Such keys are not defined in this document.
 
 # Local Resolver Deployment Considerations {#local-deployment}
 
-A key goal of Adaptive DNS is that clients will be able to use Authoritative DoH Servers
+A key goal of Adaptive DNS is that clients will be able to use Designated DoH Servers
 to improve the privacy of queries, without entirely bypassing local network authority and
 policy. For example, if a client host is attached to an enterprise Wi-Fi network that provides
 access and resolution for private names not generally accessible on the Internet, such
@@ -444,7 +444,7 @@ names will only be usable when a local resolver is used.
 In order to achieve this, a local network can advertise itself as authoritative for a domain,
 allowing it to be used prior to external servers in the client resolution algorithm {{resolution-algorithm}}.
 
-## Local Authoritative DoH Servers
+## Local Designated DoH Servers
 
 If a local network wants to have clients send queries for a set of private domains to its own resolver,
 it needs to define an explicit provisioning domain, as defined in {{!I-D.ietf-intarea-provisioning-domains}}.
@@ -461,13 +461,13 @@ TLS connections.
 Clients must also be careful in determining which DoH servers they send queries to
 directly, without obfuscation. In order to avoid the possibility of a spoofed NS2
 record defining a malicious DoH server as authoritiative, clients MUST ensure that
-such records validate using DNSSEC {{!RFC4033}}. Even servers that are officially registered
-as authoritative can risk leaking or logging information about client lookups.
+such records validate using DNSSEC {{!RFC4033}}. Even servers that are officially designated
+can risk leaking or logging information about client lookups.
 Such risk can be mitigated by validating that the DoH servers can present proof
 of logging audits, or by a local whitelist of servers maintained by a client.
 
 Clients should take caution when using obfuscated responses from resolvers that do not
-carry DNSSEC signatures. An adversarial Target resolver that wishes to learn the IP address 
+carry DNSSEC signatures. An adversarial Target resolver that wishes to learn the IP address
 of clients requesting resolution for sensitive domains can redirect clients to addresses
 of its choosing. Clients that use these answers to open direct connections to the server
 may then leak their local IP address. Privacy-Sensitive Connections concerned about this attack
