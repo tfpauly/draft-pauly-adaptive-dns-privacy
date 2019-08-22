@@ -44,7 +44,7 @@ normative:
         -
           T. Pauly
     RRTYPE:
-      title: Associated Trusted Resolver Records
+      title: Designated Encrypted Resolver Records
       authors:
         -
           T. Pauly
@@ -109,7 +109,7 @@ to a target.
 - Client ability to generate one-time-use symmetric keys to encrypt DNS responses.
 
 One mechanism for discovering and privisioning the DoH URI Templates and public keys
-is a DNS resource record, NS2 {{RRTYPE}}.
+is a DNS resource record, DOHNS {{RRTYPE}}.
 
 # HTTP Exchange
 

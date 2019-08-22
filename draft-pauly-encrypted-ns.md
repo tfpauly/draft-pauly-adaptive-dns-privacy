@@ -51,7 +51,7 @@ normative:
 
 --- abstract
 
-This document defines a DNS resource record, NS2, that identifies
+This document defines a DNS resource record, DOHNS, that identifies
 a designated name server that provides DNS Over HTTPS (DoH)
 access to clients and recursive resolvers. The record also contains
 associated data required to use the name server.
@@ -76,7 +76,7 @@ algorithm that clients can use to improve their privacy stance by using
 multiple DoH servers for resolution, and only resolving with a server directly
 when that server is specifically designated for the zone that is being resolved.
 
-This document defines a new RR, NS2, to indicate the location of an designated
+This document defines a new RR, DOHNS, to indicate the location of an designated
 DNS server that is accessible over DoH, along with information necessary
 for clients to use the server.
 
@@ -88,9 +88,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 {{?RFC2119}} {{?RFC8174}} when, and only when,
 they appear in all capitals, as shown here.
 
-# The NS2 Resource Record
+# The DOHNS Resource Record
 
-The NS2 RR contains two pieces of information in its RDATA:
+The DOHNS RR contains two pieces of information in its RDATA:
 
 - The URI Template of the DoH server {{!RFC8484}}
 - The optional public key of the DoH server used for proxied obfuscated queries {{OBFUSCATION}}
@@ -126,7 +126,7 @@ Public Key:
 
 # Security Considerations
 
-All NS2 resource records MUST be signed with DNSSEC, by being part
+All DOHNS resource records MUST be signed with DNSSEC, by being part
 of a RRset that is covered by an RRSIG RR {{!RFC4034}}.
 
 # IANA Considerations
@@ -137,7 +137,7 @@ Record (RR) TYPEs registry:
 
 | TYPE | Meaning         | Reference      |
 |:------------|:-----------------------|:---------------------|:------------|
-| NS2     | Designated Encrypted Name Server | (This document) |
+| DOHNS     | Designated Encrypted Name Server | (This document) |
 
 # Acknowledgments
 

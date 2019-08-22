@@ -39,7 +39,7 @@ author:
 
 normative:
   RRTYPE:
-    title: Associated Trusted Resolver Records
+    title: Designated Encrypted Resolver Records
     authors:
       -
         T. Pauly
@@ -197,21 +197,21 @@ that is required to be associated with each server is:
 - A list of domains for which the DoH server is designated
 
 This information can be retrieved from several different sources. The primary source
-for discovering Designated DoH Server configurations is the NS2 DNS Record
+for discovering Designated DoH Server configurations is the DOHNS DNS Record
 {{RRTYPE}}. This record provides the URI Template of the server and the public
 obfuscation key for a specific domain.
 
 When a client resolves a name (based on the order in {{resolution-algorithm}}) is SHOULD
-issue a query for the NS2 record for any name that does not fall within known Designated
-DoH Server's configuration. The client MAY also issue queries for the NS2 record for
+issue a query for the DOHNS record for any name that does not fall within known Designated
+DoH Server's configuration. The client MAY also issue queries for the DOHNS record for
 more specific names to discover further Designated DoH Servers.
 
-Any NS2 record MUST be validated using DNSSEC {{!RFC4033}} before a client uses the information
+Any DOHNS record MUST be validated using DNSSEC {{!RFC4033}} before a client uses the information
 about the designated DoH Servers.
 
 In order to bootstrap discovery of Designated DoH Servers, client systems SHOULD
 have some saved list of at least two names that they use consistently to perform
-NS2 record queries on the Direct Resolvers configured by the local network. Since
+DOHNS record queries on the Direct Resolvers configured by the local network. Since
 these queries are likely not private, they SHOULD NOT be associated with user
 action or contain user-identifying content. Rather, the expection is that all client
 systems of the same version and configuration would issue the same bootstrapping
@@ -250,7 +250,7 @@ if this server provides an extended configuration in the form of a Web PvD {{con
 To do this, the client performs a lookup of https://\<DoH Server\>/.well-known/pvd, requesting
 a media type of “application/pvd+json”.
 
-If the retrieved JSON contains a "dnsZones" array, the client SHOULD perform an NS2 lookup
+If the retrieved JSON contains a "dnsZones" array, the client SHOULD perform an DOHNS lookup
 of each of the listed zones on the DoH server and validate that the DoH server is a designated
 server for the domain; and if it is, add the domain to the local configuration.
 
@@ -264,7 +264,7 @@ If an RA provided by the router on the network defines an Explicit PvD that has 
 information, and this additional information JSON dictionary contains the key "dohTemplate" {{iana}},
 then the client SHOULD add this DoH server to its list of known DoH configurations. The
 domains that the DoH server claims authority for are listed in the "dnsZones" key. Clients
-MUST peform an NS2 record query to the locally-provisioned DoH server and validate
+MUST peform an DOHNS record query to the locally-provisioned DoH server and validate
 the answer with DNSSEC {{!RFC4033}} before creating a mapping from the domain to the server.
 Once this has been validated, clients can use this server for resolution as described in
 step 2 of {{resolution-algorithm}}.
@@ -365,18 +365,18 @@ answers using client keys.
 
 In order to support acting as an Obfuscation Target, a DoH server needs to provide a public
 HPKE {{!I-D.irtf-cfrg-hpke}} key that can be used to encrypt client queries. This key is advertised
-in the NS2 record, and encoded according to {{OBFUSCATION}}.
+in the DOHNS record, and encoded according to {{OBFUSCATION}}.
 
 DoH servers also SHOULD provide an ESNI {{!I-D.ietf-tls-esni}} key to help encrypt the Server
 Name Indication field in TLS handshakes to the DoH server.
 
 ## Advertise the DoH Server
 
-The primary mechanism for advertising a Designated DoH Server is the NS2 DNS Record {{RRTYPE}}.
+The primary mechanism for advertising a Designated DoH Server is the DOHNS DNS Record {{RRTYPE}}.
 This record MUST contain both the URI Template of the DoH Server as well as the Obfuscation Public
 Key. It MAY contain the ESNI key {{!I-D.ietf-tls-esni}}.
 
-Servers MUST ensure that the NS2 records are signed with DNSSEC {{!RFC4033}}.
+Servers MUST ensure that the DOHNS records are signed with DNSSEC {{!RFC4033}}.
 
 ## Provide Extended Configuration as a Web PvD {#configuration}
 
@@ -409,7 +409,7 @@ an empty array.
 
 The key "dnsZones", which contains an array of domains as strings, indicates the
 zones that belong to the PvD. Any zone that is listed in this array for a Web PvD
-MUST have a corresponding NS2 record that defines the DoH server as designated
+MUST have a corresponding DOHNS record that defines the DoH server as designated
 for the zone. Servers SHOULD include in this array any names that are considered
 default or well-known for the deployment, but is not required or expected to list
 all zones or domains for which it is designated. The trade-off here is that zones
@@ -417,17 +417,17 @@ that are listed can be fetched and validated automatically by clients, thus remo
 a bootstrapping step in discovering mappings from domains to Designated
 DoH Servers.
 
-Client that retrieve the Web PvD JSON dictionary SHOULD perform an NS2 record
+Client that retrieve the Web PvD JSON dictionary SHOULD perform an DOHNS record
 query for each of the entries in the "dnsZones" array in order to populate the
 mappings of domains. These MAY be performed in an obfuscated fashion, but
 MAY also be queried directly on the DoH server (since the information is not user-specific,
 but in response to generic server-driven content). Once clients retrieve the PvD JSON
 information, servers MAY pre-populate the client cache by sending an HTTP Server
-Push for the NS2 records for the entries in the "dnsZones" array.
+Push for the DOHNS records for the entries in the "dnsZones" array.
 
 This document also registers one new key in the Additional Information PvD Keys registry,
 to identify the URI Template for the DoH server {{iana}}. When included in Web PvDs, this URI
-MUST match the template in the NS2 DNS Record.
+MUST match the template in the DOHNS DNS Record.
 
 Beyond providing resolution configuration, the Web PvD configuration can be extended
 to offer information about proxies and other services offered by the server deployment.
@@ -459,7 +459,7 @@ using Adaptive DNS, all exchanges between clients and servers are performed over
 TLS connections.
 
 Clients must also be careful in determining which DoH servers they send queries to
-directly, without obfuscation. In order to avoid the possibility of a spoofed NS2
+directly, without obfuscation. In order to avoid the possibility of a spoofed DOHNS
 record defining a malicious DoH server as authoritiative, clients MUST ensure that
 such records validate using DNSSEC {{!RFC4033}}. Even servers that are officially designated
 can risk leaking or logging information about client lookups.
