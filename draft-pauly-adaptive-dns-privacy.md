@@ -105,7 +105,7 @@ This architecture is composed of several mechanisms:
 
 - a DoH server that responds to queries directly and supports proxying ({{server}});
 
-- and client behavior rules for how to resolve names using a combination of designated DoH resolvers, obfuscated queries, and local resollvers ({{client}}).
+- and client behavior rules for how to resolve names using a combination of designated DoH resolvers, obfuscated queries, and local resolvers ({{client}}).
 
 ## Specification of Requirements
 
@@ -275,8 +275,7 @@ See {{local-deployment}} for local deployment considerations.
 
 When establishing a secure connection to a certain hostname, clients need
 to first determine which resolver configuration ought to be used for DNS resolution.
-Given a specific hostname, and assuming that no other PvD or interface selection
-requirement has been specified, the order of preference for which resolver to use
+Given a specific hostname, the order of preference for which resolver to use
 SHOULD be:
 
 1. An Exclusive Direct Resolver, such as a resolver provisioned by a VPN,
@@ -367,7 +366,7 @@ In order to support acting as an Obfuscation Target, a DoH server needs to provi
 HPKE {{!I-D.irtf-cfrg-hpke}} key that can be used to encrypt client queries. This key is advertised
 in the DOHNS record, and encoded according to {{OBFUSCATION}}.
 
-DoH servers also SHOULD provide an ESNI {{!I-D.ietf-tls-esni}} key to help encrypt the Server
+DoH servers also SHOULD provide an ESNI {{!I-D.ietf-tls-esni}} key to encrypt the Server
 Name Indication field in TLS handshakes to the DoH server.
 
 ## Advertise the DoH Server
