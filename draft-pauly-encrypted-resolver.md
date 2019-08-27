@@ -1,7 +1,7 @@
 ---
 title: "Designated Encrypted Resolver Records"
 abbrev: Designated Encrypted Resolver Records
-docname: draft-pauly-encrypted-ns
+docname: draft-pauly-encrypted-resolver
 date:
 category: std
 
