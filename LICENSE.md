@@ -1,4 +1,4 @@
 # License
 
 See the
-[guidelines for contributions](https://github.com/tfpauly/draft-pauly-web-pvd/blob/master/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/blob/master/CONTRIBUTING.md).
