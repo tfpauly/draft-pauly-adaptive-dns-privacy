@@ -51,7 +51,7 @@ normative:
 
 --- abstract
 
-This document defines an architecture that allows client hosts to dynamically
+This document defines an architecture that allows clients to dynamically
 discover designated resolvers that offer encrypted DNS services, and use them
 in an adaptive way that improves privacy while co-existing with locally
 provisioned resolvers. These resolvers can be used directly when
@@ -62,17 +62,17 @@ to proxy encrypted queries, thus obfuscating the identity of the client requesti
 
 # Introduction
 
-When client hosts need to resolve names into addresses in order to establish networking connections,
+When clients need to resolve names into addresses in order to establish networking connections,
 they traditionally use by default the DNS resolver that is provisioned by the local router, or by
 a tunneling server such as a VPN.
 
-However, privacy-sensitive client hosts often would prefer to use an encrypted DNS service other
+However, privacy-sensitive client often would prefer to use an encrypted DNS service other
 than the one locally provisioned in order to prevent interception or modification by adversaries along
 the network path and centralized profiling by a single local resolver. Protocols that can improve the privacy
 stance of a client when using DNS or creating TLS connections include DNS-over-TLS {{!RFC7858}},
 DNS-over-HTTPS {{!RFC8484}}, and encrypted Server Name Indication (ESNI) {{!I-D.ietf-tls-esni}}.
 
-There are several concerns around a client host using such privacy-enhancing mechanisms
+There are several concerns around a client using such privacy-enhancing mechanisms
 for generic system traffic. A remote service that provides encrypted DNS may not provide
 correct answers for locally available resources, or private resources (such as domains only
 accessible over a private network). Remote services may also be untrusted from a privacy
@@ -149,7 +149,7 @@ Obfuscation Target:
 Privacy-Sensitive Connections:
 : Connections made by clients that are explicitly Privacy-Sensitive are treated differently
 from connections made for generic system behavior, such as non-user-initiated maintenance
-connections. This distinction is only relevant on the client host, and does not get communicated
+connections. This distinction is only relevant on the client, and does not get communicated
 to other network entities. Certain applications, such as browsers, can choose to treat
 all connections as privacy-sensitive.
 
@@ -436,7 +436,7 @@ Such keys are not defined in this document.
 
 A key goal of Adaptive DNS is that clients will be able to use Designated DoH Servers
 to improve the privacy of queries, without entirely bypassing local network authority and
-policy. For example, if a client host is attached to an enterprise Wi-Fi network that provides
+policy. For example, if a client is attached to an enterprise Wi-Fi network that provides
 access and resolution for private names not generally accessible on the Internet, such
 names will only be usable when a local resolver is used.
 

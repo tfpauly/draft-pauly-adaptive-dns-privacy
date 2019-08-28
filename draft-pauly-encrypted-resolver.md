@@ -70,7 +70,7 @@ location of authoritative servers in NS resource records (RRs) does not
 indicate that these servers provide support of protocols like DoH.
 
 Discovering DNS servers that provide access over DoH can
-also be used directly by client hosts. These servers can be specifically designated
+also be used directly by clients. These servers can be specifically designated
 as the correct resolvers to use for a given zone. Adaptive DNS ({{ADNS}}) defines an
 algorithm that clients can use to improve their privacy stance by using
 multiple DoH servers for resolution, and only resolving with a server directly
