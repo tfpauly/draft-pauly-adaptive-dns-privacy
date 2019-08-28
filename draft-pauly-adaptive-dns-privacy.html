@@ -1,0 +1,763 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head profile="http://www.w3.org/2006/03/hcard http://dublincore.org/documents/2008/08/04/dc-html/">
+  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
+
+  <title>Adaptive DNS: Improving Privacy of Name Resolution</title>
+
+  
+<style type="text/css">/*<![CDATA[*/
+
+body {
+  font: 16px "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
+  color: #333;
+  font-size-adjust: 0.5;
+  line-height: 24px;
+  margin: 75px auto;
+  max-width: 624px;
+  padding: 0 5px;
+}
+
+.title, .filename, h1, h2, h3, h4, h5 {
+  font: 16px "Roboto Condensed","Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
+  font-size-adjust: 0.5;
+  font-weight: bold;
+  color: #333;
+  line-height: 100%;
+  margin: 1.2em 0 0.3em;
+}
+.title, #rfc\.title h1 { font-size: 32px; }
+h1, section h1, h2, section h2, section h3, nav h2 { font-size: 20px; }
+h3, section h4, h4, section h5 { font-size: 16px; }
+h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
+  color: #333;
+}
+
+table {
+  margin-left: 0em;
+  border-collapse: collapse;
+}
+th {
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+  vertical-align: top;
+}
+tr:nth-child(2n+1) > td,
+tr:nth-child(2n+1) > th {
+  background-color: #f9f9f9;
+}
+td.reference {
+  max-width: 200px;
+  border-top: none;
+  padding-right: 1em;
+}
+.right {
+  text-align: right;
+}
+
+
+table.header, table#rfc\.headerblock {
+  width: 100%;
+}
+table.header td, table#rfc\.headerblock td {
+  border: none;
+  background-color: transparent;
+  color: black;
+  padding: 0;
+}
+.filename {
+  display: block;
+  color: rgb(119, 119, 119);
+  font-size: 20px;
+  font-weight: normal;
+  line-height: 100%;
+  margin: 10px 0 32px;
+}
+#rfc\.abstract+p, #rfc\.abstract+p code, #rfc\.abstract+p samp, #rfc\.abstract+p tt {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+samp, tt, code, pre, span.tt {
+  font-size: 13.5px;
+  font-family: Consolas, monospace;
+  font-size-adjust: none;
+}
+pre {
+  background-color: #eee;
+  border: 1px solid #ddd;
+  overflow-x: auto;
+  padding: 5px;
+  margin: 5px;
+}
+.figure, caption {
+  font-style: italic;
+  margin: 0 1.5em;
+  text-align: left;
+}
+
+address {
+  margin: 16px 2px;
+  line-height: 20px;
+}
+.vcard {
+  font-style: normal;
+}
+.vcardline {
+  display: block;
+}
+.vcardline .fn, address b {
+  font-weight: normal;
+}
+.vcardline .hidden {
+  display: none;
+}
+
+dl {
+  margin-left: 1em;
+}
+dl.dl-horizontal: {
+  margin-left: 0;
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.nohang > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .5em;
+}
+dl.compact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+ul.empty {
+  list-style-type: none;
+}
+ul.empty li {
+  margin-top: .5em;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+hr.noprint {
+  display: none;
+}
+
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #2a6496;
+}
+a[href]:hover {
+  background-color: #eee;
+}
+
+p, ol, ul, li {
+  padding: 0;
+}
+p {
+  margin: 0.5em 0;
+}
+ol, ul {
+  margin: 0.2em 0 0.2em 2em;
+}
+li {
+  margin: 0.2em 0;
+}
+address {
+  font-style: normal;
+}
+
+ul.toc ul {
+  margin: 0 0 0 2em;
+}
+ul.toc li {
+  list-style: none;
+  margin: 0;
+}
+
+@media screen and (min-width: 924px) {
+  body {
+    padding-right: 350px;
+  }
+  body>ul.toc, body>#rfc\.toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 500px);
+    width: 300px;
+    z-index: 1;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  body>#rfc\.toc {
+    top: 55px;
+  }
+  body>ul.toc {
+    top: 100px;
+  }
+
+  ul.toc {
+    margin: 0 0 0 4px;
+    font-size: 12px;
+    line-height: 20px;
+  }
+  ul.toc ul {
+    margin-left: 1.2em;
+  }
+}
+
+.github-fork-ribbon-wrapper {
+  display: none;
+}
+@media screen and (min-width: 800px) {
+  /* "Fork me on GitHub" CSS ribbon based on
+   * https://github.com/simonwhitaker/github-fork-ribbon-css
+   */
+  .github-fork-ribbon {
+    position: absolute;
+    padding: 2px 0;
+    background-color: #a00;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);
+    font: 700 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    pointer-events: auto;
+
+    top: 38px;
+    right: -45px;
+
+    transform: rotate(45deg);
+  }
+
+  .github-fork-ribbon a[href],
+  .github-fork-ribbon a[href]:hover {
+    color: #fff;
+    background-color: transparent;
+    text-decoration: none;
+    text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
+    text-align: center;
+
+    width: 190px;
+    line-height: 18px;
+
+    display: inline-block;
+    padding: 2px 0;
+
+    border: 1.5px dotted #fff;
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+
+  .github-fork-ribbon-wrapper {
+    display: block;
+    width: 130px;
+    height: 130px;
+    position: absolute;
+    overflow: hidden;
+    top: 0; right: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .github-fork-ribbon-wrapper {
+    position: fixed;
+  }
+/*]]>*/</style>
+<meta name="viewport" content="initial-scale=1.0">
+
+
+  <link href="#rfc.toc" rel="Contents">
+<link href="#rfc.section.1" rel="Chapter" title="1 Introduction">
+<link href="#rfc.section.1.1" rel="Chapter" title="1.1 Specification of Requirements">
+<link href="#rfc.section.2" rel="Chapter" title="2 Terminology">
+<link href="#rfc.section.3" rel="Chapter" title="3 Client Behavior">
+<link href="#rfc.section.3.1" rel="Chapter" title="3.1 Discovering Designated DoH Servers">
+<link href="#rfc.section.3.1.1" rel="Chapter" title="3.1.1 Whitelisting Designated DoH Servers">
+<link href="#rfc.section.3.1.2" rel="Chapter" title="3.1.2 Accessing Extended Information">
+<link href="#rfc.section.3.2" rel="Chapter" title="3.2 Discovering Local Resolvers">
+<link href="#rfc.section.3.3" rel="Chapter" title="3.3 Hostname Resolution Algorithm">
+<link href="#rfc.section.3.4" rel="Chapter" title="3.4 Obfuscated Resolution">
+<link href="#rfc.section.4" rel="Chapter" title="4 Server Requirements">
+<link href="#rfc.section.4.1" rel="Chapter" title="4.1 Provide a DoH Server">
+<link href="#rfc.section.4.1.1" rel="Chapter" title="4.1.1 Obfuscated DoH Proxy">
+<link href="#rfc.section.4.1.2" rel="Chapter" title="4.1.2 Obfuscated DoH Target">
+<link href="#rfc.section.4.1.3" rel="Chapter" title="4.1.3 Keying Material">
+<link href="#rfc.section.4.2" rel="Chapter" title="4.2 Advertise the DoH Server">
+<link href="#rfc.section.4.3" rel="Chapter" title="4.3 Provide Extended Configuration as a Web PvD">
+<link href="#rfc.section.5" rel="Chapter" title="5 Local Resolver Deployment Considerations">
+<link href="#rfc.section.5.1" rel="Chapter" title="5.1 Local Designated DoH Servers">
+<link href="#rfc.section.6" rel="Chapter" title="6 Security Considerations">
+<link href="#rfc.section.7" rel="Chapter" title="7 IANA Considerations">
+<link href="#rfc.section.8" rel="Chapter" title="8 Acknowledgments">
+<link href="#rfc.references" rel="Chapter" title="9 References">
+<link href="#rfc.references.1" rel="Chapter" title="9.1 Normative References">
+<link href="#rfc.references.2" rel="Chapter" title="9.2 Informative References">
+<link href="#rfc.authors" rel="Chapter">
+
+
+  <meta name="generator" content="xml2rfc version 2.8.4 - https://tools.ietf.org/tools/xml2rfc" />
+  <link rel="schema.dct" href="http://purl.org/dc/terms/" />
+
+  <meta name="dct.creator" content="Kinnear, E., Pauly, T., and C. Wood" />
+  <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-adaptive-dns-privacy-latest" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-8-28" />
+  <meta name="dct.abstract" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus obfuscating the identity of the client requesting resolution." />
+  <meta name="description" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus obfuscating the identity of the client requesting resolution." />
+
+</head>
+
+<body>
+
+  <table class="header">
+    <tbody>
+    
+    	<tr>
+<td class="left">Network Working Group</td>
+<td class="right">E. Kinnear</td>
+</tr>
+<tr>
+<td class="left">Internet-Draft</td>
+<td class="right">T. Pauly</td>
+</tr>
+<tr>
+<td class="left">Intended status: Standards Track</td>
+<td class="right">C. Wood</td>
+</tr>
+<tr>
+<td class="left">Expires: February 29, 2020</td>
+<td class="right">Apple Inc.</td>
+</tr>
+<tr>
+<td class="left"></td>
+<td class="right">August 28, 2019</td>
+</tr>
+
+    	
+    </tbody>
+  </table>
+
+  <p class="title">Adaptive DNS: Improving Privacy of Name Resolution<br />
+  <span class="filename">draft-pauly-adaptive-dns-privacy-latest</span></p>
+  
+  <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
+<p>This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus obfuscating the identity of the client requesting resolution.</p>
+<h1 id="rfc.status"><a href="#rfc.status">Status of This Memo</a></h1>
+<p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
+<p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
+<p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
+<p>This Internet-Draft will expire on February 29, 2020.</p>
+<h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
+<p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
+<p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
+
+  
+  <hr class="noprint" />
+  <h1 class="np" id="rfc.toc"><a href="#rfc.toc">Table of Contents</a></h1>
+  <ul class="toc">
+
+  	<li>1.   <a href="#rfc.section.1">Introduction</a>
+</li>
+<ul><li>1.1.   <a href="#rfc.section.1.1">Specification of Requirements</a>
+</li>
+</ul><li>2.   <a href="#rfc.section.2">Terminology</a>
+</li>
+<li>3.   <a href="#rfc.section.3">Client Behavior</a>
+</li>
+<ul><li>3.1.   <a href="#rfc.section.3.1">Discovering Designated DoH Servers</a>
+</li>
+<ul><li>3.1.1.   <a href="#rfc.section.3.1.1">Whitelisting Designated DoH Servers</a>
+</li>
+<li>3.1.2.   <a href="#rfc.section.3.1.2">Accessing Extended Information</a>
+</li>
+</ul><li>3.2.   <a href="#rfc.section.3.2">Discovering Local Resolvers</a>
+</li>
+<li>3.3.   <a href="#rfc.section.3.3">Hostname Resolution Algorithm</a>
+</li>
+<li>3.4.   <a href="#rfc.section.3.4">Obfuscated Resolution</a>
+</li>
+</ul><li>4.   <a href="#rfc.section.4">Server Requirements</a>
+</li>
+<ul><li>4.1.   <a href="#rfc.section.4.1">Provide a DoH Server</a>
+</li>
+<ul><li>4.1.1.   <a href="#rfc.section.4.1.1">Obfuscated DoH Proxy</a>
+</li>
+<li>4.1.2.   <a href="#rfc.section.4.1.2">Obfuscated DoH Target</a>
+</li>
+<li>4.1.3.   <a href="#rfc.section.4.1.3">Keying Material</a>
+</li>
+</ul><li>4.2.   <a href="#rfc.section.4.2">Advertise the DoH Server</a>
+</li>
+<li>4.3.   <a href="#rfc.section.4.3">Provide Extended Configuration as a Web PvD</a>
+</li>
+</ul><li>5.   <a href="#rfc.section.5">Local Resolver Deployment Considerations</a>
+</li>
+<ul><li>5.1.   <a href="#rfc.section.5.1">Local Designated DoH Servers</a>
+</li>
+</ul><li>6.   <a href="#rfc.section.6">Security Considerations</a>
+</li>
+<li>7.   <a href="#rfc.section.7">IANA Considerations</a>
+</li>
+<li>8.   <a href="#rfc.section.8">Acknowledgments</a>
+</li>
+<li>9.   <a href="#rfc.references">References</a>
+</li>
+<ul><li>9.1.   <a href="#rfc.references.1">Normative References</a>
+</li>
+<li>9.2.   <a href="#rfc.references.2">Informative References</a>
+</li>
+</ul><li><a href="#rfc.authors">Authors' Addresses</a>
+</li>
+
+
+  </ul>
+
+  <h1 id="rfc.section.1">
+<a href="#rfc.section.1">1.</a> <a href="#introduction" id="introduction">Introduction</a>
+</h1>
+<p id="rfc.section.1.p.1">When clients need to resolve names into addresses in order to establish networking connections, they traditionally use by default the DNS resolver that is provisioned by the local router, or by a tunneling server such as a VPN.</p>
+<p id="rfc.section.1.p.2">However, privacy-sensitive client often would prefer to use an encrypted DNS service other than the one locally provisioned in order to prevent interception or modification by adversaries along the network path and centralized profiling by a single local resolver. Protocols that can improve the privacy stance of a client when using DNS or creating TLS connections include DNS-over-TLS <a href="#RFC7858" class="xref">[RFC7858]</a>, DNS-over-HTTPS <a href="#RFC8484" class="xref">[RFC8484]</a>, and encrypted Server Name Indication (ESNI) <a href="#I-D.ietf-tls-esni" class="xref">[I-D.ietf-tls-esni]</a>.</p>
+<p id="rfc.section.1.p.3">There are several concerns around a client using such privacy-enhancing mechanisms for generic system traffic. A remote service that provides encrypted DNS may not provide correct answers for locally available resources, or private resources (such as domains only accessible over a private network). Remote services may also be untrusted from a privacy perspective: while encryption will prevent on-path observers from seeing hostnames, client systems need to trust the encrypted DNS service to not store or misuse queries made to it.</p>
+<p id="rfc.section.1.p.4">Client systems are left with choosing between one of the following stances:</p>
+<p></p>
+
+<ol>
+<li>Send all application DNS queries to a particular encrypted DNS service, which requires establishing user trust of the service. This can lead to resolution failures for local or private enterprise domains absent heuristics or other workarounds for detecting managed networks.</li>
+<li>Allow the user or another entity to configure local policy for which domains to send to local, private, or encrypted resolvers. This provides more granularity at the cost of increasing user burden.</li>
+<li>Only use locally-provisioned resolvers, and opportunistically use encrypted DNS to these resolvers when possible. (Clients may learn of encrypted transport support by actively probing such resolvers.) This provides marginal benefit over not using encrypted DNS at all, especially if clients have no means of authenticating or trusting local resolvers.</li>
+</ol>
+<p id="rfc.section.1.p.6">This document defines an architecture that allows clients to improve the privacy of their DNS queries without requiring user intervention, and allowing coexistence with local, private, and enterprise resolvers.</p>
+<p id="rfc.section.1.p.7">This architecture is composed of several mechanisms:</p>
+<p></p>
+
+<ul>
+<li>A DNS RRTYPE that indicates a designated DoH server associated with a name (<a href="#RRTYPE" class="xref">[RRTYPE]</a>);</li>
+<li>an extension to DoH that allows queries to be obfuscated (<a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>);</li>
+<li>a DoH server that responds to queries directly and supports proxying (<a href="#server" class="xref">Section 4</a>);</li>
+<li>and client behavior rules for how to resolve names using a combination of designated DoH resolvers, obfuscated queries, and local resolvers (<a href="#client" class="xref">Section 3</a>).</li>
+</ul>
+<h1 id="rfc.section.1.1">
+<a href="#rfc.section.1.1">1.1.</a> <a href="#specification-of-requirements" id="specification-of-requirements">Specification of Requirements</a>
+</h1>
+<p id="rfc.section.1.1.p.1">The key words &#8220;MUST&#8221;, &#8220;MUST NOT&#8221;, &#8220;REQUIRED&#8221;, &#8220;SHALL&#8221;, &#8220;SHALL NOT&#8221;, &#8220;SHOULD&#8221;, &#8220;SHOULD NOT&#8221;, &#8220;RECOMMENDED&#8221;, &#8220;NOT RECOMMENDED&#8221;, &#8220;MAY&#8221;, and &#8220;OPTIONAL&#8221; in this document are to be interpreted as described in BCP 14 <a href="#RFC2119" class="xref">[RFC2119]</a> <a href="#RFC8174" class="xref">[RFC8174]</a> when, and only when, they appear in all capitals, as shown here.</p>
+<h1 id="rfc.section.2">
+<a href="#rfc.section.2">2.</a> <a href="#terminology" id="terminology">Terminology</a>
+</h1>
+<p id="rfc.section.2.p.1">This document defines the following terms:</p>
+<p></p>
+
+<dl>
+<dt>Adaptive DNS:</dt>
+<dd style="margin-left: 8">Adaptive DNS is a technique to provide an encrypted transport for DNS queries that can be sent directly to a Designated DoH Server, use Obfuscated DoH to hide the client IP address, or use Direct Resolvers when required or appropriate.</dd>
+<dt>Designated DoH Server:</dt>
+<dd style="margin-left: 8">A DNS resolver that provides connectivity over HTTPS (DoH) that is designated as a responsible resolver for a given domain or zone.</dd>
+<dt>Direct Resolver:</dt>
+<dd style="margin-left: 8">A DNS resolver using any transport that is provisioned directly by a local router or a VPN.</dd>
+<dt>Exclusive Direct Resolver:</dt>
+<dd style="margin-left: 8">A Direct Resolver that requires the client to use it exclusively for a given set of domains, such as private domains managed by a VPN. This status is governed by local system policy.</dd>
+<dt>Obfuscated DoH:</dt>
+<dd style="margin-left: 8">A technique that uses multiple DoH servers to proxy queries in a way that obfuscates the client&#8217;s IP address.</dd>
+<dt>Obfuscation Proxy:</dt>
+<dd style="margin-left: 8">A resolution server that proxies encrypted client DNS queries to another resolution server that will be able to decrypt the query (the Obfuscation Target).</dd>
+<dt>Obfuscation Target:</dt>
+<dd style="margin-left: 8">A resolution server that receives encrypted client DNS queries via an Obfuscation Proxy.</dd>
+<dt>Privacy-Sensitive Connections:</dt>
+<dd style="margin-left: 8">Connections made by clients that are explicitly Privacy-Sensitive are treated differently from connections made for generic system behavior, such as non-user-initiated maintenance connections. This distinction is only relevant on the client, and does not get communicated to other network entities. Certain applications, such as browsers, can choose to treat all connections as privacy-sensitive.</dd>
+<dt>Web PvD:</dt>
+<dd style="margin-left: 8">A Web Provisioning Domain, or Web PvD, represents the configuration of resolvers, proxies, and other information that a server deployment makes available to clients. See <a href="#configuration" class="xref">Section 4.3</a>.</dd>
+</dl>
+<h1 id="rfc.section.3">
+<a href="#rfc.section.3">3.</a> <a href="#client" id="client">Client Behavior</a>
+</h1>
+<p id="rfc.section.3.p.1">Adaptive DNS allows client systems and applications to improve the privacy of their DNS queries and connections both by requiring confidentiality via encryption and by limiting the ability to correlate client IP addresses with query contents.  Specifically, the goal for client queries is to achieve the following properties:</p>
+<p></p>
+
+<ol>
+<li>Eavesdroppers on the local network or elsewhere on the path cannot learn the names being queried by the client or the answers being returned by the resolver.</li>
+<li>Only a designated DNS resolver associated with the deployment that is also hosting content will be able to read both the client IP address and queried names for Privacy-Sensitive Connections. For example, a resolver owned and operated by the same provider which hosts &#8220;example.com&#8221; would be able to link queries for &#8220;example.com&#8221; to specific clients (by their IP address), since the server ultimately has this capability once clients subsequently establish secure (e.g., TLS) connections to an address to which &#8220;example.com&#8221; resolves.</li>
+<li>Clients will be able to comply with policies required by VPNs and local networks that are authoritative for private domains.</li>
+</ol>
+<p id="rfc.section.3.p.3">An algorithm for determining how to resolve a given name in a manner that satisfies these properties is described in <a href="#resolution-algorithm" class="xref">Section 3.3</a>. Note that this algorithm does not guarantee that responses that are not signed with DNSSEC are valid, and clients that establish connections to unsigned addresses may still expose their local IP addresses to an attacker.</p>
+<h1 id="rfc.section.3.1">
+<a href="#rfc.section.3.1">3.1.</a> <a href="#designated-discovery" id="designated-discovery">Discovering Designated DoH Servers</a>
+</h1>
+<p id="rfc.section.3.1.p.1">All direct (non-obfuscated) queries for names in privacy-sensitive connections MUST be sent to a server that both provides encryption and is designated for the domain.</p>
+<p id="rfc.section.3.1.p.2">Clients dynamically build and maintain a set of known Designated DoH Servers. The information that is required to be associated with each server is:</p>
+<p></p>
+
+<ul>
+<li>The URI Template of the DoH server <a href="#RFC8484" class="xref">[RFC8484]</a>
+</li>
+<li>The public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key of the DoH server used for proxied obfuscated queries</li>
+<li>A list of domains for which the DoH server is designated</li>
+</ul>
+<p id="rfc.section.3.1.p.4">This information can be retrieved from several different sources. The primary source for discovering Designated DoH Server configurations is the DOHNS DNS Record <a href="#RRTYPE" class="xref">[RRTYPE]</a>. This record provides the URI Template of the server and the public obfuscation key for a specific domain.</p>
+<p id="rfc.section.3.1.p.5">When a client resolves a name (based on the order in <a href="#resolution-algorithm" class="xref">Section 3.3</a>) is SHOULD issue a query for the DOHNS record for any name that does not fall within known Designated DoH Server&#8217;s configuration. The client MAY also issue queries for the DOHNS record for more specific names to discover further Designated DoH Servers.</p>
+<p id="rfc.section.3.1.p.6">Any DOHNS record MUST be validated using DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> before a client uses the information about the designated DoH Servers.</p>
+<p id="rfc.section.3.1.p.7">In order to bootstrap discovery of Designated DoH Servers, client systems SHOULD have some saved list of at least two names that they use consistently to perform DOHNS record queries on the Direct Resolvers configured by the local network. Since these queries are likely not private, they SHOULD NOT be associated with user action or contain user-identifying content. Rather, the expection is that all client systems of the same version and configuration would issue the same bootstrapping queries when joining a network for the first time when the list of Designated DoH Servers is empty.</p>
+<h1 id="rfc.section.3.1.1">
+<a href="#rfc.section.3.1.1">3.1.1.</a> <a href="#whitelisting" id="whitelisting">Whitelisting Designated DoH Servers</a>
+</h1>
+<p id="rfc.section.3.1.1.p.1">Prior to using a Designated DoH Server for direct name queries on privacy-sensitive connections, clients MUST whitelist the server.</p>
+<p id="rfc.section.3.1.1.p.2">The requirements for whitelisting are:</p>
+<p></p>
+
+<ul>
+<li>Support for acting as an Obfuscation Proxy. Each Designated DoH Server is expected to support acting as a proxy for Obfuscation. A client MUST issue at least one query that is proxied through the server before sending direct queries to the server.</li>
+<li>Support for acting as an Obfuscation Target. Each Designated DoH Server is expected to support acting as a target for Obfuscation. A client MUST issue at least one query that is targetd at the server through a proxy before sending direct queries to the server.</li>
+</ul>
+<p id="rfc.section.3.1.1.p.4">Clients MAY further choose to restrict the whitelist by other local policy. For example, a client system can have a list of trusted resolver configurations, and it can limit the whitelist of Designated DoH Servers to configurations that match this list.  Alternatively, a client system can check a server against a list of audited and approved DoH Servers that have properties that the client approves.</p>
+<p id="rfc.section.3.1.1.p.5">Clients SHOULD NOT whitelist authority mappings for top-level domains (TLDs), such as &#8220;.com&#8221;.</p>
+<h1 id="rfc.section.3.1.2">
+<a href="#rfc.section.3.1.2">3.1.2.</a> <a href="#accessing-extended-information" id="accessing-extended-information">Accessing Extended Information</a>
+</h1>
+<p id="rfc.section.3.1.2.p.1">When a Designated DoH Server is discovered, clients SHOULD also check to see if this server provides an extended configuration in the form of a Web PvD <a href="#configuration" class="xref">Section 4.3</a>.  To do this, the client performs a lookup of https://&lt;DoH Server&gt;/.well-known/pvd, requesting a media type of &#8220;application/pvd+json&#8221;.</p>
+<p id="rfc.section.3.1.2.p.2">If the retrieved JSON contains a &#8220;dnsZones&#8221; array, the client SHOULD perform an DOHNS lookup of each of the listed zones on the DoH server and validate that the DoH server is a designated server for the domain; and if it is, add the domain to the local configuration.</p>
+<h1 id="rfc.section.3.2">
+<a href="#rfc.section.3.2">3.2.</a> <a href="#local-discovery" id="local-discovery">Discovering Local Resolvers</a>
+</h1>
+<p id="rfc.section.3.2.p.1">If the local network provides configuration with an Explicit Provisioning Domain (PvD), as defined by <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>, clients can learn about domains for which the local network&#8217;s resolver is authoritative.</p>
+<p id="rfc.section.3.2.p.2">If an RA provided by the router on the network defines an Explicit PvD that has additional information, and this additional information JSON dictionary contains the key &#8220;dohTemplate&#8221; <a href="#iana" class="xref">Section 7</a>, then the client SHOULD add this DoH server to its list of known DoH configurations. The domains that the DoH server claims authority for are listed in the &#8220;dnsZones&#8221; key. Clients MUST peform an DOHNS record query to the locally-provisioned DoH server and validate the answer with DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> before creating a mapping from the domain to the server.  Once this has been validated, clients can use this server for resolution as described in step 2 of <a href="#resolution-algorithm" class="xref">Section 3.3</a>.</p>
+<p id="rfc.section.3.2.p.3">See <a href="#local-deployment" class="xref">Section 5</a> for local deployment considerations.</p>
+<h1 id="rfc.section.3.3">
+<a href="#rfc.section.3.3">3.3.</a> <a href="#resolution-algorithm" id="resolution-algorithm">Hostname Resolution Algorithm</a>
+</h1>
+<p id="rfc.section.3.3.p.1">When establishing a secure connection to a certain hostname, clients need to first determine which resolver configuration ought to be used for DNS resolution.  Given a specific hostname, the order of preference for which resolver to use SHOULD be:</p>
+<p></p>
+
+<ol>
+<li>An Exclusive Direct Resolver, such as a resolver provisioned by a VPN, domain rules that include the hostname being resolved. If the resolution fails, the connection will fail. See <a href="#local-discovery" class="xref">Section 3.2</a> and <a href="#local-deployment" class="xref">Section 5</a>.</li>
+<li>A Direct Resolver, such as a local router, with domain rules that is known to be authoritative for the domain containing the hostname. If the resolution fails, the connection will try the next resolver configuration based on this list.</li>
+<li>The most specific Designated DoH Server that has been whitelisted (<a href="#whitelisting" class="xref">Section 3.1.1</a>) for the domain containing the hostname, i.e., the designated DoH server which is associated with the longest matching prefix of the hostname. For example, given two Designated DoH Servers, one for foo.example.com and another example.com, clients connecting to bar.foo.example.com should use the former. If the resolution fails, the connection will try an obfuscated query.</li>
+<li>Obfuscated queries using multiple DoH Servers (<a href="#obfuscation" class="xref">Section 3.4</a>). If this resolution fails, Privacy-Sensitive Connections will fail. All other connections will use the last resort, the default Direct Resolvers.</li>
+<li>The default Direct Resolver, generally the resolver provisioned by the local router, is used as the last resort for any connection that is not explicitly Privacy-Sensitive.</li>
+</ol>
+<h1 id="rfc.section.3.4">
+<a href="#rfc.section.3.4">3.4.</a> <a href="#obfuscation" id="obfuscation">Obfuscated Resolution</a>
+</h1>
+<p id="rfc.section.3.4.p.1">For all privacy-sensitive connection queries for names that do not correspond to a Designated DoH Server, the client SHOULD use obfuscation to help conceal its IP address from local eavesdroppers and untrusted resolvers.</p>
+<p id="rfc.section.3.4.p.2">DNS obfuscation is achieved by using Obfuscated DoH (<a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>). This extension to DoH allows a client to encrypt a query with a target DoH server&#8217;s public key, and proxy the query through another server. The query is packaged with a unique client-defined symmetric key that is used to sign the DNS answer, which is sent back to the client via the proxy.</p>
+<p id="rfc.section.3.4.p.3">All DoH Servers that are used as Designated DoH Servers by the client MUST support being both an Obfuscation Proxy and an Obfuscation Target, as described in the server requirements (<a href="#server" class="xref">Section 4</a>).</p>
+<p id="rfc.section.3.4.p.4">Since each Designated DoH Server can act as one of two roles in an obfuscated exchange, there are (N) * (N - 1) / 2 possible pairs of servers, where N is the number of whitelisted servers. While clients SHOULD use a variety of server pairs in rotation to decrease the ability for any given server to track client queries, it is not expected that all possible combinations will be used.  Some combinations will be able to handle more load than other, and will have better latency properties than others. To optimize performance, clients SHOULD maintain statistics to track the performance characteristics and success rates of particular pairs.</p>
+<p id="rfc.section.3.4.p.5">Clients that are performing obfuscated resolution SHOULD fall back to another pair of servers if a first query times out, with a locally-determined limit for the number of fallback attempts that will be performed.</p>
+<h1 id="rfc.section.4">
+<a href="#rfc.section.4">4.</a> <a href="#server" id="server">Server Requirements</a>
+</h1>
+<p id="rfc.section.4.p.1">Any server deployment that provides a set of services within one or more domains, such as a CDN, can run a server node that allows clients to run Adaptive DNS.  A new server node can be added at any time, and can be used once it is advertised to clients and can be validated and whitelisted. The system overall is intended to scale and provide improved performance as more nodes become available.</p>
+<p id="rfc.section.4.p.2">The basic requirements to participate as a server node in this architecture are described below.</p>
+<h1 id="rfc.section.4.1">
+<a href="#rfc.section.4.1">4.1.</a> <a href="#provide-a-doh-server" id="provide-a-doh-server">Provide a DoH Server</a>
+</h1>
+<p id="rfc.section.4.1.p.1">Each server node is primarily defined by a DoH server <a href="#RFC8484" class="xref">[RFC8484]</a> that is designated for a set of domains, and also provides Obfuscated DoH functionality. As such, the DoH servers MUST be able to act as recursive resolvers that accept queries for records and domains beyond those for which the servers are specifically designated.</p>
+<h1 id="rfc.section.4.1.1">
+<a href="#rfc.section.4.1.1">4.1.1.</a> <a href="#obfuscated-doh-proxy" id="obfuscated-doh-proxy">Obfuscated DoH Proxy</a>
+</h1>
+<p id="rfc.section.4.1.1.p.1">The DoH servers MUST be able to act as Obfuscation Proxies. In this function, they will proxy encrypted queries and answers between clients and Obfuscation Target DoH servers.</p>
+<h1 id="rfc.section.4.1.2">
+<a href="#rfc.section.4.1.2">4.1.2.</a> <a href="#obfuscated-doh-target" id="obfuscated-doh-target">Obfuscated DoH Target</a>
+</h1>
+<p id="rfc.section.4.1.2.p.1">The DoH servers MUST be able to act as Obfuscation Targets. In this function, they will accept encrypted proxied queries from clients via Obfuscation Proxy DoH servers, and provide encrypted answers using client keys.</p>
+<h1 id="rfc.section.4.1.3">
+<a href="#rfc.section.4.1.3">4.1.3.</a> <a href="#keying-material" id="keying-material">Keying Material</a>
+</h1>
+<p id="rfc.section.4.1.3.p.1">In order to support acting as an Obfuscation Target, a DoH server needs to provide a public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key that can be used to encrypt client queries. This key is advertised in the DOHNS record, and encoded according to <a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>.</p>
+<p id="rfc.section.4.1.3.p.2">DoH servers also SHOULD provide an ESNI <a href="#I-D.ietf-tls-esni" class="xref">[I-D.ietf-tls-esni]</a> key to encrypt the Server Name Indication field in TLS handshakes to the DoH server.</p>
+<h1 id="rfc.section.4.2">
+<a href="#rfc.section.4.2">4.2.</a> <a href="#advertise-the-doh-server" id="advertise-the-doh-server">Advertise the DoH Server</a>
+</h1>
+<p id="rfc.section.4.2.p.1">The primary mechanism for advertising a Designated DoH Server is the DOHNS DNS Record <a href="#RRTYPE" class="xref">[RRTYPE]</a>.  This record MUST contain both the URI Template of the DoH Server as well as the Obfuscation Public Key. It MAY contain the ESNI key <a href="#I-D.ietf-tls-esni" class="xref">[I-D.ietf-tls-esni]</a>.</p>
+<p id="rfc.section.4.2.p.2">Servers MUST ensure that the DOHNS records are signed with DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a>.</p>
+<h1 id="rfc.section.4.3">
+<a href="#rfc.section.4.3">4.3.</a> <a href="#configuration" id="configuration">Provide Extended Configuration as a Web PvD</a>
+</h1>
+<p id="rfc.section.4.3.p.1">Beyond providing basic DoH server functionality, server nodes SHOULD offer a set of extended configuration to help clients discover the default set of domains for which the server is designated, as well as other capabilities offered by the server deployment.</p>
+<p id="rfc.section.4.3.p.2">This set of extended configuration information is referred to as a Web Provisioning Domain, or a Web PvD. Provisioning Domains are sets of consistent information that clients can use to access networks, including rules for resolution and proxying. Generally, these PvDs are provisioned directly, such as by a local router or a VPN.  <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a> defines an extensible configuration dictionary that can be used to add information to local PvD configurations.  Web PvDs share the same JSON configuration format, and share the registry of keys defined as &#8220;Additional Information PvD Keys&#8221;.</p>
+<p id="rfc.section.4.3.p.3">If present, the PvD JSON configuration MUST be available at the URI with the format https://&lt;DoH Server&gt;/.well-known/pvd, using the well-known URI format defined in <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>. HTTP requests and responses for the extended configuration information use the &#8220;application/pvd+json&#8221; media type.  Clients SHOULD include this media type as an Accept header in their GET requests, and servers MUST mark this media type as their Content-Type header in responses.</p>
+<p id="rfc.section.4.3.p.4">The &#8220;identifer&#8221; key SHOULD be the hostname of the DoH Server itself.</p>
+<p id="rfc.section.4.3.p.5">For Web PvDs, the &#8220;prefixes&#8221; key within the JSON configuration SHOULD contain an empty array.</p>
+<p id="rfc.section.4.3.p.6">The key &#8220;dnsZones&#8221;, which contains an array of domains as strings, indicates the zones that belong to the PvD. Any zone that is listed in this array for a Web PvD MUST have a corresponding DOHNS record that defines the DoH server as designated for the zone. Servers SHOULD include in this array any names that are considered default or well-known for the deployment, but is not required or expected to list all zones or domains for which it is designated. The trade-off here is that zones that are listed can be fetched and validated automatically by clients, thus removing a bootstrapping step in discovering mappings from domains to Designated DoH Servers.</p>
+<p id="rfc.section.4.3.p.7">Client that retrieve the Web PvD JSON dictionary SHOULD perform an DOHNS record query for each of the entries in the &#8220;dnsZones&#8221; array in order to populate the mappings of domains. These MAY be performed in an obfuscated fashion, but MAY also be queried directly on the DoH server (since the information is not user-specific, but in response to generic server-driven content). Once clients retrieve the PvD JSON information, servers MAY pre-populate the client cache by sending an HTTP Server Push for the DOHNS records for the entries in the &#8220;dnsZones&#8221; array.</p>
+<p id="rfc.section.4.3.p.8">This document also registers one new key in the Additional Information PvD Keys registry, to identify the URI Template for the DoH server <a href="#iana" class="xref">Section 7</a>. When included in Web PvDs, this URI MUST match the template in the DOHNS DNS Record.</p>
+<p id="rfc.section.4.3.p.9">Beyond providing resolution configuration, the Web PvD configuration can be extended to offer information about proxies and other services offered by the server deployment.  Such keys are not defined in this document.</p>
+<h1 id="rfc.section.5">
+<a href="#rfc.section.5">5.</a> <a href="#local-deployment" id="local-deployment">Local Resolver Deployment Considerations</a>
+</h1>
+<p id="rfc.section.5.p.1">A key goal of Adaptive DNS is that clients will be able to use Designated DoH Servers to improve the privacy of queries, without entirely bypassing local network authority and policy. For example, if a client is attached to an enterprise Wi-Fi network that provides access and resolution for private names not generally accessible on the Internet, such names will only be usable when a local resolver is used.</p>
+<p id="rfc.section.5.p.2">In order to achieve this, a local network can advertise itself as authoritative for a domain, allowing it to be used prior to external servers in the client resolution algorithm <a href="#resolution-algorithm" class="xref">Section 3.3</a>.</p>
+<h1 id="rfc.section.5.1">
+<a href="#rfc.section.5.1">5.1.</a> <a href="#local-designated-doh-servers" id="local-designated-doh-servers">Local Designated DoH Servers</a>
+</h1>
+<p id="rfc.section.5.1.p.1">If a local network wants to have clients send queries for a set of private domains to its own resolver, it needs to define an explicit provisioning domain, as defined in <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>.  The PvD RA option SHOULD set the H-flag to indicate that Additional Information is available.  This Additional Information JSON object SHOULD include both the &#8220;dohTemplate&#8221; and &#8220;dnsZones&#8221; keys to define the local DoH server and which domains it claims authority over.</p>
+<h1 id="rfc.section.6">
+<a href="#rfc.section.6">6.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
+</h1>
+<p id="rfc.section.6.p.1">In order to avoid interception and modification of the information retrieved by clients using Adaptive DNS, all exchanges between clients and servers are performed over TLS connections.</p>
+<p id="rfc.section.6.p.2">Clients must also be careful in determining which DoH servers they send queries to directly, without obfuscation. In order to avoid the possibility of a spoofed DOHNS record defining a malicious DoH server as authoritiative, clients MUST ensure that such records validate using DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a>. Even servers that are officially designated can risk leaking or logging information about client lookups.  Such risk can be mitigated by validating that the DoH servers can present proof of logging audits, or by a local whitelist of servers maintained by a client.</p>
+<p id="rfc.section.6.p.3">Clients should take caution when using obfuscated responses from resolvers that do not carry DNSSEC signatures. An adversarial Target resolver that wishes to learn the IP address of clients requesting resolution for sensitive domains can redirect clients to addresses of its choosing. Clients that use these answers to open direct connections to the server may then leak their local IP address. Privacy-Sensitive Connections concerned about this attack SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or some other tunneling mechanism.</p>
+<h1 id="rfc.section.7">
+<a href="#rfc.section.7">7.</a> <a href="#iana" id="iana">IANA Considerations</a>
+</h1>
+<p id="rfc.section.7.p.1">This document adds a key to the &#8220;Additional Information PvD Keys&#8221; registry, defined by <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>.</p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="left">JSON key</th>
+<th class="left">Description</th>
+<th class="left">Type</th>
+<th class="left">Example</th>
+</tr></thead>
+<tbody><tr>
+<td class="left">dohTemplate</td>
+<td class="left">DoH URI Template <a href="#RFC8484" class="xref">[RFC8484]</a>
+</td>
+<td class="left">String</td>
+<td class="left">&#8220;https://dnsserver.example.net/dns-query{?dns}&#8221;</td>
+</tr></tbody>
+</table>
+<h1 id="rfc.section.8">
+<a href="#rfc.section.8">8.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
+</h1>
+<p id="rfc.section.8.p.1">Thanks to Erik Nygren, Lorenzo Colitti, and Patrick McManus for their input on this approach.</p>
+<h1 id="rfc.references">
+<a href="#rfc.references">9.</a> References</h1>
+<h1 id="rfc.references.1">
+<a href="#rfc.references.1">9.1.</a> Normative References</h1>
+<table><tbody>
+<tr>
+<td class="reference"><b id="I-D.ietf-intarea-provisioning-domains">[I-D.ietf-intarea-provisioning-domains]</b></td>
+<td class="top">
+<a>Pfister, P.</a>, <a>Vyncke, E.</a>, <a>Pauly, T.</a>, <a>Schinazi, D.</a> and <a>W. Shao</a>, "<a href="https://tools.ietf.org/html/draft-ietf-intarea-provisioning-domains-06">Discovering Provisioning Domain Names and Data</a>", Internet-Draft draft-ietf-intarea-provisioning-domains-06, August 2019.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.ietf-tls-esni">[I-D.ietf-tls-esni]</b></td>
+<td class="top">
+<a>Rescorla, E.</a>, <a>Oku, K.</a>, <a>Sullivan, N.</a> and <a>C. Wood</a>, "<a href="https://tools.ietf.org/html/draft-ietf-tls-esni-04">Encrypted Server Name Indication for TLS 1.3</a>", Internet-Draft draft-ietf-tls-esni-04, July 2019.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.irtf-cfrg-hpke">[I-D.irtf-cfrg-hpke]</b></td>
+<td class="top">
+<a>Barnes, R.</a> and <a>K. Bhargavan</a>, "<a href="https://tools.ietf.org/html/draft-irtf-cfrg-hpke-00">Hybrid Public Key Encryption</a>", Internet-Draft draft-irtf-cfrg-hpke-00, July 2019.</td>
+</tr>
+<tr>
+<td class="reference"><b id="OBFUSCATION">[OBFUSCATION]</b></td>
+<td class="top">"<a>Obfuscated DNS Over HTTPS</a>", n.d..</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC4033">[RFC4033]</b></td>
+<td class="top">
+<a>Arends, R.</a>, <a>Austein, R.</a>, <a>Larson, M.</a>, <a>Massey, D.</a> and <a>S. Rose</a>, "<a href="https://tools.ietf.org/html/rfc4033">DNS Security Introduction and Requirements</a>", RFC 4033, DOI 10.17487/RFC4033, March 2005.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC7858">[RFC7858]</b></td>
+<td class="top">
+<a>Hu, Z.</a>, <a>Zhu, L.</a>, <a>Heidemann, J.</a>, <a>Mankin, A.</a>, <a>Wessels, D.</a> and <a>P. Hoffman</a>, "<a href="https://tools.ietf.org/html/rfc7858">Specification for DNS over Transport Layer Security (TLS)</a>", RFC 7858, DOI 10.17487/RFC7858, May 2016.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC8484">[RFC8484]</b></td>
+<td class="top">
+<a>Hoffman, P.</a> and <a>P. McManus</a>, "<a href="https://tools.ietf.org/html/rfc8484">DNS Queries over HTTPS (DoH)</a>", RFC 8484, DOI 10.17487/RFC8484, October 2018.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RRTYPE">[RRTYPE]</b></td>
+<td class="top">"<a>Designated Encrypted Resolver Records</a>", n.d..</td>
+</tr>
+</tbody></table>
+<h1 id="rfc.references.2">
+<a href="#rfc.references.2">9.2.</a> Informative References</h1>
+<table><tbody>
+<tr>
+<td class="reference"><b id="RFC2119">[RFC2119]</b></td>
+<td class="top">
+<a>Bradner, S.</a>, "<a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>", BCP 14, RFC 2119, DOI 10.17487/RFC2119, March 1997.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC8174">[RFC8174]</b></td>
+<td class="top">
+<a>Leiba, B.</a>, "<a href="https://tools.ietf.org/html/rfc8174">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>", BCP 14, RFC 8174, DOI 10.17487/RFC8174, May 2017.</td>
+</tr>
+</tbody></table>
+<h1 id="rfc.authors"><a href="#rfc.authors">Authors' Addresses</a></h1>
+<div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Eric Kinnear</span> 
+	  <span class="n hidden">
+		<span class="family-name">Kinnear</span>
+	  </span>
+	</span>
+	<span class="org vcardline">Apple Inc.</span>
+	<span class="adr">
+	  <span class="vcardline">One Apple Park Way</span>
+
+	  <span class="vcardline">
+		<span class="locality">Cupertino, California 95014</span>,  
+		<span class="region"></span>
+		<span class="code"></span>
+	  </span>
+	  <span class="country-name vcardline">United States of America</span>
+	</span>
+	<span class="vcardline">EMail: <a href="mailto:ekinnear@apple.com">ekinnear@apple.com</a></span>
+
+  </address>
+</div><div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Tommy Pauly</span> 
+	  <span class="n hidden">
+		<span class="family-name">Pauly</span>
+	  </span>
+	</span>
+	<span class="org vcardline">Apple Inc.</span>
+	<span class="adr">
+	  <span class="vcardline">One Apple Park Way</span>
+
+	  <span class="vcardline">
+		<span class="locality">Cupertino, California 95014</span>,  
+		<span class="region"></span>
+		<span class="code"></span>
+	  </span>
+	  <span class="country-name vcardline">United States of America</span>
+	</span>
+	<span class="vcardline">EMail: <a href="mailto:tpauly@apple.com">tpauly@apple.com</a></span>
+
+  </address>
+</div><div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Chris Wood</span> 
+	  <span class="n hidden">
+		<span class="family-name">Wood</span>
+	  </span>
+	</span>
+	<span class="org vcardline">Apple Inc.</span>
+	<span class="adr">
+	  <span class="vcardline">One Apple Park Way</span>
+
+	  <span class="vcardline">
+		<span class="locality">Cupertino, California 95014</span>,  
+		<span class="region"></span>
+		<span class="code"></span>
+	  </span>
+	  <span class="country-name vcardline">United States of America</span>
+	</span>
+	<span class="vcardline">EMail: <a href="mailto:cawood@apple.com">cawood@apple.com</a></span>
+
+  </address>
+</div>
+
+</body>
+</html>
+

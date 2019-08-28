@@ -5,7 +5,7 @@
 <head profile="http://www.w3.org/2006/03/hcard http://dublincore.org/documents/2008/08/04/dc-html/">
   <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
 
-  <title>Web Provisioning Domains</title>
+  <title>Designated Encrypted Resolver Records</title>
 
   
 <style type="text/css">/*<![CDATA[*/
@@ -78,13 +78,14 @@ table.header td, table#rfc\.headerblock td {
   line-height: 100%;
   margin: 10px 0 32px;
 }
-#rfc\.abstract+p, #rfc\.abstract p {
+#rfc\.abstract+p, #rfc\.abstract+p code, #rfc\.abstract+p samp, #rfc\.abstract+p tt {
   font-size: 20px;
   line-height: 28px;
 }
 
 samp, tt, code, pre, span.tt {
-  font: 13.5px Consolas, monospace;
+  font-size: 13.5px;
+  font-family: Consolas, monospace;
   font-size-adjust: none;
 }
 pre {
@@ -283,25 +284,24 @@ ul.toc li {
   <link href="#rfc.toc" rel="Contents">
 <link href="#rfc.section.1" rel="Chapter" title="1 Introduction">
 <link href="#rfc.section.1.1" rel="Chapter" title="1.1 Specification of Requirements">
-<link href="#rfc.section.2" rel="Chapter" title="2 Protocol">
-<link href="#rfc.section.3" rel="Chapter" title="3 Client Behavior">
-<link href="#rfc.section.4" rel="Chapter" title="4 Security Considerations">
-<link href="#rfc.section.5" rel="Chapter" title="5 IANA Considerations">
-<link href="#rfc.section.6" rel="Chapter" title="6 Acknowledgments">
-<link href="#rfc.references" rel="Chapter" title="7 References">
-<link href="#rfc.references.1" rel="Chapter" title="7.1 Normative References">
-<link href="#rfc.references.2" rel="Chapter" title="7.2 Informative References">
+<link href="#rfc.section.2" rel="Chapter" title="2 The DOHNS Resource Record">
+<link href="#rfc.section.3" rel="Chapter" title="3 Security Considerations">
+<link href="#rfc.section.4" rel="Chapter" title="4 IANA Considerations">
+<link href="#rfc.section.5" rel="Chapter" title="5 Acknowledgments">
+<link href="#rfc.references" rel="Chapter" title="6 References">
+<link href="#rfc.references.1" rel="Chapter" title="6.1 Normative References">
+<link href="#rfc.references.2" rel="Chapter" title="6.2 Informative References">
 <link href="#rfc.authors" rel="Chapter">
 
 
   <meta name="generator" content="xml2rfc version 2.8.4 - https://tools.ietf.org/tools/xml2rfc" />
   <link rel="schema.dct" href="http://purl.org/dc/terms/" />
 
-  <meta name="dct.creator" content="Pauly, T., Kinnear, E., and C. Wood" />
-  <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-web-pvd-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-4-12" />
-  <meta name="dct.abstract" content="This document defines a mechanism for web services, such as HTTP servers and Content Delivery Networks, to provide Provisioning Domain information to client hosts. This information includes policies for using encrypted DNS services, encrypted SNI keys for use in TLS, and protocol capabilities supported by the web services." />
-  <meta name="description" content="This document defines a mechanism for web services, such as HTTP servers and Content Delivery Networks, to provide Provisioning Domain information to client hosts. This information includes policies for using encrypted DNS services, encrypted SNI keys for use in TLS, and protocol capabilities supported by the web services." />
+  <meta name="dct.creator" content="Kinnear, E., Pauly, T., and C. Wood" />
+  <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-encrypted-resolver" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-8-28" />
+  <meta name="dct.abstract" content="This document defines a DNS resource record, DOHNS, that identifies a designated name server that provides DNS Over HTTPS (DoH) access to clients and recursive resolvers. The record also contains associated data required to use the name server." />
+  <meta name="description" content="This document defines a DNS resource record, DOHNS, that identifies a designated name server that provides DNS Over HTTPS (DoH) access to clients and recursive resolvers. The record also contains associated data required to use the name server." />
 
 </head>
 
@@ -312,39 +312,39 @@ ul.toc li {
     
     	<tr>
 <td class="left">Network Working Group</td>
-<td class="right">T. Pauly</td>
+<td class="right">E. Kinnear</td>
 </tr>
 <tr>
 <td class="left">Internet-Draft</td>
-<td class="right">E. Kinnear</td>
+<td class="right">T. Pauly</td>
 </tr>
 <tr>
 <td class="left">Intended status: Standards Track</td>
 <td class="right">C. Wood</td>
 </tr>
 <tr>
-<td class="left">Expires: October 14, 2019</td>
+<td class="left">Expires: February 29, 2020</td>
 <td class="right">Apple Inc.</td>
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">April 12, 2019</td>
+<td class="right">August 28, 2019</td>
 </tr>
 
     	
     </tbody>
   </table>
 
-  <p class="title">Web Provisioning Domains<br />
-  <span class="filename">draft-pauly-web-pvd-latest</span></p>
+  <p class="title">Designated Encrypted Resolver Records<br />
+  <span class="filename">draft-pauly-encrypted-resolver</span></p>
   
   <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
-<p>This document defines a mechanism for web services, such as HTTP servers and Content Delivery Networks, to provide Provisioning Domain information to client hosts. This information includes policies for using encrypted DNS services, encrypted SNI keys for use in TLS, and protocol capabilities supported by the web services.</p>
+<p>This document defines a DNS resource record, DOHNS, that identifies a designated name server that provides DNS Over HTTPS (DoH) access to clients and recursive resolvers. The record also contains associated data required to use the name server.</p>
 <h1 id="rfc.status"><a href="#rfc.status">Status of This Memo</a></h1>
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on October 14, 2019.</p>
+<p>This Internet-Draft will expire on February 29, 2020.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -358,21 +358,19 @@ ul.toc li {
 </li>
 <ul><li>1.1.   <a href="#rfc.section.1.1">Specification of Requirements</a>
 </li>
-</ul><li>2.   <a href="#rfc.section.2">Protocol</a>
+</ul><li>2.   <a href="#rfc.section.2">The DOHNS Resource Record</a>
 </li>
-<li>3.   <a href="#rfc.section.3">Client Behavior</a>
+<li>3.   <a href="#rfc.section.3">Security Considerations</a>
 </li>
-<li>4.   <a href="#rfc.section.4">Security Considerations</a>
+<li>4.   <a href="#rfc.section.4">IANA Considerations</a>
 </li>
-<li>5.   <a href="#rfc.section.5">IANA Considerations</a>
+<li>5.   <a href="#rfc.section.5">Acknowledgments</a>
 </li>
-<li>6.   <a href="#rfc.section.6">Acknowledgments</a>
+<li>6.   <a href="#rfc.references">References</a>
 </li>
-<li>7.   <a href="#rfc.references">References</a>
+<ul><li>6.1.   <a href="#rfc.references.1">Normative References</a>
 </li>
-<ul><li>7.1.   <a href="#rfc.references.1">Normative References</a>
-</li>
-<li>7.2.   <a href="#rfc.references.2">Informative References</a>
+<li>6.2.   <a href="#rfc.references.2">Informative References</a>
 </li>
 </ul><li><a href="#rfc.authors">Authors' Addresses</a>
 </li>
@@ -383,67 +381,96 @@ ul.toc li {
   <h1 id="rfc.section.1">
 <a href="#rfc.section.1">1.</a> <a href="#introduction" id="introduction">Introduction</a>
 </h1>
-<p id="rfc.section.1.p.1">Provisioning Domains (PvDs) are defined as consistent sets of network configuration information <a href="#RFC7556" class="xref">[RFC7556]</a>.  This information includes configuration for how a client host should issue DNS queries and route its traffic. Traditionally, a PvD is defined by a local network element (such as a router) or by a VPN server. Routers can provide multiple PvDs, as defined in <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>.</p>
-<p id="rfc.section.1.p.2">However, client hosts may want to use DNS configurations other than the one locally provisioned to use encrypted DNS protocols to prevent interception or modification by untrusted parties along the network path. Protocols that can improve the privacy stance of a client when using DNS or creating TLS connections include DNS-over-TLS <a href="#RFC7858" class="xref">[RFC7858]</a>, DNS-over-HTTPS <a href="#RFC8484" class="xref">[RFC8484]</a>, and encrypted Server Name Indication (ENSI) <a href="#I-D.ietf-tls-esni" class="xref">[I-D.ietf-tls-esni]</a>.</p>
-<p id="rfc.section.1.p.3">There are several concerns around a client host using such privacy-enhancing mechanisms for generic system traffic. A remote service that provides encrypted DNS may not provide correct answers for locally available resources, or private resources (such as domains only accessible over a private network). A remote service may also itself be untrusted from a privacy perspective: while encryption will prevent on-path observers from seeing hostnames, the client host needs to trust the encrypted DNS service to not store or misuse queries made to it.</p>
-<p id="rfc.section.1.p.4">Client systems are left with choosing between one of the following stances:</p>
-<p></p>
-
-<ol>
-<li>Send all user DNS queries to a particular encrypted DNS service, which requires establishing user trust of the service. This can lead to resolution failures for private enterprise domains.</li>
-<li>Allow the user or another entity to configure local policy for which domains to send to local, private, or encrypted resolvers. This provides more granularity, but increases the burden on the user.</li>
-<li>Only use locally configured DNS servers, opportunistically using encrypted DNS to the local server when available. This provides little benefit over not using encrypted DNS at all.</li>
-</ol>
-<p id="rfc.section.1.p.6">This document defines a protocol to allow servers to dynamically provision clients with available PvD configurations to resolve and route traffic for which the servers are authoritative.  These PvDs, to contrast locally-defined PvDs, are referred to as &#8220;Web PvDs&#8221;.</p>
-<p id="rfc.section.1.p.7">A Web PvD configuration that is signed by an authority for &#8220;example.com&#8221; can define how to reach an encrypted DNS service that can resolve subdomains within &#8220;example.com&#8221;, provide access to keys to use for ESNI, and define how clients can optimally access hosts for &#8220;example.com&#8221;.</p>
+<p id="rfc.section.1.p.1">DNS-over-HTTPS <a href="#RFC8484" class="xref">[RFC8484]</a> (DoH) provides an encrypted and multiplexed mechanism for performing DNS queries. DoH provides a mechanism for encryption, which can help provide some privacy and security benefits.</p>
+<p id="rfc.section.1.p.2">Communication between recursive resolvers and authoritative servers is not generally peformed over encrypted channels, however, since the location of authoritative servers in NS resource records (RRs) does not indicate that these servers provide support of protocols like DoH.</p>
+<p id="rfc.section.1.p.3">Discovering DNS servers that provide access over DoH can also be used directly by clients. These servers can be specifically designated as the correct resolvers to use for a given zone. Adaptive DNS (<a href="#ADNS" class="xref">[ADNS]</a>) defines an algorithm that clients can use to improve their privacy stance by using multiple DoH servers for resolution, and only resolving with a server directly when that server is specifically designated for the zone that is being resolved.</p>
+<p id="rfc.section.1.p.4">This document defines a new RR, DOHNS, to indicate the location of an designated DNS server that is accessible over DoH, along with information necessary for clients to use the server.</p>
 <h1 id="rfc.section.1.1">
 <a href="#rfc.section.1.1">1.1.</a> <a href="#specification-of-requirements" id="specification-of-requirements">Specification of Requirements</a>
 </h1>
 <p id="rfc.section.1.1.p.1">The key words &#8220;MUST&#8221;, &#8220;MUST NOT&#8221;, &#8220;REQUIRED&#8221;, &#8220;SHALL&#8221;, &#8220;SHALL NOT&#8221;, &#8220;SHOULD&#8221;, &#8220;SHOULD NOT&#8221;, &#8220;RECOMMENDED&#8221;, &#8220;NOT RECOMMENDED&#8221;, &#8220;MAY&#8221;, and &#8220;OPTIONAL&#8221; in this document are to be interpreted as described in BCP 14 <a href="#RFC2119" class="xref">[RFC2119]</a> <a href="#RFC8174" class="xref">[RFC8174]</a> when, and only when, they appear in all capitals, as shown here.</p>
 <h1 id="rfc.section.2">
-<a href="#rfc.section.2">2.</a> <a href="#protocol" id="protocol">Protocol</a>
+<a href="#rfc.section.2">2.</a> <a href="#the-dohns-resource-record" id="the-dohns-resource-record">The DOHNS Resource Record</a>
 </h1>
-<p id="rfc.section.2.p.1">Define the protocol.</p>
+<p id="rfc.section.2.p.1">The DOHNS RR contains two pieces of information in its RDATA:</p>
+<p></p>
+
+<ul>
+<li>The URI Template of the DoH server <a href="#RFC8484" class="xref">[RFC8484]</a>
+</li>
+<li>The optional public key of the DoH server used for proxied obfuscated queries <a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>
+</li>
+</ul>
+<p id="rfc.section.2.p.3">The RDATA is formatted as follows:</p>
+<pre>
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-------------------------------+-------------------------------+
+|      URI Template Length      |       Public Key Length       |
++-------------------------------+-------------------------------+
+~                URI Template (Variable Length)                 ~
++---------------------------------------------------------------+
+~                  Public Key (Variable Length)                 ~
++---------------------------------------------------------------+
+</pre>
+<p></p>
+
+<dl>
+<dt>URI Template Length:</dt>
+<dd style="margin-left: 8">A 16-bit unsigned integer, in network byte order, that indicates the length of the URI Template field.</dd>
+<dt>Public Key Length:</dt>
+<dd style="margin-left: 8">A 16-bit unsigned integer, in network byte order, that indicates the length of the Public Key field.</dd>
+<dt>URI Template:</dt>
+<dd style="margin-left: 8">The URI Template for the Designated DoH Server, as defined in <a href="#RFC8484" class="xref">[RFC8484]</a>. This is a string encoded as UTF-8 characters.</dd>
+<dt>Public Key:</dt>
+<dd style="margin-left: 8">A public key used for Obfuscated DoH, as defined in <a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>.</dd>
+</dl>
 <h1 id="rfc.section.3">
-<a href="#rfc.section.3">3.</a> <a href="#client-behavior" id="client-behavior">Client Behavior</a>
+<a href="#rfc.section.3">3.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
 </h1>
-<p id="rfc.section.3.p.1">Web PvDs</p>
+<p id="rfc.section.3.p.1">All DOHNS resource records MUST be signed with DNSSEC, by being part of a RRset that is covered by an RRSIG RR <a href="#RFC4034" class="xref">[RFC4034]</a>.</p>
 <h1 id="rfc.section.4">
-<a href="#rfc.section.4">4.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
+<a href="#rfc.section.4">4.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
 </h1>
-<p id="rfc.section.4.p.1">Make it secure!</p>
+<p id="rfc.section.4.p.1">This document defines a new RRTYPE in accordance with <a href="#RFC6895" class="xref">[RFC6895]</a>.  Please add the the following entry to the data type range of the Resource Record (RR) TYPEs registry:</p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="left">TYPE</th>
+<th class="left">Meaning</th>
+<th class="left">Reference</th>
+</tr></thead>
+<tbody><tr>
+<td class="left">DOHNS</td>
+<td class="left">Designated Encrypted Name Server</td>
+<td class="left">(This document)</td>
+</tr></tbody>
+</table>
 <h1 id="rfc.section.5">
-<a href="#rfc.section.5">5.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
+<a href="#rfc.section.5">5.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
 </h1>
-<p id="rfc.section.5.p.1">Consider IANA.</p>
-<h1 id="rfc.section.6">
-<a href="#rfc.section.6">6.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
-</h1>
-<p id="rfc.section.6.p.1">Thanks!</p>
+<p id="rfc.section.5.p.1">Thanks to Erik Nygren for his input on this work (<a href="#I-D.nygren-httpbis-httpssvc" class="xref">[I-D.nygren-httpbis-httpssvc]</a>).</p>
 <h1 id="rfc.references">
-<a href="#rfc.references">7.</a> References</h1>
+<a href="#rfc.references">6.</a> References</h1>
 <h1 id="rfc.references.1">
-<a href="#rfc.references.1">7.1.</a> Normative References</h1>
+<a href="#rfc.references.1">6.1.</a> Normative References</h1>
 <table><tbody>
 <tr>
-<td class="reference"><b id="I-D.ietf-intarea-provisioning-domains">[I-D.ietf-intarea-provisioning-domains]</b></td>
-<td class="top">
-<a>Pfister, P.</a>, <a>Vyncke, E.</a>, <a>Pauly, T.</a>, <a>Schinazi, D.</a> and <a>W. Shao</a>, "<a href="https://tools.ietf.org/html/draft-ietf-intarea-provisioning-domains-04">Discovering Provisioning Domain Names and Data</a>", Internet-Draft draft-ietf-intarea-provisioning-domains-04, March 2019.</td>
+<td class="reference"><b id="ADNS">[ADNS]</b></td>
+<td class="top">"<a>Adaptive DNS: Improving Privacy of Name Resolution</a>", n.d..</td>
 </tr>
 <tr>
-<td class="reference"><b id="I-D.ietf-tls-esni">[I-D.ietf-tls-esni]</b></td>
-<td class="top">
-<a>Rescorla, E.</a>, <a>Oku, K.</a>, <a>Sullivan, N.</a> and <a>C. Wood</a>, "<a href="https://tools.ietf.org/html/draft-ietf-tls-esni-03">Encrypted Server Name Indication for TLS 1.3</a>", Internet-Draft draft-ietf-tls-esni-03, March 2019.</td>
+<td class="reference"><b id="OBFUSCATION">[OBFUSCATION]</b></td>
+<td class="top">"<a>Obfuscated DNS Over HTTPS</a>", n.d..</td>
 </tr>
 <tr>
-<td class="reference"><b id="RFC7556">[RFC7556]</b></td>
+<td class="reference"><b id="RFC4034">[RFC4034]</b></td>
 <td class="top">
-<a>Anipko, D.</a>, "<a href="https://tools.ietf.org/html/rfc7556">Multiple Provisioning Domain Architecture</a>", RFC 7556, DOI 10.17487/RFC7556, June 2015.</td>
+<a>Arends, R.</a>, <a>Austein, R.</a>, <a>Larson, M.</a>, <a>Massey, D.</a> and <a>S. Rose</a>, "<a href="https://tools.ietf.org/html/rfc4034">Resource Records for the DNS Security Extensions</a>", RFC 4034, DOI 10.17487/RFC4034, March 2005.</td>
 </tr>
 <tr>
-<td class="reference"><b id="RFC7858">[RFC7858]</b></td>
+<td class="reference"><b id="RFC6895">[RFC6895]</b></td>
 <td class="top">
-<a>Hu, Z.</a>, <a>Zhu, L.</a>, <a>Heidemann, J.</a>, <a>Mankin, A.</a>, <a>Wessels, D.</a> and <a>P. Hoffman</a>, "<a href="https://tools.ietf.org/html/rfc7858">Specification for DNS over Transport Layer Security (TLS)</a>", RFC 7858, DOI 10.17487/RFC7858, May 2016.</td>
+<a>Eastlake 3rd, D.</a>, "<a href="https://tools.ietf.org/html/rfc6895">Domain Name System (DNS) IANA Considerations</a>", BCP 42, RFC 6895, DOI 10.17487/RFC6895, April 2013.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC8484">[RFC8484]</b></td>
@@ -452,8 +479,13 @@ ul.toc li {
 </tr>
 </tbody></table>
 <h1 id="rfc.references.2">
-<a href="#rfc.references.2">7.2.</a> Informative References</h1>
+<a href="#rfc.references.2">6.2.</a> Informative References</h1>
 <table><tbody>
+<tr>
+<td class="reference"><b id="I-D.nygren-httpbis-httpssvc">[I-D.nygren-httpbis-httpssvc]</b></td>
+<td class="top">
+<a>Schwartz, B.</a>, <a>Bishop, M.</a> and <a>E. Nygren</a>, "<a href="https://tools.ietf.org/html/draft-nygren-httpbis-httpssvc-03">HTTPSSVC service location and parameter specification via the DNS (DNS HTTPSSVC)</a>", Internet-Draft draft-nygren-httpbis-httpssvc-03, July 2019.</td>
+</tr>
 <tr>
 <td class="reference"><b id="RFC2119">[RFC2119]</b></td>
 <td class="top">
@@ -467,28 +499,6 @@ ul.toc li {
 </tbody></table>
 <h1 id="rfc.authors"><a href="#rfc.authors">Authors' Addresses</a></h1>
 <div class="avoidbreak">
-  <address class="vcard">
-	<span class="vcardline">
-	  <span class="fn">Tommy Pauly</span> 
-	  <span class="n hidden">
-		<span class="family-name">Pauly</span>
-	  </span>
-	</span>
-	<span class="org vcardline">Apple Inc.</span>
-	<span class="adr">
-	  <span class="vcardline">One Apple Park Way</span>
-
-	  <span class="vcardline">
-		<span class="locality">Cupertino, California 95014</span>,  
-		<span class="region"></span>
-		<span class="code"></span>
-	  </span>
-	  <span class="country-name vcardline">United States of America</span>
-	</span>
-	<span class="vcardline">EMail: <a href="mailto:tpauly@apple.com">tpauly@apple.com</a></span>
-
-  </address>
-</div><div class="avoidbreak">
   <address class="vcard">
 	<span class="vcardline">
 	  <span class="fn">Eric Kinnear</span> 
@@ -508,6 +518,28 @@ ul.toc li {
 	  <span class="country-name vcardline">United States of America</span>
 	</span>
 	<span class="vcardline">EMail: <a href="mailto:ekinnear@apple.com">ekinnear@apple.com</a></span>
+
+  </address>
+</div><div class="avoidbreak">
+  <address class="vcard">
+	<span class="vcardline">
+	  <span class="fn">Tommy Pauly</span> 
+	  <span class="n hidden">
+		<span class="family-name">Pauly</span>
+	  </span>
+	</span>
+	<span class="org vcardline">Apple Inc.</span>
+	<span class="adr">
+	  <span class="vcardline">One Apple Park Way</span>
+
+	  <span class="vcardline">
+		<span class="locality">Cupertino, California 95014</span>,  
+		<span class="region"></span>
+		<span class="code"></span>
+	  </span>
+	  <span class="country-name vcardline">United States of America</span>
+	</span>
+	<span class="vcardline">EMail: <a href="mailto:tpauly@apple.com">tpauly@apple.com</a></span>
 
   </address>
 </div><div class="avoidbreak">
@@ -536,3 +568,4 @@ ul.toc li {
 
 </body>
 </html>
+
