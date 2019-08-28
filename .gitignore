@@ -14,3 +14,6 @@ pulls.json
 report.xml
 venv/
 lib
+draft-pauly-adaptive-dns-privacy.xml
+draft-pauly-encrypted-resolver.xml
+draft-pauly-obfuscated-doh.xml
