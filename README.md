@@ -1,4 +1,4 @@
-# ADAPTIVE Drafts
+# Adaptive DNS Privacy Drafts
 
 This is the working area for individual Internet-Drafts.
 
