@@ -36,6 +36,11 @@ author:
     city: Cupertino, California 95014
     country: United States of America
     email: cawood@apple.com
+  -
+    ins: P. McManus
+    name: Patrick McManus
+    org: Fastly
+    email: mcmanus@ducksong.com
 
 normative:
   RRTYPE:
