@@ -52,7 +52,7 @@ normative:
 --- abstract
 
 This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation
-of client addresses via proxying. This improves privacy of DNS operations by not allowing
+of client addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing
 any one server entity to be aware of both the client IP address and the content of DNS
 queries and answers.
 
@@ -72,12 +72,12 @@ Proposals such as Oblivious DNS ({{?I-D.annee-dprive-oblivious-dns}}) allow incr
 by not allowing any single DNS server to be aware of both the client IP address and the
 message contents.
 
-This document defines an Obfuscated DoH, an extension to DoH that allows for a proxied mode
+This document defines Obfuscated DoH, an extension to DoH that allows for a proxied mode
 of resolution, in which DNS messages are encrypted in such a way that no DoH server
 can independently read both the client IP address and the DNS message contents.
 
 This mechanism is intended to be used as one option for resolving privacy-sensitive content
-in a broader context of Adaptive DNS {{ADNS}}.
+in the broader context of Adaptive DNS {{ADNS}}.
 
 ## Specification of Requirements
 
@@ -96,7 +96,8 @@ Obfuscation Proxy:
 will be able to decrypt the query (the Obfuscation Target).
 
 Obfuscation Target:
-: A resolution server that receives encrypted client DNS queries via an Obfuscation Proxy.
+: A resolution server that receives encrypted client DNS queries and
+generates encrypted DNS responses transferred via an Obfuscation Proxy.
 
 # Deployment Requirements
 
@@ -104,11 +105,11 @@ Obfuscated DoH requires, at a minimum:
 
 - Two DoH servers, where one can act as an Obfuscation Proxy, and the other can act as an
 Obfuscation Target.
-- Public keys for encrypt DNS queries that are passed from a client through a proxy
+- Public keys for encrypting DNS queries that are passed from a client through a proxy
 to a target.
 - Client ability to generate one-time-use symmetric keys to encrypt DNS responses.
 
-One mechanism for discovering and privisioning the DoH URI Templates and public keys
+The mechanism for discovering and provisioning the DoH URI Templates and public keys
 is a DNS resource record, DOHNS {{RRTYPE}}.
 
 # HTTP Exchange
@@ -123,26 +124,32 @@ via the Obfuscation Proxy.
 
 ## HTTP Request {#obfuscated-request}
 
-Obfuscated DoH queries are created by the Client, and sent to the Obfuscation Proxy using the
-hostname in the proxy's DoH URI Template. Obfuscated queries MUST use the POST method,
+Obfuscated DoH queries are created by the Client, and sent to the
+Obfuscation Proxy. The proxy's address is determined from the
+authority of the proxy server's URI, while the authority information
+of the HTTP request reflects the authority of the target
+server. Likewise, when connecting to the proxy the client should use
+the proxy target's information for HTTPS certificate selection via SNI
+and when validating the resulting certificate.
+
+Obfuscated queries MUST use the POST method,
 in which the encrypted query blob is sent as the HTTP message body.
 
-Clients MUST set an HTTP Content-Type header to "application/obfuscated-dns-message"
+Clients MUST set the HTTP Content-Type header to "application/obfuscated-dns-message"
 to indicate that this request is an obfuscated query intended for proxying. Clients also SHOULD
 set this same value for the HTTP Accept header.
 
-The :authority psuedo-header MUST indicate the hostname of the Obfuscation Target (not the Obfuscation
-Proxy that initially receives the request), and the :path psuedo-header MUST conform to the path specified
+The HTTP authority information (e.g. The HTTP/2 :authority
+psuedo-header or the HTTP/1 host header) MUST indicate the hostname of the Obfuscation Target (not the Obfuscation
+Proxy that initially receives the request), and the path information MUST conform to the path specified
 by the Obfuscation Target's DoH URI Template.
-
-Note that the authority specified in the request will not match the certificate of the Obfuscation Proxy.
 
 Upon receiving a POST request that contains a "application/obfuscated-dns-message" Content-Type,
 the DoH server looks at the :authority and :path psuedo-headers. If the fields match the DoH server's
 own hostname and configured path, then it is the target of the query, and can decrypt the query {{encryption}}.
 If the fields do not match the local server, then the server is acting as an Obfuscation Proxy. If it is
-a proxy, it is expected to open an HTTPS connection to the Obfuscation Target based on the
-authority identified in the :authority psuedo-header, and send the request on to the target.
+a proxy, it is expected to send the request on to the Obfuscation Target based on the
+authority identified in the HTTP request.
 
 ## HTTP Request Example
 
