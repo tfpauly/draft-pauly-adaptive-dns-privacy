@@ -462,6 +462,11 @@ The PvD RA option SHOULD set the H-flag to indicate that Additional Information 
 This Additional Information JSON object SHOULD include both the "dohTemplate" and "dnsZones"
 keys to define the local DoH server and which domains it claims authority over.
 
+Although local Designated DoH Servers MAY support proxying obfuscated DNS queries, they will often
+have addresses that can be correlated with the client's address or location. Therefore, a client
+SHOULD NOT select one of these servers as an Obfuscation Proxy unless it knows that this
+locally-provisioned proxy is located sufficiently far away from the client itself.
+
 # Security Considerations
 
 In order to avoid interception and modification of the information retrieved by clients
