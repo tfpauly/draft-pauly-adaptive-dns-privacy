@@ -199,7 +199,8 @@ that is required to be associated with each server is:
 This information can be retrieved from several different sources. The primary source
 for discovering Designated DoH Server configurations is the DOHNS DNS Record
 {{RRTYPE}}. This record provides the URI Template of the server and the public
-obfuscation key for a specific domain.
+obfuscation key for a specific domain. A specific domain may have more
+than one DOHNS record.
 
 When a client resolves a name (based on the order in {{resolution-algorithm}}) is SHOULD
 issue a query for the DOHNS record for any name that does not fall within known Designated
