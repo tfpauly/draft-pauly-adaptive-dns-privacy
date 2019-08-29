@@ -426,13 +426,14 @@ that are listed can be fetched and validated automatically by clients, thus remo
 a bootstrapping step in discovering mappings from domains to Designated
 DoH Servers.
 
-Client that retrieve the Web PvD JSON dictionary SHOULD perform an DOHNS record
+Clients that retrieve the Web PvD JSON dictionary SHOULD perform an DOHNS record
 query for each of the entries in the "dnsZones" array in order to populate the
 mappings of domains. These MAY be performed in an obfuscated fashion, but
 MAY also be queried directly on the DoH server (since the information is not user-specific,
-but in response to generic server-driven content). Once clients retrieve the PvD JSON
-information, servers MAY pre-populate the client cache by sending an HTTP Server
-Push for the DOHNS records for the entries in the "dnsZones" array.
+but in response to generic server-driven content). Servers can choose
+to pre-emptively transfer the relevant DOHNS records if the
+dictionary retrieval is done with an HTTP version that supports PUSH
+semantics.
 
 This document also registers one new key in the Additional Information PvD Keys registry,
 to identify the URI Template for the DoH server {{iana}}. When included in Web PvDs, this URI
