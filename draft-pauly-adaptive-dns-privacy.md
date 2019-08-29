@@ -171,7 +171,7 @@ and by limiting the ability to correlate client IP addresses with query contents
 Specifically, the goal for client queries is to achieve the following
 properties:
 
-1. No party other than the client and server may learn or control the
+1. No party other than the client and server can learn or control the
 names being queried by the client or the answers being returned by the server.
 
 2. Only a designated DNS resolver associated with the deployment that is also
