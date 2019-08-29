@@ -390,9 +390,11 @@ Servers MUST ensure that the DOHNS records are signed with DNSSEC {{!RFC4033}}.
 ## Provide Extended Configuration as a Web PvD {#configuration}
 
 Beyond providing basic DoH server functionality, server nodes SHOULD
-offer a set of extended configuration to help clients discover the default
-set of domains for which the server is designated, as well as other
-capabilities offered by the server deployment.
+provide a mechanism that allows clients to look up properties and
+configuration for the server deployment. Amongst other information,
+this configuration can optionally contain a list of some popular domains for
+which this server is designated. This allows clients to optimize lookups
+for the many common names.
 
 This set of extended configuration information is referred to as a
 Web Provisioning Domain, or a Web PvD. Provisioning Domains are
