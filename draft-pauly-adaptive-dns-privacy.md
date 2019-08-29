@@ -462,6 +462,33 @@ The PvD RA option SHOULD set the H-flag to indicate that Additional Information 
 This Additional Information JSON object SHOULD include both the "dohTemplate" and "dnsZones"
 keys to define the local DoH server and which domains it claims authority over.
 
+# Performance Considerations
+
+One of the challenges with cloud based DNS approaches, such as Adaptive
+DNS, is that the obfuscated stub resolver address is sometimes
+currently used as input into DNS geographic load balancing
+sytems. Alternatively, the client's actual address is forwarded to the
+recursive resolver by the stub using EDNS0 CLient Subnet which is a
+practice discouraged by DoH. Sharing this address, while detrimental
+to privacy, can result in DNS responses that will give better
+performance to the client when it connects to them.
+
+The Adaptive DNS architecture makes the observation that this
+informaton is sensitive when used with, and therefore excluded from,
+the Target server but is much less sensitive when used with a
+Designated DoH Server. This is true becuase the Designated DoH Server
+definitely controls the value of the addressing information being
+returned to the client and the client will presumable be connecting to
+that from its IP address shortly anyhow.
+
+Based on those properties it makes sense to optimize for the number of
+connections that are made with DNS records obtained from a Designated
+DoH Server rather than records obtained through the obfuscated
+mechanisms. Servers can encourgage this by setting large TTLs for
+DOHNS records and using longer TTLs for responses returned by their
+Designated DoH Server endpoints which can be more confident they have
+accurate addressing informaton.
+
 # Security Considerations
 
 In order to avoid interception and modification of the information retrieved by clients
