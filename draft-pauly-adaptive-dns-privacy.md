@@ -63,13 +63,15 @@ to proxy encrypted queries, thus obfuscating the identity of the client requesti
 # Introduction
 
 When clients need to resolve names into addresses in order to establish networking connections,
-they traditionally use by default the DNS resolver that is provisioned by the local router, or by
-a tunneling server such as a VPN.
+they traditionally use by default the DNS resolver that is provisioned
+by the local network along with their IP address. Alternatively, they
+can use a resolver indicated by a tunneling service such as a VPN.
 
-However, privacy-sensitive client often would prefer to use an encrypted DNS service other
-than the one locally provisioned in order to prevent interception or modification by adversaries along
-the network path and centralized profiling by a single local resolver. Protocols that can improve the privacy
-stance of a client when using DNS or creating TLS connections include DNS-over-TLS {{!RFC7858}},
+However, privacy-sensitive clients might prefer to use an encrypted DNS service other
+than the one locally provisioned in order to prevent interception,
+profiling, or modification by entities other than the operator of the
+name service for the name being resolved. Protocols that can improve the transport security
+of a client when using DNS or creating TLS connections include DNS-over-TLS {{!RFC7858}},
 DNS-over-HTTPS {{!RFC8484}}, and encrypted Server Name Indication (ESNI) {{!I-D.ietf-tls-esni}}.
 
 There are several concerns around a client using such privacy-enhancing mechanisms
@@ -77,7 +79,11 @@ for generic system traffic. A remote service that provides encrypted DNS may not
 correct answers for locally available resources, or private resources (such as domains only
 accessible over a private network). Remote services may also be untrusted from a privacy
 perspective: while encryption will prevent on-path observers from seeing hostnames,
-client systems need to trust the encrypted DNS service to not store or misuse queries made to it.
+client systems need to trust the encrypted DNS service to not store or
+misuse queries made to it. Further, extensive use of cloud based
+recursive resolvers obscures the network location of the client which
+may degrade the performance of the returned server due to lack of
+proximity at the benefit of improved privacy.
 
 Client systems are left with choosing between one of the following stances:
 
@@ -162,11 +168,11 @@ and other information that a server deployment makes available to clients. See {
 Adaptive DNS allows client systems and applications to improve the privacy
 of their DNS queries and connections both by requiring confidentiality via encryption
 and by limiting the ability to correlate client IP addresses with query contents.
-Specifically, the goal for client queries is to achieve the following properties:
+Specifically, the goal for client queries is to achieve the following
+properties:
 
-1. Eavesdroppers on the local network or elsewhere on the path cannot
-learn the names being queried by the client or the answers being returned
-by the resolver.
+1. No party other than the client and server can learn or control the
+names being queried by the client or the answers being returned by the server.
 
 2. Only a designated DNS resolver associated with the deployment that is also
 hosting content will be able to read both the client IP address and queried names for
@@ -182,7 +188,8 @@ An algorithm for determining how to resolve a given name in a manner that satisf
 these properties is described in {{resolution-algorithm}}. Note that this algorithm
 does not guarantee that responses that are not signed with DNSSEC are valid, and clients
 that establish connections to unsigned addresses may still expose their local IP addresses
-to an attacker.
+to attackers that control their terminal resolver even if obfuscated
+during resolution.
 
 ## Discovering Designated DoH Servers {#designated-discovery}
 
@@ -201,10 +208,12 @@ for discovering Designated DoH Server configurations is the DOHNS DNS Record
 {{RRTYPE}}. This record provides the URI Template of the server and the public
 obfuscation key for a specific domain.
 
-When a client resolves a name (based on the order in {{resolution-algorithm}}) is SHOULD
-issue a query for the DOHNS record for any name that does not fall within known Designated
-DoH Server's configuration. The client MAY also issue queries for the DOHNS record for
-more specific names to discover further Designated DoH Servers.
+When a client resolves a name (based on the order in
+{{resolution-algorithm}}) it SHOULD determine the Designated DoH
+Server via a DOHNS record for any name that does not fall within known
+Designated DoH Server's configuration. The client MAY also issue
+queries for the DOHNS record for more specific names to discover
+further Designated DoH Servers.
 
 Any DOHNS record MUST be validated using DNSSEC {{!RFC4033}} before a client uses the information
 about the designated DoH Servers.
@@ -231,7 +240,7 @@ least one query that is proxied through the server before sending direct queries
 to the server.
 - Support for acting as an Obfuscation Target. Each Designated DoH Server is
 expected to support acting as a target for Obfuscation. A client MUST issue at
-least one query that is targetd at the server through a proxy before sending direct queries
+least one query that is targeted at the server through a proxy before sending direct queries
 to the server.
 
 Clients MAY further choose to restrict the whitelist by other local policy. For example,
@@ -240,7 +249,7 @@ the whitelist of Designated DoH Servers to configurations that match this list.
 Alternatively, a client system can check a server against a list of audited and approved
 DoH Servers that have properties that the client approves.
 
-Clients SHOULD NOT whitelist authority mappings for top-level domains (TLDs), such
+Clients SHOULD NOT whitelist authority mappings for effective top-level domains (eTLDs), such
 as ".com".
 
 ### Accessing Extended Information
@@ -264,7 +273,7 @@ If an RA provided by the router on the network defines an Explicit PvD that has 
 information, and this additional information JSON dictionary contains the key "dohTemplate" {{iana}},
 then the client SHOULD add this DoH server to its list of known DoH configurations. The
 domains that the DoH server claims authority for are listed in the "dnsZones" key. Clients
-MUST peform an DOHNS record query to the locally-provisioned DoH server and validate
+MUST use a DOHNS record from the locally-provisioned DoH server and validate
 the answer with DNSSEC {{!RFC4033}} before creating a mapping from the domain to the server.
 Once this has been validated, clients can use this server for resolution as described in
 step 2 of {{resolution-algorithm}}.
@@ -282,7 +291,7 @@ SHOULD be:
 domain rules that include the hostname being resolved. If the resolution
 fails, the connection will fail. See {{local-discovery}} and {{local-deployment}}.
 
-2. A Direct Resolver, such as a local router, with domain rules that is known to be
+2. A Direct Resolver, such as a local router, with domain rules that are known to be
 authoritative for the domain containing the hostname. If the resolution fails,
 the connection will try the next resolver configuration based on this list.
 
@@ -304,7 +313,7 @@ is used as the last resort for any connection that is not explicitly Privacy-Sen
 
 For all privacy-sensitive connection queries for names that do not correspond
 to a Designated DoH Server, the client SHOULD use obfuscation to help
-conceal its IP address from local eavesdroppers and untrusted resolvers.
+conceal its IP address from eavesdroppers and untrusted resolvers.
 
 DNS obfuscation is achieved by using Obfuscated DoH ({{OBFUSCATION}}). This
 extension to DoH allows a client to encrypt a query with a target DoH server's public
@@ -321,7 +330,7 @@ obfuscated exchange, there are (N) * (N - 1) / 2 possible pairs of servers, wher
 N is the number of whitelisted servers. While clients SHOULD use a variety of
 server pairs in rotation to decrease the ability for any given server to track
 client queries, it is not expected that all possible combinations will be used.
-Some combinations will be able to handle more load than other, and will have
+Some combinations will be able to handle more load than others, and some will have
 better latency properties than others. To optimize performance, clients SHOULD
 maintain statistics to track the performance characteristics and success rates of
 particular pairs.
