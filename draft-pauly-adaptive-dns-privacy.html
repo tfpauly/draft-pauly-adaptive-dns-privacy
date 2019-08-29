@@ -315,7 +315,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Kinnear, E., Pauly, T., and C. Wood" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-adaptive-dns-privacy-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-8-28" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-8-29" />
   <meta name="dct.abstract" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus obfuscating the identity of the client requesting resolution." />
   <meta name="description" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus obfuscating the identity of the client requesting resolution." />
 
@@ -339,12 +339,12 @@ ul.toc li {
 <td class="right">C. Wood</td>
 </tr>
 <tr>
-<td class="left">Expires: February 29, 2020</td>
+<td class="left">Expires: March 1, 2020</td>
 <td class="right">Apple Inc.</td>
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">August 28, 2019</td>
+<td class="right">August 29, 2019</td>
 </tr>
 
     	
@@ -360,7 +360,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on February 29, 2020.</p>
+<p>This Internet-Draft will expire on March 1, 2020.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -429,9 +429,9 @@ ul.toc li {
   <h1 id="rfc.section.1">
 <a href="#rfc.section.1">1.</a> <a href="#introduction" id="introduction">Introduction</a>
 </h1>
-<p id="rfc.section.1.p.1">When clients need to resolve names into addresses in order to establish networking connections, they traditionally use by default the DNS resolver that is provisioned by the local router, or by a tunneling server such as a VPN.</p>
-<p id="rfc.section.1.p.2">However, privacy-sensitive client often would prefer to use an encrypted DNS service other than the one locally provisioned in order to prevent interception or modification by adversaries along the network path and centralized profiling by a single local resolver. Protocols that can improve the privacy stance of a client when using DNS or creating TLS connections include DNS-over-TLS <a href="#RFC7858" class="xref">[RFC7858]</a>, DNS-over-HTTPS <a href="#RFC8484" class="xref">[RFC8484]</a>, and encrypted Server Name Indication (ESNI) <a href="#I-D.ietf-tls-esni" class="xref">[I-D.ietf-tls-esni]</a>.</p>
-<p id="rfc.section.1.p.3">There are several concerns around a client using such privacy-enhancing mechanisms for generic system traffic. A remote service that provides encrypted DNS may not provide correct answers for locally available resources, or private resources (such as domains only accessible over a private network). Remote services may also be untrusted from a privacy perspective: while encryption will prevent on-path observers from seeing hostnames, client systems need to trust the encrypted DNS service to not store or misuse queries made to it.</p>
+<p id="rfc.section.1.p.1">When clients need to resolve names into addresses in order to establish networking connections, they traditionally use by default the DNS resolver that is provisioned by the local network along with their IP address. Alternatively, they can use a resolver indicated by a tunneling service such as a VPN.</p>
+<p id="rfc.section.1.p.2">However, privacy-sensitive clients might prefer to use an encrypted DNS service other than the one locally provisioned in order to prevent interception, profiling, or modification by entities other than the operator of the name service for the name being resolved. Protocols that can improve the transport security of a client when using DNS or creating TLS connections include DNS-over-TLS <a href="#RFC7858" class="xref">[RFC7858]</a>, DNS-over-HTTPS <a href="#RFC8484" class="xref">[RFC8484]</a>, and encrypted Server Name Indication (ESNI) <a href="#I-D.ietf-tls-esni" class="xref">[I-D.ietf-tls-esni]</a>.</p>
+<p id="rfc.section.1.p.3">There are several concerns around a client using such privacy-enhancing mechanisms for generic system traffic. A remote service that provides encrypted DNS may not provide correct answers for locally available resources, or private resources (such as domains only accessible over a private network). Remote services may also be untrusted from a privacy perspective: while encryption will prevent on-path observers from seeing hostnames, client systems need to trust the encrypted DNS service to not store or misuse queries made to it. Further, extensive use of cloud based recursive resolvers obscures the network location of the client which may degrade the performance of the returned server due to lack of proximity at the benefit of improved privacy.</p>
 <p id="rfc.section.1.p.4">Client systems are left with choosing between one of the following stances:</p>
 <p></p>
 
@@ -487,11 +487,11 @@ ul.toc li {
 <p></p>
 
 <ol>
-<li>Eavesdroppers on the local network or elsewhere on the path cannot learn the names being queried by the client or the answers being returned by the resolver.</li>
+<li>No party other than the client and server can learn or control the names being queried by the client or the answers being returned by the server.</li>
 <li>Only a designated DNS resolver associated with the deployment that is also hosting content will be able to read both the client IP address and queried names for Privacy-Sensitive Connections. For example, a resolver owned and operated by the same provider which hosts &#8220;example.com&#8221; would be able to link queries for &#8220;example.com&#8221; to specific clients (by their IP address), since the server ultimately has this capability once clients subsequently establish secure (e.g., TLS) connections to an address to which &#8220;example.com&#8221; resolves.</li>
 <li>Clients will be able to comply with policies required by VPNs and local networks that are authoritative for private domains.</li>
 </ol>
-<p id="rfc.section.3.p.3">An algorithm for determining how to resolve a given name in a manner that satisfies these properties is described in <a href="#resolution-algorithm" class="xref">Section 3.3</a>. Note that this algorithm does not guarantee that responses that are not signed with DNSSEC are valid, and clients that establish connections to unsigned addresses may still expose their local IP addresses to an attacker.</p>
+<p id="rfc.section.3.p.3">An algorithm for determining how to resolve a given name in a manner that satisfies these properties is described in <a href="#resolution-algorithm" class="xref">Section 3.3</a>. Note that this algorithm does not guarantee that responses that are not signed with DNSSEC are valid, and clients that establish connections to unsigned addresses may still expose their local IP addresses to attackers that control their terminal resolver even if obfuscated during resolution.</p>
 <h1 id="rfc.section.3.1">
 <a href="#rfc.section.3.1">3.1.</a> <a href="#designated-discovery" id="designated-discovery">Discovering Designated DoH Servers</a>
 </h1>
@@ -505,8 +505,8 @@ ul.toc li {
 <li>The public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key of the DoH server used for proxied obfuscated queries</li>
 <li>A list of domains for which the DoH server is designated</li>
 </ul>
-<p id="rfc.section.3.1.p.4">This information can be retrieved from several different sources. The primary source for discovering Designated DoH Server configurations is the DOHNS DNS Record <a href="#RRTYPE" class="xref">[RRTYPE]</a>. This record provides the URI Template of the server and the public obfuscation key for a specific domain.</p>
-<p id="rfc.section.3.1.p.5">When a client resolves a name (based on the order in <a href="#resolution-algorithm" class="xref">Section 3.3</a>) is SHOULD issue a query for the DOHNS record for any name that does not fall within known Designated DoH Server&#8217;s configuration. The client MAY also issue queries for the DOHNS record for more specific names to discover further Designated DoH Servers.</p>
+<p id="rfc.section.3.1.p.4">This information can be retrieved from several different sources. The primary source for discovering Designated DoH Server configurations is the DOHNS DNS Record <a href="#RRTYPE" class="xref">[RRTYPE]</a>. This record provides the URI Template of the server and the public obfuscation key for a specific domain. A specific domain may have more than one DOHNS record.</p>
+<p id="rfc.section.3.1.p.5">When a client resolves a name (based on the order in <a href="#resolution-algorithm" class="xref">Section 3.3</a>) it SHOULD determine the Designated DoH Server via a DOHNS record for any name that does not fall within known Designated DoH Server&#8217;s configuration. The client MAY also issue queries for the DOHNS record for more specific names to discover further Designated DoH Servers.</p>
 <p id="rfc.section.3.1.p.6">Any DOHNS record MUST be validated using DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> before a client uses the information about the designated DoH Servers.</p>
 <p id="rfc.section.3.1.p.7">In order to bootstrap discovery of Designated DoH Servers, client systems SHOULD have some saved list of at least two names that they use consistently to perform DOHNS record queries on the Direct Resolvers configured by the local network. Since these queries are likely not private, they SHOULD NOT be associated with user action or contain user-identifying content. Rather, the expection is that all client systems of the same version and configuration would issue the same bootstrapping queries when joining a network for the first time when the list of Designated DoH Servers is empty.</p>
 <h1 id="rfc.section.3.1.1">
@@ -518,10 +518,10 @@ ul.toc li {
 
 <ul>
 <li>Support for acting as an Obfuscation Proxy. Each Designated DoH Server is expected to support acting as a proxy for Obfuscation. A client MUST issue at least one query that is proxied through the server before sending direct queries to the server.</li>
-<li>Support for acting as an Obfuscation Target. Each Designated DoH Server is expected to support acting as a target for Obfuscation. A client MUST issue at least one query that is targetd at the server through a proxy before sending direct queries to the server.</li>
+<li>Support for acting as an Obfuscation Target. Each Designated DoH Server is expected to support acting as a target for Obfuscation. A client MUST issue at least one query that is targeted at the server through a proxy before sending direct queries to the server.</li>
 </ul>
 <p id="rfc.section.3.1.1.p.4">Clients MAY further choose to restrict the whitelist by other local policy. For example, a client system can have a list of trusted resolver configurations, and it can limit the whitelist of Designated DoH Servers to configurations that match this list.  Alternatively, a client system can check a server against a list of audited and approved DoH Servers that have properties that the client approves.</p>
-<p id="rfc.section.3.1.1.p.5">Clients SHOULD NOT whitelist authority mappings for top-level domains (TLDs), such as &#8220;.com&#8221;.</p>
+<p id="rfc.section.3.1.1.p.5">Clients SHOULD NOT whitelist authority mappings for effective top-level domains (eTLDs), such as &#8220;.com&#8221;.</p>
 <h1 id="rfc.section.3.1.2">
 <a href="#rfc.section.3.1.2">3.1.2.</a> <a href="#accessing-extended-information" id="accessing-extended-information">Accessing Extended Information</a>
 </h1>
@@ -531,7 +531,7 @@ ul.toc li {
 <a href="#rfc.section.3.2">3.2.</a> <a href="#local-discovery" id="local-discovery">Discovering Local Resolvers</a>
 </h1>
 <p id="rfc.section.3.2.p.1">If the local network provides configuration with an Explicit Provisioning Domain (PvD), as defined by <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>, clients can learn about domains for which the local network&#8217;s resolver is authoritative.</p>
-<p id="rfc.section.3.2.p.2">If an RA provided by the router on the network defines an Explicit PvD that has additional information, and this additional information JSON dictionary contains the key &#8220;dohTemplate&#8221; <a href="#iana" class="xref">Section 7</a>, then the client SHOULD add this DoH server to its list of known DoH configurations. The domains that the DoH server claims authority for are listed in the &#8220;dnsZones&#8221; key. Clients MUST peform an DOHNS record query to the locally-provisioned DoH server and validate the answer with DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> before creating a mapping from the domain to the server.  Once this has been validated, clients can use this server for resolution as described in step 2 of <a href="#resolution-algorithm" class="xref">Section 3.3</a>.</p>
+<p id="rfc.section.3.2.p.2">If an RA provided by the router on the network defines an Explicit PvD that has additional information, and this additional information JSON dictionary contains the key &#8220;dohTemplate&#8221; <a href="#iana" class="xref">Section 7</a>, then the client SHOULD add this DoH server to its list of known DoH configurations. The domains that the DoH server claims authority for are listed in the &#8220;dnsZones&#8221; key. Clients MUST use a DOHNS record from the locally-provisioned DoH server and validate the answer with DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> before creating a mapping from the domain to the server.  Once this has been validated, clients can use this server for resolution as described in step 2 of <a href="#resolution-algorithm" class="xref">Section 3.3</a>.</p>
 <p id="rfc.section.3.2.p.3">See <a href="#local-deployment" class="xref">Section 5</a> for local deployment considerations.</p>
 <h1 id="rfc.section.3.3">
 <a href="#rfc.section.3.3">3.3.</a> <a href="#resolution-algorithm" id="resolution-algorithm">Hostname Resolution Algorithm</a>
@@ -541,7 +541,7 @@ ul.toc li {
 
 <ol>
 <li>An Exclusive Direct Resolver, such as a resolver provisioned by a VPN, domain rules that include the hostname being resolved. If the resolution fails, the connection will fail. See <a href="#local-discovery" class="xref">Section 3.2</a> and <a href="#local-deployment" class="xref">Section 5</a>.</li>
-<li>A Direct Resolver, such as a local router, with domain rules that is known to be authoritative for the domain containing the hostname. If the resolution fails, the connection will try the next resolver configuration based on this list.</li>
+<li>A Direct Resolver, such as a local router, with domain rules that are known to be authoritative for the domain containing the hostname. If the resolution fails, the connection will try the next resolver configuration based on this list.</li>
 <li>The most specific Designated DoH Server that has been whitelisted (<a href="#whitelisting" class="xref">Section 3.1.1</a>) for the domain containing the hostname, i.e., the designated DoH server which is associated with the longest matching prefix of the hostname. For example, given two Designated DoH Servers, one for foo.example.com and another example.com, clients connecting to bar.foo.example.com should use the former. If the resolution fails, the connection will try an obfuscated query.</li>
 <li>Obfuscated queries using multiple DoH Servers (<a href="#obfuscation" class="xref">Section 3.4</a>). If this resolution fails, Privacy-Sensitive Connections will fail. All other connections will use the last resort, the default Direct Resolvers.</li>
 <li>The default Direct Resolver, generally the resolver provisioned by the local router, is used as the last resort for any connection that is not explicitly Privacy-Sensitive.</li>
@@ -549,10 +549,10 @@ ul.toc li {
 <h1 id="rfc.section.3.4">
 <a href="#rfc.section.3.4">3.4.</a> <a href="#obfuscation" id="obfuscation">Obfuscated Resolution</a>
 </h1>
-<p id="rfc.section.3.4.p.1">For all privacy-sensitive connection queries for names that do not correspond to a Designated DoH Server, the client SHOULD use obfuscation to help conceal its IP address from local eavesdroppers and untrusted resolvers.</p>
+<p id="rfc.section.3.4.p.1">For all privacy-sensitive connection queries for names that do not correspond to a Designated DoH Server, the client SHOULD use obfuscation to help conceal its IP address from eavesdroppers and untrusted resolvers.</p>
 <p id="rfc.section.3.4.p.2">DNS obfuscation is achieved by using Obfuscated DoH (<a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>). This extension to DoH allows a client to encrypt a query with a target DoH server&#8217;s public key, and proxy the query through another server. The query is packaged with a unique client-defined symmetric key that is used to sign the DNS answer, which is sent back to the client via the proxy.</p>
 <p id="rfc.section.3.4.p.3">All DoH Servers that are used as Designated DoH Servers by the client MUST support being both an Obfuscation Proxy and an Obfuscation Target, as described in the server requirements (<a href="#server" class="xref">Section 4</a>).</p>
-<p id="rfc.section.3.4.p.4">Since each Designated DoH Server can act as one of two roles in an obfuscated exchange, there are (N) * (N - 1) / 2 possible pairs of servers, where N is the number of whitelisted servers. While clients SHOULD use a variety of server pairs in rotation to decrease the ability for any given server to track client queries, it is not expected that all possible combinations will be used.  Some combinations will be able to handle more load than other, and will have better latency properties than others. To optimize performance, clients SHOULD maintain statistics to track the performance characteristics and success rates of particular pairs.</p>
+<p id="rfc.section.3.4.p.4">Since each Designated DoH Server can act as one of two roles in an obfuscated exchange, there are (N) * (N - 1) / 2 possible pairs of servers, where N is the number of whitelisted servers. While clients SHOULD use a variety of server pairs in rotation to decrease the ability for any given server to track client queries, it is not expected that all possible combinations will be used.  Some combinations will be able to handle more load than others, and some will have better latency properties than others. To optimize performance, clients SHOULD maintain statistics to track the performance characteristics and success rates of particular pairs.</p>
 <p id="rfc.section.3.4.p.5">Clients that are performing obfuscated resolution SHOULD fall back to another pair of servers if a first query times out, with a locally-determined limit for the number of fallback attempts that will be performed.</p>
 <h1 id="rfc.section.4">
 <a href="#rfc.section.4">4.</a> <a href="#server" id="server">Server Requirements</a>
@@ -590,7 +590,7 @@ ul.toc li {
 <p id="rfc.section.4.3.p.4">The &#8220;identifer&#8221; key SHOULD be the hostname of the DoH Server itself.</p>
 <p id="rfc.section.4.3.p.5">For Web PvDs, the &#8220;prefixes&#8221; key within the JSON configuration SHOULD contain an empty array.</p>
 <p id="rfc.section.4.3.p.6">The key &#8220;dnsZones&#8221;, which contains an array of domains as strings, indicates the zones that belong to the PvD. Any zone that is listed in this array for a Web PvD MUST have a corresponding DOHNS record that defines the DoH server as designated for the zone. Servers SHOULD include in this array any names that are considered default or well-known for the deployment, but is not required or expected to list all zones or domains for which it is designated. The trade-off here is that zones that are listed can be fetched and validated automatically by clients, thus removing a bootstrapping step in discovering mappings from domains to Designated DoH Servers.</p>
-<p id="rfc.section.4.3.p.7">Client that retrieve the Web PvD JSON dictionary SHOULD perform an DOHNS record query for each of the entries in the &#8220;dnsZones&#8221; array in order to populate the mappings of domains. These MAY be performed in an obfuscated fashion, but MAY also be queried directly on the DoH server (since the information is not user-specific, but in response to generic server-driven content). Once clients retrieve the PvD JSON information, servers MAY pre-populate the client cache by sending an HTTP Server Push for the DOHNS records for the entries in the &#8220;dnsZones&#8221; array.</p>
+<p id="rfc.section.4.3.p.7">Clients that retrieve the Web PvD JSON dictionary SHOULD perform an DOHNS record query for each of the entries in the &#8220;dnsZones&#8221; array in order to populate the mappings of domains. These MAY be performed in an obfuscated fashion, but MAY also be queried directly on the DoH server (since the information is not user-specific, but in response to generic server-driven content). Servers can choose to pre-emptively transfer the relevant DOHNS records if the dictionary retrieval is done with an HTTP version that supports PUSH semantics.</p>
 <p id="rfc.section.4.3.p.8">This document also registers one new key in the Additional Information PvD Keys registry, to identify the URI Template for the DoH server <a href="#iana" class="xref">Section 7</a>. When included in Web PvDs, this URI MUST match the template in the DOHNS DNS Record.</p>
 <p id="rfc.section.4.3.p.9">Beyond providing resolution configuration, the Web PvD configuration can be extended to offer information about proxies and other services offered by the server deployment.  Such keys are not defined in this document.</p>
 <h1 id="rfc.section.5">

@@ -309,9 +309,9 @@ ul.toc li {
 
   <meta name="dct.creator" content="Kinnear, E., Pauly, T., and C. Wood" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-obfuscated-doh-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-8-28" />
-  <meta name="dct.abstract" content="This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation of client addresses via proxying. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
-  <meta name="description" content="This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation of client addresses via proxying. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-8-29" />
+  <meta name="dct.abstract" content="This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation of client addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
+  <meta name="description" content="This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation of client addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
 
 </head>
 
@@ -333,12 +333,12 @@ ul.toc li {
 <td class="right">C. Wood</td>
 </tr>
 <tr>
-<td class="left">Expires: February 29, 2020</td>
+<td class="left">Expires: March 1, 2020</td>
 <td class="right">Apple Inc.</td>
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">August 28, 2019</td>
+<td class="right">August 29, 2019</td>
 </tr>
 
     	
@@ -349,12 +349,12 @@ ul.toc li {
   <span class="filename">draft-pauly-obfuscated-doh-latest</span></p>
   
   <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
-<p>This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation of client addresses via proxying. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers.</p>
+<p>This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation of client addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers.</p>
 <h1 id="rfc.status"><a href="#rfc.status">Status of This Memo</a></h1>
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on February 29, 2020.</p>
+<p>This Internet-Draft will expire on March 1, 2020.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -414,8 +414,8 @@ ul.toc li {
 <p id="rfc.section.1.p.1">DNS Over HTTPS (DoH) <a href="#RFC8484" class="xref">[RFC8484]</a> defines a mechanism to allow DNS messages to be transmitted in encrypted HTTP messages. This provides improved confidentiality and authentication for DNS interactions in various circumstances.</p>
 <p id="rfc.section.1.p.2">While DoH can prevent eavesdroppers from directly reading the contents of DNS exchanges, it does not allow clients to send DNS queries and receive answers from servers without revealing their local IP address, and thus information about the identity or location of the client.</p>
 <p id="rfc.section.1.p.3">Proposals such as Oblivious DNS (<a href="#I-D.annee-dprive-oblivious-dns" class="xref">[I-D.annee-dprive-oblivious-dns]</a>) allow increased privacy by not allowing any single DNS server to be aware of both the client IP address and the message contents.</p>
-<p id="rfc.section.1.p.4">This document defines an Obfuscated DoH, an extension to DoH that allows for a proxied mode of resolution, in which DNS messages are encrypted in such a way that no DoH server can independently read both the client IP address and the DNS message contents.</p>
-<p id="rfc.section.1.p.5">This mechanism is intended to be used as one option for resolving privacy-sensitive content in a broader context of Adaptive DNS <a href="#ADNS" class="xref">[ADNS]</a>.</p>
+<p id="rfc.section.1.p.4">This document defines Obfuscated DoH, an extension to DoH that allows for a proxied mode of resolution, in which DNS messages are encrypted in such a way that no DoH server can independently read both the client IP address and the DNS message contents.</p>
+<p id="rfc.section.1.p.5">This mechanism is intended to be used as one option for resolving privacy-sensitive content in the broader context of Adaptive DNS <a href="#ADNS" class="xref">[ADNS]</a>.</p>
 <h1 id="rfc.section.1.1">
 <a href="#rfc.section.1.1">1.1.</a> <a href="#specification-of-requirements" id="specification-of-requirements">Specification of Requirements</a>
 </h1>
@@ -430,7 +430,7 @@ ul.toc li {
 <dt>Obfuscation Proxy:</dt>
 <dd style="margin-left: 8">A resolution server that proxies encrypted client DNS queries to another resolution server that will be able to decrypt the query (the Obfuscation Target).</dd>
 <dt>Obfuscation Target:</dt>
-<dd style="margin-left: 8">A resolution server that receives encrypted client DNS queries via an Obfuscation Proxy.</dd>
+<dd style="margin-left: 8">A resolution server that receives encrypted client DNS queries and generates encrypted DNS responses transferred via an Obfuscation Proxy.</dd>
 </dl>
 <h1 id="rfc.section.3">
 <a href="#rfc.section.3">3.</a> <a href="#deployment-requirements" id="deployment-requirements">Deployment Requirements</a>
@@ -440,10 +440,10 @@ ul.toc li {
 
 <ul>
 <li>Two DoH servers, where one can act as an Obfuscation Proxy, and the other can act as an Obfuscation Target.</li>
-<li>Public keys for encrypt DNS queries that are passed from a client through a proxy to a target.</li>
+<li>Public keys for encrypting DNS queries that are passed from a client through a proxy to a target.</li>
 <li>Client ability to generate one-time-use symmetric keys to encrypt DNS responses.</li>
 </ul>
-<p id="rfc.section.3.p.3">One mechanism for discovering and privisioning the DoH URI Templates and public keys is a DNS resource record, DOHNS <a href="#RRTYPE" class="xref">[RRTYPE]</a>.</p>
+<p id="rfc.section.3.p.3">The mechanism for discovering and provisioning the DoH URI Templates and public keys is a DNS resource record, DOHNS <a href="#RRTYPE" class="xref">[RRTYPE]</a>.</p>
 <h1 id="rfc.section.4">
 <a href="#rfc.section.4">4.</a> <a href="#http-exchange" id="http-exchange">HTTP Exchange</a>
 </h1>
@@ -458,11 +458,11 @@ ul.toc li {
 <h1 id="rfc.section.4.1">
 <a href="#rfc.section.4.1">4.1.</a> <a href="#obfuscated-request" id="obfuscated-request">HTTP Request</a>
 </h1>
-<p id="rfc.section.4.1.p.1">Obfuscated DoH queries are created by the Client, and sent to the Obfuscation Proxy using the hostname in the proxy&#8217;s DoH URI Template. Obfuscated queries MUST use the POST method, in which the encrypted query blob is sent as the HTTP message body.</p>
-<p id="rfc.section.4.1.p.2">Clients MUST set an HTTP Content-Type header to &#8220;application/obfuscated-dns-message&#8221; to indicate that this request is an obfuscated query intended for proxying. Clients also SHOULD set this same value for the HTTP Accept header.</p>
-<p id="rfc.section.4.1.p.3">The :authority psuedo-header MUST indicate the hostname of the Obfuscation Target (not the Obfuscation Proxy that initially receives the request), and the :path psuedo-header MUST conform to the path specified by the Obfuscation Target&#8217;s DoH URI Template.</p>
-<p id="rfc.section.4.1.p.4">Note that the authority specified in the request will not match the certificate of the Obfuscation Proxy.</p>
-<p id="rfc.section.4.1.p.5">Upon receiving a POST request that contains a &#8220;application/obfuscated-dns-message&#8221; Content-Type, the DoH server looks at the :authority and :path psuedo-headers. If the fields match the DoH server&#8217;s own hostname and configured path, then it is the target of the query, and can decrypt the query <a href="#encryption" class="xref">Section 6</a>.  If the fields do not match the local server, then the server is acting as an Obfuscation Proxy. If it is a proxy, it is expected to open an HTTPS connection to the Obfuscation Target based on the authority identified in the :authority psuedo-header, and send the request on to the target.</p>
+<p id="rfc.section.4.1.p.1">Obfuscated DoH queries are created by the Client, and sent to the Obfuscation Proxy. The proxy&#8217;s address is determined from the authority of the proxy server&#8217;s URI, while the authority information of the HTTP request reflects the authority of the target server. Likewise, when connecting to the proxy the client should use the proxy target&#8217;s information for HTTPS certificate selection via SNI and when validating the resulting certificate.</p>
+<p id="rfc.section.4.1.p.2">Obfuscated queries MUST use the POST method, in which the encrypted query blob is sent as the HTTP message body.</p>
+<p id="rfc.section.4.1.p.3">Clients MUST set the HTTP Content-Type header to &#8220;application/obfuscated-dns-message&#8221; to indicate that this request is an obfuscated query intended for proxying. Clients also SHOULD set this same value for the HTTP Accept header.</p>
+<p id="rfc.section.4.1.p.4">The HTTP authority information (e.g. The HTTP/2 :authority psuedo-header or the HTTP/1 host header) MUST indicate the hostname of the Obfuscation Target (not the Obfuscation Proxy that initially receives the request), and the path information MUST conform to the path specified by the Obfuscation Target&#8217;s DoH URI Template.</p>
+<p id="rfc.section.4.1.p.5">Upon receiving a POST request that contains a &#8220;application/obfuscated-dns-message&#8221; Content-Type, the DoH server looks at the :authority and :path psuedo-headers. If the fields match the DoH server&#8217;s own hostname and configured path, then it is the target of the query, and can decrypt the query <a href="#encryption" class="xref">Section 6</a>.  If the fields do not match the local server, then the server is acting as an Obfuscation Proxy. If it is a proxy, it is expected to send the request on to the Obfuscation Target based on the authority identified in the HTTP request.</p>
 <h1 id="rfc.section.4.2">
 <a href="#rfc.section.4.2">4.2.</a> <a href="#http-request-example" id="http-request-example">HTTP Request Example</a>
 </h1>

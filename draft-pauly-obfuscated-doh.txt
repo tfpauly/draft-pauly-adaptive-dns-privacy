@@ -5,8 +5,8 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: February 29, 2020                                    Apple Inc.
-                                                         August 28, 2019
+Expires: March 1, 2020                                        Apple Inc.
+                                                         August 29, 2019
 
 
                        Obfuscated DNS Over HTTPS
@@ -15,10 +15,10 @@ Expires: February 29, 2020                                    Apple Inc.
 Abstract
 
    This document describes an extension to DNS Over HTTPS (DoH) that
-   allows obfuscation of client addresses via proxying.  This improves
-   privacy of DNS operations by not allowing any one server entity to be
-   aware of both the client IP address and the content of DNS queries
-   and answers.
+   allows obfuscation of client addresses via proxying encrypted DNS
+   transactions.  This improves privacy of DNS operations by not
+   allowing any one server entity to be aware of both the client IP
+   address and the content of DNS queries and answers.
 
 Status of This Memo
 
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on February 29, 2020.
+   This Internet-Draft will expire on March 1, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kinnear, et al.         Expires February 29, 2020               [Page 1]
+Kinnear, et al.           Expires March 1, 2020                 [Page 1]
 
 Internet-Draft               Obfuscated DoH                  August 2019
 
@@ -101,21 +101,21 @@ Table of Contents
    allow increased privacy by not allowing any single DNS server to be
    aware of both the client IP address and the message contents.
 
-   This document defines an Obfuscated DoH, an extension to DoH that
-   allows for a proxied mode of resolution, in which DNS messages are
-   encrypted in such a way that no DoH server can independently read
-   both the client IP address and the DNS message contents.
+   This document defines Obfuscated DoH, an extension to DoH that allows
+   for a proxied mode of resolution, in which DNS messages are encrypted
+   in such a way that no DoH server can independently read both the
+   client IP address and the DNS message contents.
 
 
 
 
-Kinnear, et al.         Expires February 29, 2020               [Page 2]
+Kinnear, et al.           Expires March 1, 2020                 [Page 2]
 
 Internet-Draft               Obfuscated DoH                  August 2019
 
 
    This mechanism is intended to be used as one option for resolving
-   privacy-sensitive content in a broader context of Adaptive DNS
+   privacy-sensitive content in the broader context of Adaptive DNS
    [ADNS].
 
 1.1.  Specification of Requirements
@@ -135,7 +135,8 @@ Internet-Draft               Obfuscated DoH                  August 2019
       decrypt the query (the Obfuscation Target).
 
    Obfuscation Target:  A resolution server that receives encrypted
-      client DNS queries via an Obfuscation Proxy.
+      client DNS queries and generates encrypted DNS responses
+      transferred via an Obfuscation Proxy.
 
 3.  Deployment Requirements
 
@@ -144,13 +145,13 @@ Internet-Draft               Obfuscated DoH                  August 2019
    o  Two DoH servers, where one can act as an Obfuscation Proxy, and
       the other can act as an Obfuscation Target.
 
-   o  Public keys for encrypt DNS queries that are passed from a client
-      through a proxy to a target.
+   o  Public keys for encrypting DNS queries that are passed from a
+      client through a proxy to a target.
 
    o  Client ability to generate one-time-use symmetric keys to encrypt
       DNS responses.
 
-   One mechanism for discovering and privisioning the DoH URI Templates
+   The mechanism for discovering and provisioning the DoH URI Templates
    and public keys is a DNS resource record, DOHNS [RRTYPE].
 
 4.  HTTP Exchange
@@ -164,8 +165,7 @@ Internet-Draft               Obfuscated DoH                  August 2019
 
 
 
-
-Kinnear, et al.         Expires February 29, 2020               [Page 3]
+Kinnear, et al.           Expires March 1, 2020                 [Page 3]
 
 Internet-Draft               Obfuscated DoH                  August 2019
 
@@ -181,22 +181,26 @@ Internet-Draft               Obfuscated DoH                  August 2019
 4.1.  HTTP Request
 
    Obfuscated DoH queries are created by the Client, and sent to the
-   Obfuscation Proxy using the hostname in the proxy's DoH URI Template.
+   Obfuscation Proxy.  The proxy's address is determined from the
+   authority of the proxy server's URI, while the authority information
+   of the HTTP request reflects the authority of the target server.
+   Likewise, when connecting to the proxy the client should use the
+   proxy target's information for HTTPS certificate selection via SNI
+   and when validating the resulting certificate.
+
    Obfuscated queries MUST use the POST method, in which the encrypted
    query blob is sent as the HTTP message body.
 
-   Clients MUST set an HTTP Content-Type header to "application/
+   Clients MUST set the HTTP Content-Type header to "application/
    obfuscated-dns-message" to indicate that this request is an
    obfuscated query intended for proxying.  Clients also SHOULD set this
    same value for the HTTP Accept header.
 
-   The :authority psuedo-header MUST indicate the hostname of the
+   The HTTP authority information (e.g.  The HTTP/2 :authority psuedo-
+   header or the HTTP/1 host header) MUST indicate the hostname of the
    Obfuscation Target (not the Obfuscation Proxy that initially receives
-   the request), and the :path psuedo-header MUST conform to the path
+   the request), and the path information MUST conform to the path
    specified by the Obfuscation Target's DoH URI Template.
-
-   Note that the authority specified in the request will not match the
-   certificate of the Obfuscation Proxy.
 
    Upon receiving a POST request that contains a "application/
    obfuscated-dns-message" Content-Type, the DoH server looks at the
@@ -204,9 +208,9 @@ Internet-Draft               Obfuscated DoH                  August 2019
    server's own hostname and configured path, then it is the target of
    the query, and can decrypt the query Section 6.  If the fields do not
    match the local server, then the server is acting as an Obfuscation
-   Proxy.  If it is a proxy, it is expected to open an HTTPS connection
-   to the Obfuscation Target based on the authority identified in the
-   :authority psuedo-header, and send the request on to the target.
+   Proxy.  If it is a proxy, it is expected to send the request on to
+   the Obfuscation Target based on the authority identified in the HTTP
+   request.
 
 4.2.  HTTP Request Example
 
@@ -217,11 +221,7 @@ Internet-Draft               Obfuscated DoH                  August 2019
 
 
 
-
-
-
-
-Kinnear, et al.         Expires February 29, 2020               [Page 4]
+Kinnear, et al.           Expires March 1, 2020                 [Page 4]
 
 Internet-Draft               Obfuscated DoH                  August 2019
 
@@ -277,7 +277,7 @@ Internet-Draft               Obfuscated DoH                  August 2019
 
 
 
-Kinnear, et al.         Expires February 29, 2020               [Page 5]
+Kinnear, et al.           Expires March 1, 2020                 [Page 5]
 
 Internet-Draft               Obfuscated DoH                  August 2019
 
@@ -333,7 +333,7 @@ Internet-Draft               Obfuscated DoH                  August 2019
 
 
 
-Kinnear, et al.         Expires February 29, 2020               [Page 6]
+Kinnear, et al.           Expires March 1, 2020                 [Page 6]
 
 Internet-Draft               Obfuscated DoH                  August 2019
 
@@ -389,7 +389,7 @@ Internet-Draft               Obfuscated DoH                  August 2019
 
 
 
-Kinnear, et al.         Expires February 29, 2020               [Page 7]
+Kinnear, et al.           Expires March 1, 2020                 [Page 7]
 
 Internet-Draft               Obfuscated DoH                  August 2019
 
@@ -445,7 +445,7 @@ Internet-Draft               Obfuscated DoH                  August 2019
 
 
 
-Kinnear, et al.         Expires February 29, 2020               [Page 8]
+Kinnear, et al.           Expires March 1, 2020                 [Page 8]
 
 Internet-Draft               Obfuscated DoH                  August 2019
 
@@ -501,7 +501,7 @@ Internet-Draft               Obfuscated DoH                  August 2019
 
 
 
-Kinnear, et al.         Expires February 29, 2020               [Page 9]
+Kinnear, et al.           Expires March 1, 2020                 [Page 9]
 
 Internet-Draft               Obfuscated DoH                  August 2019
 
@@ -557,7 +557,7 @@ Authors' Addresses
 
 
 
-Kinnear, et al.         Expires February 29, 2020              [Page 10]
+Kinnear, et al.           Expires March 1, 2020                [Page 10]
 
 Internet-Draft               Obfuscated DoH                  August 2019
 
@@ -613,4 +613,4 @@ Internet-Draft               Obfuscated DoH                  August 2019
 
 
 
-Kinnear, et al.         Expires February 29, 2020              [Page 11]
+Kinnear, et al.           Expires March 1, 2020                [Page 11]
