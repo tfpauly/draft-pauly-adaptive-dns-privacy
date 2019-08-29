@@ -67,7 +67,7 @@ they traditionally use by default the DNS resolver that is provisioned
 by the local network along with their IP address. Alternatively, they
 can use a resolver indicated by a tunneling service such as a VPN.
 
-However, privacy-sensitive clients my prefer to use an encrypted DNS service other
+However, privacy-sensitive clients might prefer to use an encrypted DNS service other
 than the one locally provisioned in order to prevent interception,
 profiling, or modification by entities other than the operator of the
 name service for the name being resolved. Protocols that can improve the transport security
