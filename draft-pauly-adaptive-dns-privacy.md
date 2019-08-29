@@ -64,7 +64,7 @@ to proxy encrypted queries, thus obfuscating the identity of the client requesti
 
 When clients need to resolve names into addresses in order to establish networking connections,
 they traditionally use by default the DNS resolver that is provisioned
-by the local network along with their IP address. Alternatively they
+by the local network along with their IP address. Alternatively, they
 may use a resolver indicated by a tunneling service such as a VPN.
 
 However, privacy-sensitive clients my prefer to use an encrypted DNS service other
