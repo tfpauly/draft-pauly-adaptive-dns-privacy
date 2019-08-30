@@ -471,7 +471,7 @@ sytems. Alternatively, the client's actual address is forwarded to the
 recursive resolver by the stub using EDNS0 Client Subnet which is a
 practice discouraged by DoH. Sharing this address, while detrimental
 to privacy, can result in DNS responses that will give better
-performance to the client when it connects to them.
+performance to the client.
 
 The Adaptive DNS architecture makes the observation that this
 informaton is sensitive when used with, and therefore excluded from,
