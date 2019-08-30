@@ -465,7 +465,7 @@ keys to define the local DoH server and which domains it claims authority over.
 # Performance Considerations
 
 One of the challenges with cloud-based DNS approaches, such as
-Adaptive DNS, is that the address of the recrusive resolver is
+Adaptive DNS, is that the address of the recursive resolver is
 sometimes used as input into DNS geographic load balancing
 sytems. These systems assume the address of the recursive resolver and
 the terminal client are similar. In other cases, the client's actual
