@@ -464,14 +464,15 @@ keys to define the local DoH server and which domains it claims authority over.
 
 # Performance Considerations
 
-One of the challenges with cloud-based DNS approaches, such as Adaptive
-DNS, is that the address of the obfuscated stub resolver can be
-currently used as input into DNS geographic load balancing
-sytems. Alternatively, the client's actual address is forwarded to the
-recursive resolver by the stub using EDNS0 Client Subnet which is a
-practice discouraged by DoH. Sharing this address, while detrimental
-to privacy, can result in DNS responses that will give better
-performance to the client.
+One of the challenges with cloud-based DNS approaches, such as
+Adaptive DNS, is that the address of the recrusive resolver is
+sometimes used as input into DNS geographic load balancing
+sytems. These systems assume the address of the recursive resolver and
+the terminal client are similar. In other cases, the client's actual
+address is forwarded to the authoritative server by the recursive using the
+EDNS0 Client Subnet feature. This is a practice discouraged by DoH for
+privacy reasons. Sharing this address, while detrimental to privacy,
+can result in better targeted DNS resolutions.
 
 Adaptive DNS makes the observation that this
 informaton is sensitive when used with, and therefore excluded from,
