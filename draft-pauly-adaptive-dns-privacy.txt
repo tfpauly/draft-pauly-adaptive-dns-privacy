@@ -5,8 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: March 1, 2020                                        Apple Inc.
-                                                         August 29, 2019
+Expires: March 2, 2020                                        Apple Inc.
+                                                              P. McManus
+                                                                  Fastly
+                                                         August 30, 2019
 
 
            Adaptive DNS: Improving Privacy of Name Resolution
@@ -37,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 1, 2020.
+   This Internet-Draft will expire on March 2, 2020.
 
 Copyright Notice
 
@@ -48,16 +50,16 @@ Copyright Notice
    Provisions Relating to IETF Documents
    (https://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
-   carefully, as they describe your rights and restrictions with respect
-   to this document.  Code Components extracted from this document must
 
 
 
-Kinnear, et al.           Expires March 1, 2020                 [Page 1]
+Kinnear, et al.           Expires March 2, 2020                 [Page 1]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
 
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
@@ -83,13 +85,14 @@ Table of Contents
      4.3.  Provide Extended Configuration as a Web PvD . . . . . . .  10
    5.  Local Resolver Deployment Considerations  . . . . . . . . . .  12
      5.1.  Local Designated DoH Servers  . . . . . . . . . . . . . .  12
-   6.  Security Considerations . . . . . . . . . . . . . . . . . . .  12
-   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  13
-   8.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  13
-   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  13
-     9.1.  Normative References  . . . . . . . . . . . . . . . . . .  13
-     9.2.  Informative References  . . . . . . . . . . . . . . . . .  14
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  14
+   6.  Performance Considerations  . . . . . . . . . . . . . . . . .  13
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  13
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  14
+   9.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  14
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  14
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .  14
+     10.2.  Informative References . . . . . . . . . . . . . . . . .  15
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  15
 
 1.  Introduction
 
@@ -103,17 +106,16 @@ Table of Contents
    DNS service other than the one locally provisioned in order to
    prevent interception, profiling, or modification by entities other
    than the operator of the name service for the name being resolved.
-   Protocols that can improve the transport security of a client when
-   using DNS or creating TLS connections include DNS-over-TLS [RFC7858],
 
 
 
-
-Kinnear, et al.           Expires March 1, 2020                 [Page 2]
+Kinnear, et al.           Expires March 2, 2020                 [Page 2]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
 
+   Protocols that can improve the transport security of a client when
+   using DNS or creating TLS connections include DNS-over-TLS [RFC7858],
    DNS-over-HTTPS [RFC8484], and encrypted Server Name Indication (ESNI)
    [I-D.ietf-tls-esni].
 
@@ -163,9 +165,7 @@ Internet-Draft                ADNS Privacy                   August 2019
 
 
 
-
-
-Kinnear, et al.           Expires March 1, 2020                 [Page 3]
+Kinnear, et al.           Expires March 2, 2020                 [Page 3]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
@@ -221,7 +221,7 @@ Internet-Draft                ADNS Privacy                   August 2019
 
 
 
-Kinnear, et al.           Expires March 1, 2020                 [Page 4]
+Kinnear, et al.           Expires March 2, 2020                 [Page 4]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
@@ -277,7 +277,7 @@ Internet-Draft                ADNS Privacy                   August 2019
 
 
 
-Kinnear, et al.           Expires March 1, 2020                 [Page 5]
+Kinnear, et al.           Expires March 2, 2020                 [Page 5]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
@@ -333,7 +333,7 @@ Internet-Draft                ADNS Privacy                   August 2019
 
 
 
-Kinnear, et al.           Expires March 1, 2020                 [Page 6]
+Kinnear, et al.           Expires March 2, 2020                 [Page 6]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
@@ -389,14 +389,14 @@ Internet-Draft                ADNS Privacy                   August 2019
 
 
 
-Kinnear, et al.           Expires March 1, 2020                 [Page 7]
+Kinnear, et al.           Expires March 2, 2020                 [Page 7]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
 
    If an RA provided by the router on the network defines an Explicit
    PvD that has additional information, and this additional information
-   JSON dictionary contains the key "dohTemplate" Section 7, then the
+   JSON dictionary contains the key "dohTemplate" Section 8, then the
    client SHOULD add this DoH server to its list of known DoH
    configurations.  The domains that the DoH server claims authority for
    are listed in the "dnsZones" key.  Clients MUST use a DOHNS record
@@ -445,7 +445,7 @@ Internet-Draft                ADNS Privacy                   August 2019
 
 
 
-Kinnear, et al.           Expires March 1, 2020                 [Page 8]
+Kinnear, et al.           Expires March 2, 2020                 [Page 8]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
@@ -501,7 +501,7 @@ Internet-Draft                ADNS Privacy                   August 2019
 
 
 
-Kinnear, et al.           Expires March 1, 2020                 [Page 9]
+Kinnear, et al.           Expires March 2, 2020                 [Page 9]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
@@ -551,16 +551,19 @@ Internet-Draft                ADNS Privacy                   August 2019
 4.3.  Provide Extended Configuration as a Web PvD
 
    Beyond providing basic DoH server functionality, server nodes SHOULD
-   offer a set of extended configuration to help clients discover the
-   default set of domains for which the server is designated, as well as
-   other capabilities offered by the server deployment.
+   provide a mechanism that allows clients to look up properties and
+   configuration for the server deployment.  Amongst other information,
+   this configuration can optionally contain a list of some popular
 
 
 
-Kinnear, et al.           Expires March 1, 2020                [Page 10]
+Kinnear, et al.           Expires March 2, 2020                [Page 10]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
+
+   domains for which this server is designated.  Clients can use this
+   list to optimize lookups for common names.
 
    This set of extended configuration information is referred to as a
    Web Provisioning Domain, or a Web PvD.  Provisioning Domains are sets
@@ -607,18 +610,17 @@ Internet-Draft                ADNS Privacy                   August 2019
    emptively transfer the relevant DOHNS records if the dictionary
    retrieval is done with an HTTP version that supports PUSH semantics.
 
-   This document also registers one new key in the Additional
-   Information PvD Keys registry, to identify the URI Template for the
 
 
 
-
-Kinnear, et al.           Expires March 1, 2020                [Page 11]
+Kinnear, et al.           Expires March 2, 2020                [Page 11]
 
 Internet-Draft                ADNS Privacy                   August 2019
 
 
-   DoH server Section 7.  When included in Web PvDs, this URI MUST match
+   This document also registers one new key in the Additional
+   Information PvD Keys registry, to identify the URI Template for the
+   DoH server Section 8.  When included in Web PvDs, this URI MUST match
    the template in the DOHNS DNS Record.
 
    Beyond providing resolution configuration, the Web PvD configuration
@@ -651,7 +653,53 @@ Internet-Draft                ADNS Privacy                   August 2019
    "dohTemplate" and "dnsZones" keys to define the local DoH server and
    which domains it claims authority over.
 
-6.  Security Considerations
+   Although local Designated DoH Servers MAY support proxying obfuscated
+   DNS queries, a client SHOULD NOT select one of these servers as an
+   Obfuscation Proxy.  Doing so might reveal the client's location to
+   the Target based on the address of the proxy, which could contribute
+   to deanonymizing the client.  Clients can make an exception to this
+   behavior if the DoH server designated by the local network is known
+   to be a non-local service, such as when a local network configures a
+   centralized public resolver to handle its DNS operations.
+
+
+
+
+
+
+
+
+Kinnear, et al.           Expires March 2, 2020                [Page 12]
+
+Internet-Draft                ADNS Privacy                   August 2019
+
+
+6.  Performance Considerations
+
+   One of the challenges with cloud-based DNS approaches, such as
+   Adaptive DNS, is that the address of the recursive resolver is
+   sometimes used as input into DNS geographic load balancing sytems.
+   These systems assume the address of the recursive resolver and the
+   terminal client are similar.  In other cases, the client's actual
+   address is forwarded to the authoritative server by the recursive
+   using the EDNS0 Client Subnet feature.  DoH discourages this practice
+   privacy reasons.  Sharing this address, while detrimental to privacy,
+   can result in better targeted DNS resolutions.
+
+   Adaptive DNS makes the observation that this informaton is sensitive
+   when used with, and therefore excluded from, the Target server but is
+   much less sensitive when used with a Designated DoH Server.  This is
+   true because the Designated DoH Server controls the value of the
+   addressing information being returned to the client.
+
+   Based on these properties, clients SHOULD prefer lookups via
+   Designated DoH Servers over obfuscated mecahnisms whenever possible.
+   Servers can encourgage this by setting large TTLs for DOHNS records
+   and using longer TTLs for responses returned by their Designated DoH
+   Server endpoints which can be more confident they have accurate
+   addressing informaton.
+
+7.  Security Considerations
 
    In order to avoid interception and modification of the information
    retrieved by clients using Adaptive DNS, all exchanges between
@@ -667,13 +715,6 @@ Internet-Draft                ADNS Privacy                   August 2019
    proof of logging audits, or by a local whitelist of servers
    maintained by a client.
 
-
-
-Kinnear, et al.           Expires March 1, 2020                [Page 12]
-
-Internet-Draft                ADNS Privacy                   August 2019
-
-
    Clients should take caution when using obfuscated responses from
    resolvers that do not carry DNSSEC signatures.  An adversarial Target
    resolver that wishes to learn the IP address of clients requesting
@@ -681,10 +722,18 @@ Internet-Draft                ADNS Privacy                   August 2019
    its choosing.  Clients that use these answers to open direct
    connections to the server may then leak their local IP address.
    Privacy-Sensitive Connections concerned about this attack SHOULD
+
+
+
+Kinnear, et al.           Expires March 2, 2020                [Page 13]
+
+Internet-Draft                ADNS Privacy                   August 2019
+
+
    conceal their IP address via a TLS- or HTTP-layer proxy or some other
    tunneling mechanism.
 
-7.  IANA Considerations
+8.  IANA Considerations
 
    This document adds a key to the "Additional Information PvD Keys"
    registry, defined by [I-D.ietf-intarea-provisioning-domains].
@@ -699,14 +748,14 @@ Internet-Draft                ADNS Privacy                   August 2019
    |          | ]        |       |                                     |
    +----------+----------+-------+-------------------------------------+
 
-8.  Acknowledgments
+9.  Acknowledgments
 
    Thanks to Erik Nygren, Lorenzo Colitti, and Patrick McManus for their
    input on this approach.
 
-9.  References
+10.  References
 
-9.1.  Normative References
+10.1.  Normative References
 
    [I-D.ietf-intarea-provisioning-domains]
               Pfister, P., Vyncke, E., Pauly, T., Schinazi, D., and W.
@@ -719,17 +768,6 @@ Internet-Draft                ADNS Privacy                   August 2019
               "Encrypted Server Name Indication for TLS 1.3", draft-
               ietf-tls-esni-04 (work in progress), July 2019.
 
-
-
-
-
-
-
-Kinnear, et al.           Expires March 1, 2020                [Page 13]
-
-Internet-Draft                ADNS Privacy                   August 2019
-
-
    [I-D.irtf-cfrg-hpke]
               Barnes, R. and K. Bhargavan, "Hybrid Public Key
               Encryption", draft-irtf-cfrg-hpke-00 (work in progress),
@@ -737,6 +775,16 @@ Internet-Draft                ADNS Privacy                   August 2019
 
    [OBFUSCATION]
               "Obfuscated DNS Over HTTPS", n.d..
+
+
+
+
+
+
+Kinnear, et al.           Expires March 2, 2020                [Page 14]
+
+Internet-Draft                ADNS Privacy                   August 2019
+
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
@@ -754,7 +802,7 @@ Internet-Draft                ADNS Privacy                   August 2019
 
    [RRTYPE]   "Designated Encrypted Resolver Records", n.d..
 
-9.2.  Informative References
+10.2.  Informative References
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -776,16 +824,6 @@ Authors' Addresses
    Email: ekinnear@apple.com
 
 
-
-
-
-
-
-Kinnear, et al.           Expires March 1, 2020                [Page 14]
-
-Internet-Draft                ADNS Privacy                   August 2019
-
-
    Tommy Pauly
    Apple Inc.
    One Apple Park Way
@@ -793,6 +831,15 @@ Internet-Draft                ADNS Privacy                   August 2019
    United States of America
 
    Email: tpauly@apple.com
+
+
+
+
+
+
+Kinnear, et al.           Expires March 2, 2020                [Page 15]
+
+Internet-Draft                ADNS Privacy                   August 2019
 
 
    Chris Wood
@@ -804,6 +851,10 @@ Internet-Draft                ADNS Privacy                   August 2019
    Email: cawood@apple.com
 
 
+   Patrick McManus
+   Fastly
+
+   Email: mcmanus@ducksong.com
 
 
 
@@ -837,4 +888,9 @@ Internet-Draft                ADNS Privacy                   August 2019
 
 
 
-Kinnear, et al.           Expires March 1, 2020                [Page 15]
+
+
+
+
+
+Kinnear, et al.           Expires March 2, 2020                [Page 16]

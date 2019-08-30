@@ -5,8 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: March 1, 2020                                        Apple Inc.
-                                                         August 29, 2019
+Expires: March 2, 2020                                        Apple Inc.
+                                                              P. McManus
+                                                                  Fastly
+                                                         August 30, 2019
 
 
                  Designated Encrypted Resolver Records
@@ -34,7 +36,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 1, 2020.
+   This Internet-Draft will expire on March 2, 2020.
 
 Copyright Notice
 
@@ -48,15 +50,16 @@ Copyright Notice
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
-   the Trust Legal Provisions and are provided without warranty as
-   described in the Simplified BSD License.
 
 
 
-Kinnear, et al.           Expires March 1, 2020                 [Page 1]
+Kinnear, et al.           Expires March 2, 2020                 [Page 1]
 
 Internet-Draft    Designated Encrypted Resolver Records      August 2019
 
+
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
 
 Table of Contents
 
@@ -106,10 +109,7 @@ Table of Contents
 
 
 
-
-
-
-Kinnear, et al.           Expires March 1, 2020                 [Page 2]
+Kinnear, et al.           Expires March 2, 2020                 [Page 2]
 
 Internet-Draft    Designated Encrypted Resolver Records      August 2019
 
@@ -165,7 +165,7 @@ Internet-Draft    Designated Encrypted Resolver Records      August 2019
 
 
 
-Kinnear, et al.           Expires March 1, 2020                 [Page 3]
+Kinnear, et al.           Expires March 2, 2020                 [Page 3]
 
 Internet-Draft    Designated Encrypted Resolver Records      August 2019
 
@@ -221,7 +221,7 @@ Internet-Draft    Designated Encrypted Resolver Records      August 2019
 
 
 
-Kinnear, et al.           Expires March 1, 2020                 [Page 4]
+Kinnear, et al.           Expires March 2, 2020                 [Page 4]
 
 Internet-Draft    Designated Encrypted Resolver Records      August 2019
 
@@ -259,6 +259,10 @@ Authors' Addresses
    Email: cawood@apple.com
 
 
+   Patrick McManus
+   Fastly
+
+   Email: mcmanus@ducksong.com
 
 
 
@@ -273,8 +277,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-Kinnear, et al.           Expires March 1, 2020                 [Page 5]
+Kinnear, et al.           Expires March 2, 2020                 [Page 5]
