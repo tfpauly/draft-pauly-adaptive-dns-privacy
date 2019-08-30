@@ -132,8 +132,10 @@ server. Likewise, when connecting to the proxy the client should use
 the proxy target's information for HTTPS certificate selection via SNI
 and when validating the resulting certificate.
 
-Obfuscated queries MUST use the POST method,
-in which the encrypted query blob is sent as the HTTP message body.
+Obfuscated DoH exchanges cannot be effectively reused by caching
+proxies to satisfy future requests due to the nature of their
+encrypted message bodies. Clients SHOULD use HTTP and DoH methods and
+headers that will prevent unhelpful cache storage of these exchanges.
 
 Clients MUST set the HTTP Content-Type header to "application/obfuscated-dns-message"
 to indicate that this request is an obfuscated query intended for proxying. Clients also SHOULD
@@ -144,7 +146,7 @@ psuedo-header or the HTTP/1 host header) MUST indicate the hostname of the Obfus
 Proxy that initially receives the request), and the path information MUST conform to the path specified
 by the Obfuscation Target's DoH URI Template.
 
-Upon receiving a POST request that contains a "application/obfuscated-dns-message" Content-Type,
+Upon receiving a request that contains a "application/obfuscated-dns-message" Content-Type,
 the DoH server looks at the :authority and :path psuedo-headers. If the fields match the DoH server's
 own hostname and configured path, then it is the target of the query, and can decrypt the query {{encryption}}.
 If the fields do not match the local server, then the server is acting as an Obfuscation Proxy. If it is
@@ -162,6 +164,7 @@ forwards an encrypted message to "dnstarget.example.net".
 :authority = dnstarget.example.net
 :path = /dns-query
 accept = application/obfuscated-dns-message
+cache-control = no-cache, no-store
 content-type = application/obfuscated-dns-message
 content-length = 106
 
