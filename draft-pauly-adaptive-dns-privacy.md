@@ -464,7 +464,7 @@ keys to define the local DoH server and which domains it claims authority over.
 
 # Performance Considerations
 
-One of the challenges with cloud based DNS approaches, such as Adaptive
+One of the challenges with cloud-based DNS approaches, such as Adaptive
 DNS, is that the obfuscated stub resolver address is sometimes
 currently used as input into DNS geographic load balancing
 sytems. Alternatively, the client's actual address is forwarded to the
