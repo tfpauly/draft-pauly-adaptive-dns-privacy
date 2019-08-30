@@ -468,7 +468,7 @@ One of the challenges with cloud based DNS approaches, such as Adaptive
 DNS, is that the obfuscated stub resolver address is sometimes
 currently used as input into DNS geographic load balancing
 sytems. Alternatively, the client's actual address is forwarded to the
-recursive resolver by the stub using EDNS0 CLient Subnet which is a
+recursive resolver by the stub using EDNS0 Client Subnet which is a
 practice discouraged by DoH. Sharing this address, while detrimental
 to privacy, can result in DNS responses that will give better
 performance to the client when it connects to them.
