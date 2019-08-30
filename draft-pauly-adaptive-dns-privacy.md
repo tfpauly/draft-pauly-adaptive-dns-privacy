@@ -479,7 +479,6 @@ the Target server but is much less sensitive when used with a
 Designated DoH Server. This is true becuase the Designated DoH Server
 definitely controls the value of the addressing information being
 returned to the client.
-that from its IP address shortly anyhow.
 
 Based on those properties it makes sense to optimize for the number of
 connections that are made with DNS records obtained from a Designated
