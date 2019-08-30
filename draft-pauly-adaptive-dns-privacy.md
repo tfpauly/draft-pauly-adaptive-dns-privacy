@@ -393,7 +393,8 @@ Beyond providing basic DoH server functionality, server nodes SHOULD
 provide a mechanism that allows clients to look up properties and
 configuration for the server deployment. Amongst other information,
 this configuration can optionally contain a list of some popular domains for
-which this server is designated. This allows clients to optimize lookups
+which this server is designated. Clients can use this list to optimize lookups
+for common names.
 
 This set of extended configuration information is referred to as a
 Web Provisioning Domain, or a Web PvD. Provisioning Domains are
