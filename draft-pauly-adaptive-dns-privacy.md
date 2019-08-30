@@ -472,7 +472,7 @@ keys to define the local DoH server and which domains it claims authority over.
 Although local Designated DoH Servers MAY support proxying obfuscated DNS queries, a client SHOULD
 NOT select one of these servers as an Obfuscation Proxy. Doing so might reveal the client's location
 to the Target based on the address of the proxy, which could contribute to deanonymizing the client.
-Client can make an exception to this behavior if the DoH server designated by the local network is known
+Clients can make an exception to this behavior if the DoH server designated by the local network is known
 to be a non-local service, such as when a local network configures a centralized public resolver to handle
 its DNS operations.
 
