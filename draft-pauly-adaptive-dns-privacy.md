@@ -36,6 +36,11 @@ author:
     city: Cupertino, California 95014
     country: United States of America
     email: cawood@apple.com
+  -
+    ins: P. McManus
+    name: Patrick McManus
+    org: Fastly
+    email: mcmanus@ducksong.com
 
 normative:
   RRTYPE:
@@ -390,9 +395,11 @@ Servers MUST ensure that the DOHNS records are signed with DNSSEC {{!RFC4033}}.
 ## Provide Extended Configuration as a Web PvD {#configuration}
 
 Beyond providing basic DoH server functionality, server nodes SHOULD
-offer a set of extended configuration to help clients discover the default
-set of domains for which the server is designated, as well as other
-capabilities offered by the server deployment.
+provide a mechanism that allows clients to look up properties and
+configuration for the server deployment. Amongst other information,
+this configuration can optionally contain a list of some popular domains for
+which this server is designated. Clients can use this list to optimize lookups
+for common names.
 
 This set of extended configuration information is referred to as a
 Web Provisioning Domain, or a Web PvD. Provisioning Domains are
@@ -468,6 +475,32 @@ to the Target based on the address of the proxy, which could contribute to deano
 Client can make an exception to this behavior if the DoH server designated by the local network is known
 to be a non-local service, such as when a local network configures a centralized public resolver to handle
 its DNS operations.
+
+# Performance Considerations
+
+One of the challenges with cloud-based DNS approaches, such as
+Adaptive DNS, is that the address of the recursive resolver is
+sometimes used as input into DNS geographic load balancing
+sytems. These systems assume the address of the recursive resolver and
+the terminal client are similar. In other cases, the client's actual
+address is forwarded to the authoritative server by the recursive using the
+EDNS0 Client Subnet feature. DoH discourages this practice
+privacy reasons. Sharing this address, while detrimental to privacy,
+can result in better targeted DNS resolutions.
+
+Adaptive DNS makes the observation that this
+informaton is sensitive when used with, and therefore excluded from,
+the Target server but is much less sensitive when used with a
+Designated DoH Server. This is true because the Designated DoH Server
+controls the value of the addressing information being
+returned to the client.
+
+Based on these properties, clients SHOULD prefer lookups via
+Designated DoH Servers over obfuscated mecahnisms whenever possible.
+Servers can encourgage this by setting large TTLs for DOHNS records
+and using longer TTLs for responses returned by their Designated DoH
+Server endpoints which can be more confident they have accurate
+addressing informaton.
 
 # Security Considerations
 
