@@ -478,7 +478,7 @@ informaton is sensitive when used with, and therefore excluded from,
 the Target server but is much less sensitive when used with a
 Designated DoH Server. This is true becuase the Designated DoH Server
 definitely controls the value of the addressing information being
-returned to the client and the client will presumable be connecting to
+returned to the client.
 that from its IP address shortly anyhow.
 
 Based on those properties it makes sense to optimize for the number of
