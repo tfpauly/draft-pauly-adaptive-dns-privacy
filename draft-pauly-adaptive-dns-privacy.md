@@ -477,7 +477,7 @@ can result in better targeted DNS resolutions.
 Adaptive DNS makes the observation that this
 informaton is sensitive when used with, and therefore excluded from,
 the Target server but is much less sensitive when used with a
-Designated DoH Server. This is true becuase the Designated DoH Server
+Designated DoH Server. This is true because the Designated DoH Server
 controls the value of the addressing information being
 returned to the client.
 
