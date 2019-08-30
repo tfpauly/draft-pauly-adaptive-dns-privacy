@@ -470,7 +470,7 @@ sometimes used as input into DNS geographic load balancing
 sytems. These systems assume the address of the recursive resolver and
 the terminal client are similar. In other cases, the client's actual
 address is forwarded to the authoritative server by the recursive using the
-EDNS0 Client Subnet feature. This is a practice discouraged by DoH for
+EDNS0 Client Subnet feature. DoH discourages this practice
 privacy reasons. Sharing this address, while detrimental to privacy,
 can result in better targeted DNS resolutions.
 
