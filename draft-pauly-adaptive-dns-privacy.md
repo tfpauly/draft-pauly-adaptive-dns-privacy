@@ -480,7 +480,7 @@ Designated DoH Server. This is true becuase the Designated DoH Server
 definitely controls the value of the addressing information being
 returned to the client.
 
-Based on those properties it makes sense to optimize for the number of
+Based on these properties, it makes sense to optimize for the number of
 connections that are made with DNS records obtained from a Designated
 DoH Server rather than records obtained through the obfuscated
 mechanisms. Servers can encourgage this by setting large TTLs for
