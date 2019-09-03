@@ -247,7 +247,6 @@ And is encoded as follows:
 
 ~~~
 struct {
-   uint16 aead_id;
    opaque symmetric_key<1..2^16-1>;
    opaque dns_message<1..2^16-1>;
 } ObfuscatedDNSQueryBody;
@@ -259,10 +258,10 @@ for resolving M to an Obfuscation Target with ObfuscatedDNSKey key pk, a client 
 1. Generate a random 64-bit query_id and random symmetric_key whose length matches
 that of the AEAD ciphersuite in pk.aead_id. (All randomness must be generated
 according to {{!RFC4086}}.)
-2. Create a ObfuscatedDNSQueryBody structure, carrying pk.aead_id, symmetric_key,
-and the message M, to produce pt.
+2. Create a ObfuscatedDNSQueryBody structure, carrying symmetric_key and the message M, to produce pt.
 3. Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.
 4. Compute the encrypted message blob as blob = encrypt_query_body(pkR, query_id, pt).
+HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are instantiated from pk.
 (See definition for encrypt_query_body below.)
 5. Output a ObfuscatedDNSMessage message Q where Q.message_type = 0x01,
 M.query_id = query_id, and M.encrypted_message = blob, M.key_id carries
@@ -293,9 +292,11 @@ Targets that receive a Query message Q decrypt and process it as follows:
 
 1. Look up the ObfuscatedDNSKey according to Q.key_id. If no such key exists,
 the Target MAY discard the query. Otherwise, let skR be the private key
-corresponding to this public key, or one chosen for trial decryption.
-2. Compute pt, error = decrypt_query_body(Q.encrypted_message). (See definition
-for decrypt_query_body below.)
+corresponding to this public key, or one chosen for trial decryption, and pk
+be the corresponding ObfuscatedDNSKey.
+2. Compute pt, error = decrypt_query_body(Q.encrypted_message). 
+HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are instantiated from pk.
+(See definition for decrypt_query_body below.) 
 3. If no error was returned, process pt as a ObfuscatedDNSQueryBody Qb.
 4. Resolve ObfuscatedDNSQueryBody.dns_message as needed, yielding answer Rb.
 5. Compute R_encrypted = encrypt_response_body(Q.query_id, Rb). (See definition
@@ -314,7 +315,7 @@ def decrypt_query_body(encrypted_message):
 ~~~
 
 ~~~
-def encrypt_response_body(query_id, respnose):
+def encrypt_response_body(query_id, response):
   aad = 0x02 || ObfuscatedDNSMessage.query_id
   R_encrypted = Seal(Q.symmetic_key, 0^Nn, aad, Rb)
   return R_encrypted
@@ -367,4 +368,4 @@ Change controller: IETF
 # Acknowledgments
 
 This work is inspired by Oblivious DNS {{?I-D.annee-dprive-oblivious-dns}}. Thanks to all of the
-authors of that document.
+authors of that document. Thanks to Frederic Jacobs for feedback on this document.
