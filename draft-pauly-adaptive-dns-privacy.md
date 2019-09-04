@@ -227,8 +227,8 @@ the HTTPSSVC record on "example.com".
                                        odohkey="..." )
 ~~~
 
-Clients MUST ignore any record containing a designated DoH server URI without
-DNSSEC {{!RFC4033}} validation.
+Clients MUST ignore any DoH server URI that was not retrieved from a
+DNSSEC-signed record {{!RFC4033}}.
 
 When a client resolves a name (based on the order in
 {{resolution-algorithm}}) it SHOULD determine the Designated DoH
