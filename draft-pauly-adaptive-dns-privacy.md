@@ -206,8 +206,8 @@ that is associated with each server is:
 This information can be retrieved from several different sources. The primary source
 for discovering Designated DoH Server configurations is from properties stored in a
 SVCB or HTTPSSVC DNS Record {{!I-D.nygren-httpbis-httpssvc}}.
-This can record provides the URI Template of the server and the public
-obfuscation key for a specific domain. A specific domain may have more
+This record provides the URI Template and the public obfuscation key of a DoH server
+that is designated for a specific domain. A specific domain may have more
 than one such record.
 
 In order to designate a DoH server for a domain, a SVCB or HTTPSSVC record can
@@ -217,7 +217,8 @@ is a URI, which is the DoH URI template {{!RFC8484}}.
 The format for the parameter that contains the public key of the DoH server is defined in
 {{OBFUSCATION}}.
 
-The following example shows a record containing a DoH URI:
+The following example shows a record containing a DoH URI, as returned by a query for
+the HTTPSSVC record on "example.com".
 
 ~~~
    example.com.      7200  IN HTTPSSVC 0 svc.example.net.
@@ -226,8 +227,8 @@ The following example shows a record containing a DoH URI:
                                        odohkey="..." )
 ~~~
 
-Any record containing the designated DoH server URI MUST be validated using DNSSEC
-{{!RFC4033}} before a client uses the information about the designated DoH Servers.
+Clients MUST ignore any record containing a designated DoH server URI without
+DNSSEC {{!RFC4033}} validation.
 
 When a client resolves a name (based on the order in
 {{resolution-algorithm}}) it SHOULD determine the Designated DoH
