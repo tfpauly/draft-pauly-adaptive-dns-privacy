@@ -205,12 +205,12 @@ that is associated with each server is:
 
 This information can be retrieved from several different sources. The primary source
 for discovering Designated DoH Server configurations is from properties stored in a
-SVCB or HTTPSSVC DNS Record {{!I-D.nygren-httpbis-httpssvc}}.
+SVCB (or a SVCB-conformant type like HTTPSSVC) DNS Record {{!I-D.nygren-httpbis-httpssvc}}.
 This record provides the URI Template and the public obfuscation key of a DoH server
 that is designated for a specific domain. A specific domain may have more
 than one such record.
 
-In order to designate a DoH server for a domain, a SVCB or HTTPSSVC record can
+In order to designate a DoH server for a domain, a SVCB record can
 add the "dohuri", which has a SvcParamKey value of 4. The value stored in the parameter
 is a URI, which is the DoH URI template {{!RFC8484}}.
 
@@ -218,7 +218,7 @@ The format for the parameter that contains the public key of the DoH server is d
 {{OBFUSCATION}}.
 
 The following example shows a record containing a DoH URI, as returned by a query for
-the HTTPSSVC record on "example.com".
+the HTTPSSVC variant of SVCB record on "example.com".
 
 ~~~
    example.com.      7200  IN HTTPSSVC 0 svc.example.net.
@@ -232,14 +232,14 @@ DNSSEC-signed record {{!RFC4033}}.
 
 When a client resolves a name (based on the order in
 {{resolution-algorithm}}) it SHOULD determine the Designated DoH
-Server via a SVCB or HTTPSSVC record for any name that does not fall within known
+Server via a SVCB record for any name that does not fall within known
 Designated DoH Server's configuration. The client MAY also issue
-queries for the SVCB or HTTPSSVC record for more specific names to discover
+queries for the SVCB record for more specific names to discover
 further Designated DoH Servers.
 
 In order to bootstrap discovery of Designated DoH Servers, client systems SHOULD
 have some saved list of at least two names that they use consistently to perform
-SVCB or HTTPSSVC record queries on the Direct Resolvers configured by the local network. Since
+SVCB record queries on the Direct Resolvers configured by the local network. Since
 these queries are likely not private, they SHOULD NOT be associated with user
 action or contain user-identifying content. Rather, the expection is that all client
 systems of the same version and configuration would issue the same bootstrapping
@@ -278,7 +278,7 @@ if this server provides an extended configuration in the form of a Web PvD {{con
 To do this, the client performs a lookup of https://\<DoH Server\>/.well-known/pvd, requesting
 a media type of “application/pvd+json”.
 
-If the retrieved JSON contains a "dnsZones" array, the client SHOULD perform an SVCB or HTTPSSVC
+If the retrieved JSON contains a "dnsZones" array, the client SHOULD perform an SVCB
 record lookup of each of the listed zones on the DoH server and validate that the DoH server is a designated
 server for the domain; and if it is, add the domain to the local configuration.
 
@@ -292,7 +292,7 @@ If an RA provided by the router on the network defines an Explicit PvD that has 
 information, and this additional information JSON dictionary contains the key "dohTemplate" {{iana}},
 then the client SHOULD add this DoH server to its list of known DoH configurations. The
 domains that the DoH server claims authority for are listed in the "dnsZones" key. Clients
-MUST use a SVCB or HTTPSSVC record from the locally-provisioned DoH server and validate
+MUST use a SVCB record from the locally-provisioned DoH server and validate
 the answer with DNSSEC {{!RFC4033}} before creating a mapping from the domain to the server.
 Once this has been validated, clients can use this server for resolution as described in
 step 2 of {{resolution-algorithm}}.
@@ -392,18 +392,18 @@ answers using client keys.
 
 In order to support acting as an Obfuscation Target, a DoH server needs to provide a public
 HPKE {{!I-D.irtf-cfrg-hpke}} key that can be used to encrypt client queries. This key is advertised
-in the SVCB or HTTPSSVC record, and encoded according to {{OBFUSCATION}}.
+in the SVCB record, and encoded according to {{OBFUSCATION}}.
 
 DoH servers also SHOULD provide an ESNI {{!I-D.ietf-tls-esni}} key to encrypt the Server
 Name Indication field in TLS handshakes to the DoH server.
 
 ## Advertise the DoH Server
 
-The primary mechanism for advertising a Designated DoH Server is a SVCB or HTTPSSVC DNS
+The primary mechanism for advertising a Designated DoH Server is a SVCB DNS
 record ({{designated-discovery}}). This record MUST contain both the URI Template of the DoH
 Server as well as the Obfuscation Public Key. It MAY contain the ESNI key {{!I-D.ietf-tls-esni}}.
 
-Servers MUST ensure that any SVCB or HTTPSSVC records are signed with DNSSEC {{!RFC4033}}.
+Servers MUST ensure that any SVCB records are signed with DNSSEC {{!RFC4033}}.
 
 ## Provide Extended Configuration as a Web PvD {#configuration}
 
@@ -438,7 +438,7 @@ an empty array.
 
 The key "dnsZones", which contains an array of domains as strings, indicates the
 zones that belong to the PvD. Any zone that is listed in this array for a Web PvD
-MUST have a corresponding SVCB or HTTPSSVC record that defines the DoH server as designated
+MUST have a corresponding SVCB record that defines the DoH server as designated
 for the zone. Servers SHOULD include in this array any names that are considered
 default or well-known for the deployment, but is not required or expected to list
 all zones or domains for which it is designated. The trade-off here is that zones
@@ -446,18 +446,18 @@ that are listed can be fetched and validated automatically by clients, thus remo
 a bootstrapping step in discovering mappings from domains to Designated
 DoH Servers.
 
-Clients that retrieve the Web PvD JSON dictionary SHOULD perform an SVCB or HTTPSSVC record
+Clients that retrieve the Web PvD JSON dictionary SHOULD perform an SVCB record
 query for each of the entries in the "dnsZones" array in order to populate the
 mappings of domains. These MAY be performed in an obfuscated fashion, but
 MAY also be queried directly on the DoH server (since the information is not user-specific,
 but in response to generic server-driven content). Servers can choose
-to pre-emptively transfer the relevant SVCB or HTTPSSVC records if the
+to pre-emptively transfer the relevant SVCB records if the
 dictionary retrieval is done with an HTTP version that supports PUSH
 semantics.
 
 This document also registers one new key in the Additional Information PvD Keys registry,
 to identify the URI Template for the DoH server {{iana}}. When included in Web PvDs, this URI
-MUST match the template in the SVCB or HTTPSSVC DNS Record.
+MUST match the template in the SVCB DNS Record.
 
 Beyond providing resolution configuration, the Web PvD configuration can be extended
 to offer information about proxies and other services offered by the server deployment.
@@ -510,7 +510,7 @@ returned to the client.
 
 Based on these properties, clients SHOULD prefer lookups via
 Designated DoH Servers over obfuscated mecahnisms whenever possible.
-Servers can encourgage this by setting large TTLs for SVCB or HTTPSSVC records
+Servers can encourgage this by setting large TTLs for SVCB records
 and using longer TTLs for responses returned by their Designated DoH
 Server endpoints which can be more confident they have accurate
 addressing informaton.
@@ -522,7 +522,7 @@ using Adaptive DNS, all exchanges between clients and servers are performed over
 TLS connections.
 
 Clients must also be careful in determining which DoH servers they send queries to
-directly, without obfuscation. In order to avoid the possibility of a spoofed SVCB or HTTPSSVC
+directly, without obfuscation. In order to avoid the possibility of a spoofed SVCB
 record defining a malicious DoH server as authoritiative, clients MUST ensure that
 such records validate using DNSSEC {{!RFC4033}}. Even servers that are officially designated
 can risk leaking or logging information about client lookups.
