@@ -8,12 +8,6 @@ This is the working area for individual Internet-Drafts.
 * [Individual Draft](https://tools.ietf.org/html/draft-pauly-adaptive-dns-privacy)
 * [Compare Editor's Copy to Individual Draft](https://tfpauly.github.io/draft-pauly-adaptive-dns-privacy/#go.draft-pauly-adaptive-dns-privacy.diff)
 
-## Designated Encrypted Resolver Records
-
-* [Editor's Copy](https://tfpauly.github.io/draft-pauly-adaptive-dns-privacy/#go.draft-pauly-encrypted-resolver.html)
-* [Individual Draft](https://tools.ietf.org/html/draft-pauly-encrypted-resolver)
-* [Compare Editor's Copy to Individual Draft](https://tfpauly.github.io/draft-pauly-adaptive-dns-privacy/#go.draft-pauly-encrypted-resolver.diff)
-
 ## Obfuscated DNS Over HTTPS
 
 * [Editor's Copy](https://tfpauly.github.io/draft-pauly-adaptive-dns-privacy/#go.draft-pauly-obfuscated-doh.html)

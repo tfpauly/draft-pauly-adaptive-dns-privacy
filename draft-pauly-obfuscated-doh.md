@@ -48,11 +48,6 @@ normative:
       authors:
         -
           T. Pauly
-    RRTYPE:
-      title: Designated Encrypted Resolver Records
-      authors:
-        -
-          T. Pauly
 
 --- abstract
 
@@ -111,11 +106,13 @@ Obfuscated DoH requires, at a minimum:
 - Two DoH servers, where one can act as an Obfuscation Proxy, and the other can act as an
 Obfuscation Target.
 - Public keys for encrypting DNS queries that are passed from a client through a proxy
-to a target.
+to a target ({{publickey}}).
 - Client ability to generate one-time-use symmetric keys to encrypt DNS responses.
 
 The mechanism for discovering and provisioning the DoH URI Templates and public keys
-is a DNS resource record, DOHNS {{RRTYPE}}.
+is via parameters added to DNS resource records. The mechanism for discovering the public
+key is decribed in {{keydiscovery}}. The mechanism for discovering a DoH URI Template is
+described in {{ADNS}}.
 
 # HTTP Exchange
 
@@ -195,6 +192,19 @@ content-length = 154
 
 <Bytes containing the encrypted payload for an Obfuscated DNS response>
 ~~~
+
+# Public Key Discovery {#keydiscovery}
+
+In order to use a DoH server as an Obfuscation Target, the client must know a public key to use
+for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type
+({{!I-D.nygren-httpbis-httpssvc}}) for a name owned by the server.
+
+The key name is "odohkey", and has an encoded SvcParamKey value of 5. If present, this key/value
+pair contains the public key to use when encrypting obfuscated messages
+that will be targeted at a DoH server. The format of the key is defined in {{publickey}}.
+
+This value MUST be protected by DNSSEC {{!RFC4033}} before a client uses the key to send
+messages to an Obfuscation Target.
 
 # Obfuscated DNS Public Key Format {#publickey}
 
@@ -294,9 +304,9 @@ Targets that receive a Query message Q decrypt and process it as follows:
 the Target MAY discard the query. Otherwise, let skR be the private key
 corresponding to this public key, or one chosen for trial decryption, and pk
 be the corresponding ObfuscatedDNSKey.
-2. Compute pt, error = decrypt_query_body(Q.encrypted_message). 
+2. Compute pt, error = decrypt_query_body(Q.encrypted_message).
 HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are instantiated from pk.
-(See definition for decrypt_query_body below.) 
+(See definition for decrypt_query_body below.)
 3. If no error was returned, process pt as a ObfuscatedDNSQueryBody Qb.
 4. Resolve ObfuscatedDNSQueryBody.dns_message as needed, yielding answer Rb.
 5. Compute R_encrypted = encrypt_response_body(Q.query_id, Rb). (See definition
@@ -326,6 +336,8 @@ The Target then sends R to the Proxy according to {{obfuscated-response}}.
 # Security Considerations
 
 # IANA Considerations
+
+## Obfuscated DoH Message Media Type
 
 This document registers a new media type, "application/obfuscated-dns-message".
 
@@ -364,6 +376,23 @@ Restrictions on usage: None
 Author: IETF
 
 Change controller: IETF
+
+## Obfuscated DoH Public Key DNS Parameter
+
+This document defines one new key to be added to the Service Binding (SVCB) Parameter Registry,
+as defined in {{!I-D.nygren-httpbis-httpssvc}}.
+
+Name:
+: odohkey
+
+SvcParamKey:
+: 5
+
+Meaning:
+: Public key used to encrypt messages in Obfuscated DoH
+
+Reference:
+: This document.
 
 # Acknowledgments
 
