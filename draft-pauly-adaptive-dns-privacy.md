@@ -218,7 +218,7 @@ The format for the parameter that contains the public key of the DoH server is d
 {{OBFUSCATION}}.
 
 The following example shows a record containing a DoH URI, as returned by a query for
-the HTTPSSVC variant of SVCB record on "example.com".
+the HTTPSSVC variant of the SVCB record type on "example.com".
 
 ~~~
    example.com.      7200  IN HTTPSSVC 0 svc.example.net.

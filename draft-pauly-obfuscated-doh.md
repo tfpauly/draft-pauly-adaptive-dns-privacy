@@ -203,8 +203,8 @@ The key name is "odohkey", and has an encoded SvcParamKey value of 5. If present
 pair contains the public key to use when encrypting obfuscated messages
 that will be targeted at a DoH server. The format of the key is defined in {{publickey}}.
 
-This value MUST be protected by DNSSEC {{!RFC4033}} before a client uses the key to send
-messages to an Obfuscation Target.
+Clients MUST only use keys that were retrieved from records protected by DNSSEC {{!RFC4033}}
+to encrypt messages to an Obfuscation Target.
 
 # Obfuscated DNS Public Key Format {#publickey}
 
