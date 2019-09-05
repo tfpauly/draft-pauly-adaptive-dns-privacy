@@ -93,41 +93,45 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 {{?RFC2119}} {{?RFC8174}} when, and only when,
 they appear in all capitals, as shown here.
 
-# The DOHNS Resource Record
+# Specifying DoH Servers in SVCB Records
 
-The DOHNS RR contains two pieces of information in its RDATA:
+{{!I-D.nygren-httpbis-httpssvc}} defines the SVCB record, along with a set of parameters
+that can be associated with a service described in such a record.
 
-- The URI Template of the DoH server {{!RFC8484}}
-- The optional public key of the DoH server used for proxied obfuscated queries {{OBFUSCATION}}
+This document defines two new keys to be added to the Service Binding (SVCB) Parameter Registry.
 
-The RDATA is formatted as follows:
+## DoH URI Template Parameter
 
-~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+-------------------------------+-------------------------------+
-|      URI Template Length      |       Public Key Length       |
-+-------------------------------+-------------------------------+
-~                URI Template (Variable Length)                 ~
-+---------------------------------------------------------------+
-~                  Public Key (Variable Length)                 ~
-+---------------------------------------------------------------+
-~~~
+If present, this parameters indicates the URI template of a DoH server that is designated
+for use with the name being resolved. This is a string encoded as UTF-8 characters.
 
-URI Template Length:
-: A 16-bit unsigned integer, in network byte order, that indicates the length of the URI
-Template field.
+Name:
+: dohuri
 
-Public Key Length:
-: A 16-bit unsigned integer, in network byte order, that indicates the length of the Public
-Key field.
+SvcParamKey:
+: 4
 
-URI Template:
-: The URI Template for the Designated DoH Server, as defined in {{!RFC8484}}. This is
-a string encoded as UTF-8 characters.
+Meaning:
+: URI template for a designated DoH server
 
-Public Key:
-: A public key used for Obfuscated DoH, as defined in {{OBFUSCATION}}.
+Reference:
+: This document.
+
+## Obfuscated DoH Public Key Parameter
+
+If present, this key/value pair contains the public key to use when encrypting obfuscated messages that will be targeted at a DoH server. The format of the key is defined in {{OBFUSCATION}}.
+
+Name:
+: odohkey
+
+SvcParamKey:
+: 5
+
+Meaning:
+: Public key for use in Obfuscated DoH
+
+Reference:
+: This document.
 
 # Security Considerations
 
