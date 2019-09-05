@@ -275,12 +275,44 @@ as ".com".
 
 When a Designated DoH Server is discovered, clients SHOULD also check to see
 if this server provides an extended configuration in the form of a Web PvD {{configuration}}.
-To do this, the client performs a lookup of https://\<DoH Server\>/.well-known/pvd, requesting
-a media type of “application/pvd+json”.
+To do this, the client performs a GET request to the DoH URI, indicating that it accepts
+a media type of “application/pvd+json” ({{!I-D.ietf-intarea-provisioning-domains}})
+and not providing any query value off of the path.
 
-If the retrieved JSON contains a "dnsZones" array, the client SHOULD perform an SVCB
-record lookup of each of the listed zones on the DoH server and validate that the DoH server is a designated
-server for the domain; and if it is, add the domain to the local configuration.
+In response, the server will return the JSON content for the PvD, if present. The content-type
+MUST be "application/pvd+json".
+
+The following exchange shows and example of a client retrieving a Web PvD configuration
+for a DoH server with the URI Template "https://dnsserver.example.net/dns-query".
+
+The client can send:
+
+~~~
+:method = GET
+:scheme = https
+:authority = dnsserver.example.net
+:path = /dns-query
+accept = application/pvd+json
+~~~
+
+And the server can reply:
+
+~~~
+:status = 200
+content-type = application/pvd+json
+content-length = 175
+cache-control = max-age=86400
+
+<JSON content of the Web PvD>
+~~~
+
+If the server does not support retrieving any extended PvD information, it MUST
+reply with HTTP status code 415 {{!RFC7231}}.
+
+If the retrieved JSON contains a "dnsZones" array ({{!I-D.ietf-intarea-provisioning-domains}}),
+the client SHOULD perform an SVCB record lookup of each of the listed zones on the DoH
+server and validate that the DoH server is a designated server for the domain; and if it is,
+add the domain to the local configuration.
 
 ## Discovering Local Resolvers {#local-discovery}
 
@@ -424,14 +456,14 @@ dictionary that can be used to add information to local PvD configurations.
 Web PvDs share the same JSON configuration format, and share the
 registry of keys defined as "Additional Information PvD Keys".
 
-If present, the PvD JSON configuration MUST be available at the URI
-with the format https://\<DoH Server\>/.well-known/pvd, using the well-known URI
-format defined in {{!I-D.ietf-intarea-provisioning-domains}}. HTTP requests and responses
-for the extended configuration information use the “application/pvd+json” media type.
-Clients SHOULD include this media type as an Accept header in their GET requests,
-and servers MUST mark this media type as their Content-Type header in responses.
+If present, the PvD JSON configuration MUST be made available to clients that
+request the "application/pvd+json" media type in a GET request to the DoH server's
+URI {{!I-D.ietf-intarea-provisioning-domains}}. Clients MUST include this media type
+as an Accept header in their GET requests, and servers MUST mark this media type
+as their Content-Type header in responses. If the PvD JSON format is not supported,
+the server MUST reply with HTTP status code 415 {{!RFC7231}}.
 
-The "identifer" key SHOULD be the hostname of the DoH Server itself.
+The "identifier" key in the JSON configuration SHOULD be the hostname of the DoH Server itself.
 
 For Web PvDs, the "prefixes" key within the JSON configuration SHOULD contain
 an empty array.
