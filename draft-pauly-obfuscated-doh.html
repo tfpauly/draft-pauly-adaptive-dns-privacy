@@ -291,16 +291,19 @@ ul.toc li {
 <link href="#rfc.section.4.2" rel="Chapter" title="4.2 HTTP Request Example">
 <link href="#rfc.section.4.3" rel="Chapter" title="4.3 HTTP Response">
 <link href="#rfc.section.4.4" rel="Chapter" title="4.4 HTTP Response Example">
-<link href="#rfc.section.5" rel="Chapter" title="5 Obfuscated DNS Public Key Format">
-<link href="#rfc.section.6" rel="Chapter" title="6 Obfuscated DNS Message Format">
-<link href="#rfc.section.6.1" rel="Chapter" title="6.1 Obfuscated Queries">
-<link href="#rfc.section.6.2" rel="Chapter" title="6.2 Obfuscated Responses">
-<link href="#rfc.section.7" rel="Chapter" title="7 Security Considerations">
-<link href="#rfc.section.8" rel="Chapter" title="8 IANA Considerations">
-<link href="#rfc.section.9" rel="Chapter" title="9 Acknowledgments">
-<link href="#rfc.references" rel="Chapter" title="10 References">
-<link href="#rfc.references.1" rel="Chapter" title="10.1 Normative References">
-<link href="#rfc.references.2" rel="Chapter" title="10.2 Informative References">
+<link href="#rfc.section.5" rel="Chapter" title="5 Public Key Discovery">
+<link href="#rfc.section.6" rel="Chapter" title="6 Obfuscated DNS Public Key Format">
+<link href="#rfc.section.7" rel="Chapter" title="7 Obfuscated DNS Message Format">
+<link href="#rfc.section.7.1" rel="Chapter" title="7.1 Obfuscated Queries">
+<link href="#rfc.section.7.2" rel="Chapter" title="7.2 Obfuscated Responses">
+<link href="#rfc.section.8" rel="Chapter" title="8 Security Considerations">
+<link href="#rfc.section.9" rel="Chapter" title="9 IANA Considerations">
+<link href="#rfc.section.9.1" rel="Chapter" title="9.1 Obfuscated DoH Message Media Type">
+<link href="#rfc.section.9.2" rel="Chapter" title="9.2 Obfuscated DoH Public Key DNS Parameter">
+<link href="#rfc.section.10" rel="Chapter" title="10 Acknowledgments">
+<link href="#rfc.references" rel="Chapter" title="11 References">
+<link href="#rfc.references.1" rel="Chapter" title="11.1 Normative References">
+<link href="#rfc.references.2" rel="Chapter" title="11.2 Informative References">
 <link href="#rfc.authors" rel="Chapter">
 
 
@@ -309,7 +312,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Kinnear, E., Pauly, T., Wood, C., and P. McManus" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-obfuscated-doh-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-9-03" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-9-05" />
   <meta name="dct.abstract" content="This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation of client addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
   <meta name="description" content="This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation of client addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
 
@@ -333,7 +336,7 @@ ul.toc li {
 <td class="right">C. Wood</td>
 </tr>
 <tr>
-<td class="left">Expires: March 6, 2020</td>
+<td class="left">Expires: March 8, 2020</td>
 <td class="right">Apple Inc.</td>
 </tr>
 <tr>
@@ -346,7 +349,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">September 03, 2019</td>
+<td class="right">September 05, 2019</td>
 </tr>
 
     	
@@ -362,7 +365,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on March 6, 2020.</p>
+<p>This Internet-Draft will expire on March 8, 2020.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -390,25 +393,31 @@ ul.toc li {
 </li>
 <li>4.4.   <a href="#rfc.section.4.4">HTTP Response Example</a>
 </li>
-</ul><li>5.   <a href="#rfc.section.5">Obfuscated DNS Public Key Format</a>
+</ul><li>5.   <a href="#rfc.section.5">Public Key Discovery</a>
 </li>
-<li>6.   <a href="#rfc.section.6">Obfuscated DNS Message Format</a>
+<li>6.   <a href="#rfc.section.6">Obfuscated DNS Public Key Format</a>
 </li>
-<ul><li>6.1.   <a href="#rfc.section.6.1">Obfuscated Queries</a>
+<li>7.   <a href="#rfc.section.7">Obfuscated DNS Message Format</a>
 </li>
-<li>6.2.   <a href="#rfc.section.6.2">Obfuscated Responses</a>
+<ul><li>7.1.   <a href="#rfc.section.7.1">Obfuscated Queries</a>
 </li>
-</ul><li>7.   <a href="#rfc.section.7">Security Considerations</a>
+<li>7.2.   <a href="#rfc.section.7.2">Obfuscated Responses</a>
 </li>
-<li>8.   <a href="#rfc.section.8">IANA Considerations</a>
+</ul><li>8.   <a href="#rfc.section.8">Security Considerations</a>
 </li>
-<li>9.   <a href="#rfc.section.9">Acknowledgments</a>
+<li>9.   <a href="#rfc.section.9">IANA Considerations</a>
 </li>
-<li>10.   <a href="#rfc.references">References</a>
+<ul><li>9.1.   <a href="#rfc.section.9.1">Obfuscated DoH Message Media Type</a>
 </li>
-<ul><li>10.1.   <a href="#rfc.references.1">Normative References</a>
+<li>9.2.   <a href="#rfc.section.9.2">Obfuscated DoH Public Key DNS Parameter</a>
 </li>
-<li>10.2.   <a href="#rfc.references.2">Informative References</a>
+</ul><li>10.   <a href="#rfc.section.10">Acknowledgments</a>
+</li>
+<li>11.   <a href="#rfc.references">References</a>
+</li>
+<ul><li>11.1.   <a href="#rfc.references.1">Normative References</a>
+</li>
+<li>11.2.   <a href="#rfc.references.2">Informative References</a>
 </li>
 </ul><li><a href="#rfc.authors">Authors' Addresses</a>
 </li>
@@ -448,10 +457,10 @@ ul.toc li {
 
 <ul>
 <li>Two DoH servers, where one can act as an Obfuscation Proxy, and the other can act as an Obfuscation Target.</li>
-<li>Public keys for encrypting DNS queries that are passed from a client through a proxy to a target.</li>
+<li>Public keys for encrypting DNS queries that are passed from a client through a proxy to a target (<a href="#publickey" class="xref">Section 6</a>).</li>
 <li>Client ability to generate one-time-use symmetric keys to encrypt DNS responses.</li>
 </ul>
-<p id="rfc.section.3.p.3">The mechanism for discovering and provisioning the DoH URI Templates and public keys is a DNS resource record, DOHNS <a href="#RRTYPE" class="xref">[RRTYPE]</a>.</p>
+<p id="rfc.section.3.p.3">The mechanism for discovering and provisioning the DoH URI Templates and public keys is via parameters added to DNS resource records. The mechanism for discovering the public key is decribed in <a href="#keydiscovery" class="xref">Section 5</a>. The mechanism for discovering a DoH URI Template is described in <a href="#ADNS" class="xref">[ADNS]</a>.</p>
 <h1 id="rfc.section.4">
 <a href="#rfc.section.4">4.</a> <a href="#http-exchange" id="http-exchange">HTTP Exchange</a>
 </h1>
@@ -470,7 +479,7 @@ ul.toc li {
 <p id="rfc.section.4.1.p.2">Obfuscated queries MUST use the POST method, in which the encrypted query blob is sent as the HTTP message body.</p>
 <p id="rfc.section.4.1.p.3">Clients MUST set the HTTP Content-Type header to &#8220;application/obfuscated-dns-message&#8221; to indicate that this request is an obfuscated query intended for proxying. Clients also SHOULD set this same value for the HTTP Accept header.</p>
 <p id="rfc.section.4.1.p.4">The HTTP authority information (e.g. The HTTP/2 :authority psuedo-header or the HTTP/1 host header) MUST indicate the hostname of the Obfuscation Target (not the Obfuscation Proxy that initially receives the request), and the path information MUST conform to the path specified by the Obfuscation Target&#8217;s DoH URI Template.</p>
-<p id="rfc.section.4.1.p.5">Upon receiving a POST request that contains a &#8220;application/obfuscated-dns-message&#8221; Content-Type, the DoH server looks at the :authority and :path psuedo-headers. If the fields match the DoH server&#8217;s own hostname and configured path, then it is the target of the query, and can decrypt the query <a href="#encryption" class="xref">Section 6</a>.  If the fields do not match the local server, then the server is acting as an Obfuscation Proxy. If it is a proxy, it is expected to send the request on to the Obfuscation Target based on the authority identified in the HTTP request.</p>
+<p id="rfc.section.4.1.p.5">Upon receiving a POST request that contains a &#8220;application/obfuscated-dns-message&#8221; Content-Type, the DoH server looks at the :authority and :path psuedo-headers. If the fields match the DoH server&#8217;s own hostname and configured path, then it is the target of the query, and can decrypt the query <a href="#encryption" class="xref">Section 7</a>.  If the fields do not match the local server, then the server is acting as an Obfuscation Proxy. If it is a proxy, it is expected to send the request on to the Obfuscation Target based on the authority identified in the HTTP request.</p>
 <h1 id="rfc.section.4.2">
 <a href="#rfc.section.4.2">4.2.</a> <a href="#http-request-example" id="http-request-example">HTTP Request Example</a>
 </h1>
@@ -490,7 +499,7 @@ content-length = 106
 <h1 id="rfc.section.4.3">
 <a href="#rfc.section.4.3">4.3.</a> <a href="#obfuscated-response" id="obfuscated-response">HTTP Response</a>
 </h1>
-<p id="rfc.section.4.3.p.1">The response to an obfuscated query is generated by the Obfuscation Target. It MUST set the Content-Type HTTP header to &#8220;application/obfuscated-dns-message&#8221; for all successful responses.  The body of the response contains a DNS message that is encrypted with the client&#8217;s symmetric key <a href="#encryption" class="xref">Section 6</a>.</p>
+<p id="rfc.section.4.3.p.1">The response to an obfuscated query is generated by the Obfuscation Target. It MUST set the Content-Type HTTP header to &#8220;application/obfuscated-dns-message&#8221; for all successful responses.  The body of the response contains a DNS message that is encrypted with the client&#8217;s symmetric key <a href="#encryption" class="xref">Section 7</a>.</p>
 <p id="rfc.section.4.3.p.2">All other aspects of the HTTP response and error handling are inherited from standard DoH.</p>
 <h1 id="rfc.section.4.4">
 <a href="#rfc.section.4.4">4.4.</a> <a href="#http-response-example" id="http-response-example">HTTP Response Example</a>
@@ -504,9 +513,15 @@ content-length = 154
 &lt;Bytes containing the encrypted payload for an Obfuscated DNS response&gt;
 </pre>
 <h1 id="rfc.section.5">
-<a href="#rfc.section.5">5.</a> <a href="#publickey" id="publickey">Obfuscated DNS Public Key Format</a>
+<a href="#rfc.section.5">5.</a> <a href="#keydiscovery" id="keydiscovery">Public Key Discovery</a>
 </h1>
-<p id="rfc.section.5.p.1">An Obfuscated DNS public key is a structure encoded, using <a href="#RFC8446" class="xref">[RFC8446]</a>-style encoding, as follows:</p>
+<p id="rfc.section.5.p.1">In order to use a DoH server as an Obfuscation Target, the client must know a public key to use for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type (<a href="#I-D.nygren-httpbis-httpssvc" class="xref">[I-D.nygren-httpbis-httpssvc]</a>) for a name owned by the server.</p>
+<p id="rfc.section.5.p.2">The key name is &#8220;odohkey&#8221;, and has an encoded SvcParamKey value of 5. If present, this key/value pair contains the public key to use when encrypting obfuscated messages that will be targeted at a DoH server. The format of the key is defined in <a href="#publickey" class="xref">Section 6</a>.</p>
+<p id="rfc.section.5.p.3">Clients MUST only use keys that were retrieved from records protected by DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> to encrypt messages to an Obfuscation Target.</p>
+<h1 id="rfc.section.6">
+<a href="#rfc.section.6">6.</a> <a href="#publickey" id="publickey">Obfuscated DNS Public Key Format</a>
+</h1>
+<p id="rfc.section.6.p.1">An Obfuscated DNS public key is a structure encoded, using <a href="#RFC8446" class="xref">[RFC8446]</a>-style encoding, as follows:</p>
 <pre>
 struct {
    uint16 kem_id;
@@ -515,11 +530,11 @@ struct {
    opaque public_key&lt;1..2^16-1&gt;;
 } ObfuscatedDNSKey;
 </pre>
-<p id="rfc.section.5.p.2">It contains the information needed to encrypt a message under ObfuscatedDNSKey.public_key such that only the owner of the corresponding private key can decrypt the message. The values for ObfuscatedDNSKey.kem_id, ObfuscatedDNSKey.kdf_id, and ObfuscatedDNSKey.aead_id are described in <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a>, Section 7. For convenience, let Identifier(ObfuscatedDNSKey) be defined as the SHA256 value of ObfuscatedDNSKey serialized.</p>
-<h1 id="rfc.section.6">
-<a href="#rfc.section.6">6.</a> <a href="#encryption" id="encryption">Obfuscated DNS Message Format</a>
+<p id="rfc.section.6.p.2">It contains the information needed to encrypt a message under ObfuscatedDNSKey.public_key such that only the owner of the corresponding private key can decrypt the message. The values for ObfuscatedDNSKey.kem_id, ObfuscatedDNSKey.kdf_id, and ObfuscatedDNSKey.aead_id are described in <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a>, Section 7. For convenience, let Identifier(ObfuscatedDNSKey) be defined as the SHA256 value of ObfuscatedDNSKey serialized.</p>
+<h1 id="rfc.section.7">
+<a href="#rfc.section.7">7.</a> <a href="#encryption" id="encryption">Obfuscated DNS Message Format</a>
 </h1>
-<p id="rfc.section.6.p.1">There are two types of Obfuscated DNS messages: Queries (0x01) and Responses (0x02). Both are encoded as follows:</p>
+<p id="rfc.section.7.p.1">There are two types of Obfuscated DNS messages: Queries (0x01) and Responses (0x02). Both are encoded as follows:</p>
 <pre>
 struct {
    uint16 message_length;
@@ -529,25 +544,25 @@ struct {
    opaque encrypted_message&lt;1..2^16-1&gt;;
 } ObfuscatedDNSMessage;
 </pre>
-<p id="rfc.section.6.p.2">ObfuscatedDNSMessage.message_type = 0x01 for Query messages and ObfuscatedDNSMessage.message_type = 0x02 for Response messages.  ObfuscatedDNSMessage.encrypted_message contains an encrypted message for the Obfuscation Target (for Query messages) or client (for Response messages). The following sections describe how these meessage bodies are constructed.</p>
-<h1 id="rfc.section.6.1">
-<a href="#rfc.section.6.1">6.1.</a> <a href="#obfuscated-queries" id="obfuscated-queries">Obfuscated Queries</a>
+<p id="rfc.section.7.p.2">ObfuscatedDNSMessage.message_type = 0x01 for Query messages and ObfuscatedDNSMessage.message_type = 0x02 for Response messages.  ObfuscatedDNSMessage.encrypted_message contains an encrypted message for the Obfuscation Target (for Query messages) or client (for Response messages). The following sections describe how these meessage bodies are constructed.</p>
+<h1 id="rfc.section.7.1">
+<a href="#rfc.section.7.1">7.1.</a> <a href="#obfuscated-queries" id="obfuscated-queries">Obfuscated Queries</a>
 </h1>
-<p id="rfc.section.6.1.p.1">Obfuscated DNS Query messages must carry the following information:</p>
+<p id="rfc.section.7.1.p.1">Obfuscated DNS Query messages must carry the following information:</p>
 <p></p>
 
 <ol>
 <li>A symmetric key and ciphersuite under which the DNS response will be encrypted.</li>
 <li>A DNS query message which the client wishes to resolve.</li>
 </ol>
-<p id="rfc.section.6.1.p.3">And is encoded as follows:</p>
+<p id="rfc.section.7.1.p.3">And is encoded as follows:</p>
 <pre>
 struct {
    opaque symmetric_key&lt;1..2^16-1&gt;;
    opaque dns_message&lt;1..2^16-1&gt;;
 } ObfuscatedDNSQueryBody;
 </pre>
-<p id="rfc.section.6.1.p.4">Let M be a DNS message a client wishes to send obfuscated. When sending an Obfuscated DNS Query for resolving M to an Obfuscation Target with ObfuscatedDNSKey key pk, a client does the following:</p>
+<p id="rfc.section.7.1.p.4">Let M be a DNS message a client wishes to send obfuscated. When sending an Obfuscated DNS Query for resolving M to an Obfuscation Target with ObfuscatedDNSKey key pk, a client does the following:</p>
 <p></p>
 
 <ol>
@@ -557,7 +572,7 @@ struct {
 <li>Compute the encrypted message blob as blob = encrypt_query_body(pkR, query_id, pt).  HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are instantiated from pk.  (See definition for encrypt_query_body below.)</li>
 <li>Output a ObfuscatedDNSMessage message Q where Q.message_type = 0x01, M.query_id = query_id, and M.encrypted_message = blob, M.key_id carries Identifier(pk), and M.message_length equals the length of the entire structure.</li>
 </ol>
-<p id="rfc.section.6.1.p.6">The client then sends Q to the Obfuscated Proxy according to <a href="#obfuscated-request" class="xref">Section 4.1</a>.</p>
+<p id="rfc.section.7.1.p.6">The client then sends Q to the Obfuscated Proxy according to <a href="#obfuscated-request" class="xref">Section 4.1</a>.</p>
 <pre>
 def encrypt_query_body(pkR, query_id, pt):
   enc, context = SetupBaseI(pkR, "odns-query")
@@ -566,16 +581,16 @@ def encrypt_query_body(pkR, query_id, pt):
   blob = enc || ct
   return blob
 </pre>
-<h1 id="rfc.section.6.2">
-<a href="#rfc.section.6.2">6.2.</a> <a href="#obfuscated-responses" id="obfuscated-responses">Obfuscated Responses</a>
+<h1 id="rfc.section.7.2">
+<a href="#rfc.section.7.2">7.2.</a> <a href="#obfuscated-responses" id="obfuscated-responses">Obfuscated Responses</a>
 </h1>
-<p id="rfc.section.6.2.p.1">Obfuscated DNS Response messages carry the DNS response. Its encoding is as follows:</p>
+<p id="rfc.section.7.2.p.1">Obfuscated DNS Response messages carry the DNS response. Its encoding is as follows:</p>
 <pre>
 struct {
    opaque dns_answer&lt;1..2^16-1&gt;;
 } ObfuscatedDNSResponseBody;
 </pre>
-<p id="rfc.section.6.2.p.2">Targets that receive a Query message Q decrypt and process it as follows:</p>
+<p id="rfc.section.7.2.p.2">Targets that receive a Query message Q decrypt and process it as follows:</p>
 <p></p>
 
 <ol>
@@ -600,37 +615,56 @@ def encrypt_response_body(query_id, response):
   R_encrypted = Seal(Q.symmetic_key, 0^Nn, aad, Rb)
   return R_encrypted
 </pre>
-<p id="rfc.section.6.2.p.4">The Target then sends R to the Proxy according to <a href="#obfuscated-response" class="xref">Section 4.3</a>.</p>
-<h1 id="rfc.section.7">
-<a href="#rfc.section.7">7.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
-</h1>
+<p id="rfc.section.7.2.p.4">The Target then sends R to the Proxy according to <a href="#obfuscated-response" class="xref">Section 4.3</a>.</p>
 <h1 id="rfc.section.8">
-<a href="#rfc.section.8">8.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
+<a href="#rfc.section.8">8.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
 </h1>
-<p id="rfc.section.8.p.1">This document registers a new media type, &#8220;application/obfuscated-dns-message&#8221;.</p>
-<p id="rfc.section.8.p.2">Type name: application</p>
-<p id="rfc.section.8.p.3">Subtype name: obfuscated-dns-message</p>
-<p id="rfc.section.8.p.4">Required parameters: N/A</p>
-<p id="rfc.section.8.p.5">Optional parameters: N/A</p>
-<p id="rfc.section.8.p.6">Encoding considerations: This is a binary format, containing encrypted DNS requests and responses, as defined in this document.</p>
-<p id="rfc.section.8.p.7">Security considerations: See this document. The content is an encrypted DNS message, and not executable code.</p>
-<p id="rfc.section.8.p.8">Interoperability considerations: This document specifies format of conforming messages and the interpretation thereof.</p>
-<p id="rfc.section.8.p.9">Published specification: This document.</p>
-<p id="rfc.section.8.p.10">Applications that use this media type: This media type is intended to be used by clients wishing to obfuscate their DNS queries when using DNS over HTTPS.</p>
-<p id="rfc.section.8.p.11">Additional information: None</p>
-<p id="rfc.section.8.p.12">Person and email address to contact for further information: See Authors&#8217; Addresses section</p>
-<p id="rfc.section.8.p.13">Intended usage: COMMON</p>
-<p id="rfc.section.8.p.14">Restrictions on usage: None</p>
-<p id="rfc.section.8.p.15">Author: IETF</p>
-<p id="rfc.section.8.p.16">Change controller: IETF</p>
 <h1 id="rfc.section.9">
-<a href="#rfc.section.9">9.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
+<a href="#rfc.section.9">9.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
 </h1>
-<p id="rfc.section.9.p.1">This work is inspired by Oblivious DNS <a href="#I-D.annee-dprive-oblivious-dns" class="xref">[I-D.annee-dprive-oblivious-dns]</a>. Thanks to all of the authors of that document. Thanks to Frederic Jacobs for feedback on this document.</p>
+<h1 id="rfc.section.9.1">
+<a href="#rfc.section.9.1">9.1.</a> <a href="#obfuscated-doh-message-media-type" id="obfuscated-doh-message-media-type">Obfuscated DoH Message Media Type</a>
+</h1>
+<p id="rfc.section.9.1.p.1">This document registers a new media type, &#8220;application/obfuscated-dns-message&#8221;.</p>
+<p id="rfc.section.9.1.p.2">Type name: application</p>
+<p id="rfc.section.9.1.p.3">Subtype name: obfuscated-dns-message</p>
+<p id="rfc.section.9.1.p.4">Required parameters: N/A</p>
+<p id="rfc.section.9.1.p.5">Optional parameters: N/A</p>
+<p id="rfc.section.9.1.p.6">Encoding considerations: This is a binary format, containing encrypted DNS requests and responses, as defined in this document.</p>
+<p id="rfc.section.9.1.p.7">Security considerations: See this document. The content is an encrypted DNS message, and not executable code.</p>
+<p id="rfc.section.9.1.p.8">Interoperability considerations: This document specifies format of conforming messages and the interpretation thereof.</p>
+<p id="rfc.section.9.1.p.9">Published specification: This document.</p>
+<p id="rfc.section.9.1.p.10">Applications that use this media type: This media type is intended to be used by clients wishing to obfuscate their DNS queries when using DNS over HTTPS.</p>
+<p id="rfc.section.9.1.p.11">Additional information: None</p>
+<p id="rfc.section.9.1.p.12">Person and email address to contact for further information: See Authors&#8217; Addresses section</p>
+<p id="rfc.section.9.1.p.13">Intended usage: COMMON</p>
+<p id="rfc.section.9.1.p.14">Restrictions on usage: None</p>
+<p id="rfc.section.9.1.p.15">Author: IETF</p>
+<p id="rfc.section.9.1.p.16">Change controller: IETF</p>
+<h1 id="rfc.section.9.2">
+<a href="#rfc.section.9.2">9.2.</a> <a href="#obfuscated-doh-public-key-dns-parameter" id="obfuscated-doh-public-key-dns-parameter">Obfuscated DoH Public Key DNS Parameter</a>
+</h1>
+<p id="rfc.section.9.2.p.1">This document defines one new key to be added to the Service Binding (SVCB) Parameter Registry, as defined in <a href="#I-D.nygren-httpbis-httpssvc" class="xref">[I-D.nygren-httpbis-httpssvc]</a>.</p>
+<p></p>
+
+<dl>
+<dt>Name:</dt>
+<dd style="margin-left: 8">odohkey</dd>
+<dt>SvcParamKey:</dt>
+<dd style="margin-left: 8">5</dd>
+<dt>Meaning:</dt>
+<dd style="margin-left: 8">Public key used to encrypt messages in Obfuscated DoH</dd>
+<dt>Reference:</dt>
+<dd style="margin-left: 8">This document.</dd>
+</dl>
+<h1 id="rfc.section.10">
+<a href="#rfc.section.10">10.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
+</h1>
+<p id="rfc.section.10.p.1">This work is inspired by Oblivious DNS <a href="#I-D.annee-dprive-oblivious-dns" class="xref">[I-D.annee-dprive-oblivious-dns]</a>. Thanks to all of the authors of that document. Thanks to Frederic Jacobs for feedback on this document.</p>
 <h1 id="rfc.references">
-<a href="#rfc.references">10.</a> References</h1>
+<a href="#rfc.references">11.</a> References</h1>
 <h1 id="rfc.references.1">
-<a href="#rfc.references.1">10.1.</a> Normative References</h1>
+<a href="#rfc.references.1">11.1.</a> Normative References</h1>
 <table><tbody>
 <tr>
 <td class="reference"><b id="ADNS">[ADNS]</b></td>
@@ -640,6 +674,16 @@ def encrypt_response_body(query_id, response):
 <td class="reference"><b id="I-D.irtf-cfrg-hpke">[I-D.irtf-cfrg-hpke]</b></td>
 <td class="top">
 <a>Barnes, R.</a> and <a>K. Bhargavan</a>, "<a href="https://tools.ietf.org/html/draft-irtf-cfrg-hpke-00">Hybrid Public Key Encryption</a>", Internet-Draft draft-irtf-cfrg-hpke-00, July 2019.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.nygren-httpbis-httpssvc">[I-D.nygren-httpbis-httpssvc]</b></td>
+<td class="top">
+<a>Schwartz, B.</a>, <a>Bishop, M.</a> and <a>E. Nygren</a>, "<a href="https://tools.ietf.org/html/draft-nygren-httpbis-httpssvc-03">HTTPSSVC service location and parameter specification via the DNS (DNS HTTPSSVC)</a>", Internet-Draft draft-nygren-httpbis-httpssvc-03, July 2019.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC4033">[RFC4033]</b></td>
+<td class="top">
+<a>Arends, R.</a>, <a>Austein, R.</a>, <a>Larson, M.</a>, <a>Massey, D.</a> and <a>S. Rose</a>, "<a href="https://tools.ietf.org/html/rfc4033">DNS Security Introduction and Requirements</a>", RFC 4033, DOI 10.17487/RFC4033, March 2005.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC4086">[RFC4086]</b></td>
@@ -656,13 +700,9 @@ def encrypt_response_body(query_id, response):
 <td class="top">
 <a>Hoffman, P.</a> and <a>P. McManus</a>, "<a href="https://tools.ietf.org/html/rfc8484">DNS Queries over HTTPS (DoH)</a>", RFC 8484, DOI 10.17487/RFC8484, October 2018.</td>
 </tr>
-<tr>
-<td class="reference"><b id="RRTYPE">[RRTYPE]</b></td>
-<td class="top">"<a>Designated Encrypted Resolver Records</a>", n.d..</td>
-</tr>
 </tbody></table>
 <h1 id="rfc.references.2">
-<a href="#rfc.references.2">10.2.</a> Informative References</h1>
+<a href="#rfc.references.2">11.2.</a> Informative References</h1>
 <table><tbody>
 <tr>
 <td class="reference"><b id="I-D.annee-dprive-oblivious-dns">[I-D.annee-dprive-oblivious-dns]</b></td>

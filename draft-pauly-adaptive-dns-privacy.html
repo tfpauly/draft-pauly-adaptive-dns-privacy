@@ -304,6 +304,8 @@ ul.toc li {
 <link href="#rfc.section.6" rel="Chapter" title="6 Performance Considerations">
 <link href="#rfc.section.7" rel="Chapter" title="7 Security Considerations">
 <link href="#rfc.section.8" rel="Chapter" title="8 IANA Considerations">
+<link href="#rfc.section.8.1" rel="Chapter" title="8.1 DoH Template PvD Key">
+<link href="#rfc.section.8.2" rel="Chapter" title="8.2 DoH URI Template DNS Parameter">
 <link href="#rfc.section.9" rel="Chapter" title="9 Acknowledgments">
 <link href="#rfc.references" rel="Chapter" title="10 References">
 <link href="#rfc.references.1" rel="Chapter" title="10.1 Normative References">
@@ -316,7 +318,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Kinnear, E., Pauly, T., Wood, C., and P. McManus" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-adaptive-dns-privacy-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-8-30" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-9-05" />
   <meta name="dct.abstract" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus obfuscating the identity of the client requesting resolution." />
   <meta name="description" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus obfuscating the identity of the client requesting resolution." />
 
@@ -340,7 +342,7 @@ ul.toc li {
 <td class="right">C. Wood</td>
 </tr>
 <tr>
-<td class="left">Expires: March 2, 2020</td>
+<td class="left">Expires: March 8, 2020</td>
 <td class="right">Apple Inc.</td>
 </tr>
 <tr>
@@ -353,7 +355,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">August 30, 2019</td>
+<td class="right">September 05, 2019</td>
 </tr>
 
     	
@@ -369,7 +371,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on March 2, 2020.</p>
+<p>This Internet-Draft will expire on March 8, 2020.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -423,7 +425,11 @@ ul.toc li {
 </li>
 <li>8.   <a href="#rfc.section.8">IANA Considerations</a>
 </li>
-<li>9.   <a href="#rfc.section.9">Acknowledgments</a>
+<ul><li>8.1.   <a href="#rfc.section.8.1">DoH Template PvD Key</a>
+</li>
+<li>8.2.   <a href="#rfc.section.8.2">DoH URI Template DNS Parameter</a>
+</li>
+</ul><li>9.   <a href="#rfc.section.9">Acknowledgments</a>
 </li>
 <li>10.   <a href="#rfc.references">References</a>
 </li>
@@ -456,7 +462,7 @@ ul.toc li {
 <p></p>
 
 <ul>
-<li>A DNS RRTYPE that indicates a designated DoH server associated with a name (<a href="#RRTYPE" class="xref">[RRTYPE]</a>);</li>
+<li>A DNS record that indicates a designated DoH server associated with a name (<a href="#designated-discovery" class="xref">Section 3.1</a>);</li>
 <li>an extension to DoH that allows queries to be obfuscated (<a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>);</li>
 <li>a DoH server that responds to queries directly and supports proxying (<a href="#server" class="xref">Section 4</a>);</li>
 <li>and client behavior rules for how to resolve names using a combination of designated DoH resolvers, obfuscated queries, and local resolvers (<a href="#client" class="xref">Section 3</a>).</li>
@@ -507,19 +513,29 @@ ul.toc li {
 <a href="#rfc.section.3.1">3.1.</a> <a href="#designated-discovery" id="designated-discovery">Discovering Designated DoH Servers</a>
 </h1>
 <p id="rfc.section.3.1.p.1">All direct (non-obfuscated) queries for names in privacy-sensitive connections MUST be sent to a server that both provides encryption and is designated for the domain.</p>
-<p id="rfc.section.3.1.p.2">Clients dynamically build and maintain a set of known Designated DoH Servers. The information that is required to be associated with each server is:</p>
+<p id="rfc.section.3.1.p.2">Clients dynamically build and maintain a set of known Designated DoH Servers. The information that is associated with each server is:</p>
 <p></p>
 
 <ul>
 <li>The URI Template of the DoH server <a href="#RFC8484" class="xref">[RFC8484]</a>
 </li>
-<li>The public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key of the DoH server used for proxied obfuscated queries</li>
+<li>The public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key of the DoH server used for proxied obfuscated queries, as defined in <a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>
+</li>
 <li>A list of domains for which the DoH server is designated</li>
 </ul>
-<p id="rfc.section.3.1.p.4">This information can be retrieved from several different sources. The primary source for discovering Designated DoH Server configurations is the DOHNS DNS Record <a href="#RRTYPE" class="xref">[RRTYPE]</a>. This record provides the URI Template of the server and the public obfuscation key for a specific domain. A specific domain may have more than one DOHNS record.</p>
-<p id="rfc.section.3.1.p.5">When a client resolves a name (based on the order in <a href="#resolution-algorithm" class="xref">Section 3.3</a>) it SHOULD determine the Designated DoH Server via a DOHNS record for any name that does not fall within known Designated DoH Server&#8217;s configuration. The client MAY also issue queries for the DOHNS record for more specific names to discover further Designated DoH Servers.</p>
-<p id="rfc.section.3.1.p.6">Any DOHNS record MUST be validated using DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> before a client uses the information about the designated DoH Servers.</p>
-<p id="rfc.section.3.1.p.7">In order to bootstrap discovery of Designated DoH Servers, client systems SHOULD have some saved list of at least two names that they use consistently to perform DOHNS record queries on the Direct Resolvers configured by the local network. Since these queries are likely not private, they SHOULD NOT be associated with user action or contain user-identifying content. Rather, the expection is that all client systems of the same version and configuration would issue the same bootstrapping queries when joining a network for the first time when the list of Designated DoH Servers is empty.</p>
+<p id="rfc.section.3.1.p.4">This information can be retrieved from several different sources. The primary source for discovering Designated DoH Server configurations is from properties stored in a SVCB (or a SVCB-conformant type like HTTPSSVC) DNS Record <a href="#I-D.nygren-httpbis-httpssvc" class="xref">[I-D.nygren-httpbis-httpssvc]</a>.  This record provides the URI Template and the public obfuscation key of a DoH server that is designated for a specific domain. A specific domain may have more than one such record.</p>
+<p id="rfc.section.3.1.p.5">In order to designate a DoH server for a domain, a SVCB record can add the &#8220;dohuri&#8221;, which has a SvcParamKey value of 4. The value stored in the parameter is a URI, which is the DoH URI template <a href="#RFC8484" class="xref">[RFC8484]</a>.</p>
+<p id="rfc.section.3.1.p.6">The format for the parameter that contains the public key of the DoH server is defined in <a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>.</p>
+<p id="rfc.section.3.1.p.7">The following example shows a record containing a DoH URI, as returned by a query for the HTTPSSVC variant of the SVCB record type on &#8220;example.com&#8221;.</p>
+<pre>
+   example.com.      7200  IN HTTPSSVC 0 svc.example.net.
+   svc.example.net.  7200  IN HTTPSSVC 2 svc1.example.net. (
+                                       dohuri=https://doh.example.net/dns-query
+                                       odohkey="..." )
+</pre>
+<p id="rfc.section.3.1.p.8">Clients MUST ignore any DoH server URI that was not retrieved from a DNSSEC-signed record <a href="#RFC4033" class="xref">[RFC4033]</a>.</p>
+<p id="rfc.section.3.1.p.9">When a client resolves a name (based on the order in <a href="#resolution-algorithm" class="xref">Section 3.3</a>) it SHOULD determine the Designated DoH Server via a SVCB record for any name that does not fall within known Designated DoH Server&#8217;s configuration. The client MAY also issue queries for the SVCB record for more specific names to discover further Designated DoH Servers.</p>
+<p id="rfc.section.3.1.p.10">In order to bootstrap discovery of Designated DoH Servers, client systems SHOULD have some saved list of at least two names that they use consistently to perform SVCB record queries on the Direct Resolvers configured by the local network. Since these queries are likely not private, they SHOULD NOT be associated with user action or contain user-identifying content. Rather, the expection is that all client systems of the same version and configuration would issue the same bootstrapping queries when joining a network for the first time when the list of Designated DoH Servers is empty.</p>
 <h1 id="rfc.section.3.1.1">
 <a href="#rfc.section.3.1.1">3.1.1.</a> <a href="#whitelisting" id="whitelisting">Whitelisting Designated DoH Servers</a>
 </h1>
@@ -537,12 +553,12 @@ ul.toc li {
 <a href="#rfc.section.3.1.2">3.1.2.</a> <a href="#accessing-extended-information" id="accessing-extended-information">Accessing Extended Information</a>
 </h1>
 <p id="rfc.section.3.1.2.p.1">When a Designated DoH Server is discovered, clients SHOULD also check to see if this server provides an extended configuration in the form of a Web PvD <a href="#configuration" class="xref">Section 4.3</a>.  To do this, the client performs a lookup of https://&lt;DoH Server&gt;/.well-known/pvd, requesting a media type of &#8220;application/pvd+json&#8221;.</p>
-<p id="rfc.section.3.1.2.p.2">If the retrieved JSON contains a &#8220;dnsZones&#8221; array, the client SHOULD perform an DOHNS lookup of each of the listed zones on the DoH server and validate that the DoH server is a designated server for the domain; and if it is, add the domain to the local configuration.</p>
+<p id="rfc.section.3.1.2.p.2">If the retrieved JSON contains a &#8220;dnsZones&#8221; array, the client SHOULD perform an SVCB record lookup of each of the listed zones on the DoH server and validate that the DoH server is a designated server for the domain; and if it is, add the domain to the local configuration.</p>
 <h1 id="rfc.section.3.2">
 <a href="#rfc.section.3.2">3.2.</a> <a href="#local-discovery" id="local-discovery">Discovering Local Resolvers</a>
 </h1>
 <p id="rfc.section.3.2.p.1">If the local network provides configuration with an Explicit Provisioning Domain (PvD), as defined by <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>, clients can learn about domains for which the local network&#8217;s resolver is authoritative.</p>
-<p id="rfc.section.3.2.p.2">If an RA provided by the router on the network defines an Explicit PvD that has additional information, and this additional information JSON dictionary contains the key &#8220;dohTemplate&#8221; <a href="#iana" class="xref">Section 8</a>, then the client SHOULD add this DoH server to its list of known DoH configurations. The domains that the DoH server claims authority for are listed in the &#8220;dnsZones&#8221; key. Clients MUST use a DOHNS record from the locally-provisioned DoH server and validate the answer with DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> before creating a mapping from the domain to the server.  Once this has been validated, clients can use this server for resolution as described in step 2 of <a href="#resolution-algorithm" class="xref">Section 3.3</a>.</p>
+<p id="rfc.section.3.2.p.2">If an RA provided by the router on the network defines an Explicit PvD that has additional information, and this additional information JSON dictionary contains the key &#8220;dohTemplate&#8221; <a href="#iana" class="xref">Section 8</a>, then the client SHOULD add this DoH server to its list of known DoH configurations. The domains that the DoH server claims authority for are listed in the &#8220;dnsZones&#8221; key. Clients MUST use a SVCB record from the locally-provisioned DoH server and validate the answer with DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> before creating a mapping from the domain to the server.  Once this has been validated, clients can use this server for resolution as described in step 2 of <a href="#resolution-algorithm" class="xref">Section 3.3</a>.</p>
 <p id="rfc.section.3.2.p.3">See <a href="#local-deployment" class="xref">Section 5</a> for local deployment considerations.</p>
 <h1 id="rfc.section.3.3">
 <a href="#rfc.section.3.3">3.3.</a> <a href="#resolution-algorithm" id="resolution-algorithm">Hostname Resolution Algorithm</a>
@@ -585,13 +601,13 @@ ul.toc li {
 <h1 id="rfc.section.4.1.3">
 <a href="#rfc.section.4.1.3">4.1.3.</a> <a href="#keying-material" id="keying-material">Keying Material</a>
 </h1>
-<p id="rfc.section.4.1.3.p.1">In order to support acting as an Obfuscation Target, a DoH server needs to provide a public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key that can be used to encrypt client queries. This key is advertised in the DOHNS record, and encoded according to <a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>.</p>
+<p id="rfc.section.4.1.3.p.1">In order to support acting as an Obfuscation Target, a DoH server needs to provide a public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key that can be used to encrypt client queries. This key is advertised in the SVCB record, and encoded according to <a href="#OBFUSCATION" class="xref">[OBFUSCATION]</a>.</p>
 <p id="rfc.section.4.1.3.p.2">DoH servers also SHOULD provide an ESNI <a href="#I-D.ietf-tls-esni" class="xref">[I-D.ietf-tls-esni]</a> key to encrypt the Server Name Indication field in TLS handshakes to the DoH server.</p>
 <h1 id="rfc.section.4.2">
 <a href="#rfc.section.4.2">4.2.</a> <a href="#advertise-the-doh-server" id="advertise-the-doh-server">Advertise the DoH Server</a>
 </h1>
-<p id="rfc.section.4.2.p.1">The primary mechanism for advertising a Designated DoH Server is the DOHNS DNS Record <a href="#RRTYPE" class="xref">[RRTYPE]</a>.  This record MUST contain both the URI Template of the DoH Server as well as the Obfuscation Public Key. It MAY contain the ESNI key <a href="#I-D.ietf-tls-esni" class="xref">[I-D.ietf-tls-esni]</a>.</p>
-<p id="rfc.section.4.2.p.2">Servers MUST ensure that the DOHNS records are signed with DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a>.</p>
+<p id="rfc.section.4.2.p.1">The primary mechanism for advertising a Designated DoH Server is a SVCB DNS record (<a href="#designated-discovery" class="xref">Section 3.1</a>). This record MUST contain both the URI Template of the DoH Server as well as the Obfuscation Public Key. It MAY contain the ESNI key <a href="#I-D.ietf-tls-esni" class="xref">[I-D.ietf-tls-esni]</a>.</p>
+<p id="rfc.section.4.2.p.2">Servers MUST ensure that any SVCB records are signed with DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a>.</p>
 <h1 id="rfc.section.4.3">
 <a href="#rfc.section.4.3">4.3.</a> <a href="#configuration" id="configuration">Provide Extended Configuration as a Web PvD</a>
 </h1>
@@ -600,9 +616,9 @@ ul.toc li {
 <p id="rfc.section.4.3.p.3">If present, the PvD JSON configuration MUST be available at the URI with the format https://&lt;DoH Server&gt;/.well-known/pvd, using the well-known URI format defined in <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>. HTTP requests and responses for the extended configuration information use the &#8220;application/pvd+json&#8221; media type.  Clients SHOULD include this media type as an Accept header in their GET requests, and servers MUST mark this media type as their Content-Type header in responses.</p>
 <p id="rfc.section.4.3.p.4">The &#8220;identifer&#8221; key SHOULD be the hostname of the DoH Server itself.</p>
 <p id="rfc.section.4.3.p.5">For Web PvDs, the &#8220;prefixes&#8221; key within the JSON configuration SHOULD contain an empty array.</p>
-<p id="rfc.section.4.3.p.6">The key &#8220;dnsZones&#8221;, which contains an array of domains as strings, indicates the zones that belong to the PvD. Any zone that is listed in this array for a Web PvD MUST have a corresponding DOHNS record that defines the DoH server as designated for the zone. Servers SHOULD include in this array any names that are considered default or well-known for the deployment, but is not required or expected to list all zones or domains for which it is designated. The trade-off here is that zones that are listed can be fetched and validated automatically by clients, thus removing a bootstrapping step in discovering mappings from domains to Designated DoH Servers.</p>
-<p id="rfc.section.4.3.p.7">Clients that retrieve the Web PvD JSON dictionary SHOULD perform an DOHNS record query for each of the entries in the &#8220;dnsZones&#8221; array in order to populate the mappings of domains. These MAY be performed in an obfuscated fashion, but MAY also be queried directly on the DoH server (since the information is not user-specific, but in response to generic server-driven content). Servers can choose to pre-emptively transfer the relevant DOHNS records if the dictionary retrieval is done with an HTTP version that supports PUSH semantics.</p>
-<p id="rfc.section.4.3.p.8">This document also registers one new key in the Additional Information PvD Keys registry, to identify the URI Template for the DoH server <a href="#iana" class="xref">Section 8</a>. When included in Web PvDs, this URI MUST match the template in the DOHNS DNS Record.</p>
+<p id="rfc.section.4.3.p.6">The key &#8220;dnsZones&#8221;, which contains an array of domains as strings, indicates the zones that belong to the PvD. Any zone that is listed in this array for a Web PvD MUST have a corresponding SVCB record that defines the DoH server as designated for the zone. Servers SHOULD include in this array any names that are considered default or well-known for the deployment, but is not required or expected to list all zones or domains for which it is designated. The trade-off here is that zones that are listed can be fetched and validated automatically by clients, thus removing a bootstrapping step in discovering mappings from domains to Designated DoH Servers.</p>
+<p id="rfc.section.4.3.p.7">Clients that retrieve the Web PvD JSON dictionary SHOULD perform an SVCB record query for each of the entries in the &#8220;dnsZones&#8221; array in order to populate the mappings of domains. These MAY be performed in an obfuscated fashion, but MAY also be queried directly on the DoH server (since the information is not user-specific, but in response to generic server-driven content). Servers can choose to pre-emptively transfer the relevant SVCB records if the dictionary retrieval is done with an HTTP version that supports PUSH semantics.</p>
+<p id="rfc.section.4.3.p.8">This document also registers one new key in the Additional Information PvD Keys registry, to identify the URI Template for the DoH server <a href="#iana" class="xref">Section 8</a>. When included in Web PvDs, this URI MUST match the template in the SVCB DNS Record.</p>
 <p id="rfc.section.4.3.p.9">Beyond providing resolution configuration, the Web PvD configuration can be extended to offer information about proxies and other services offered by the server deployment.  Such keys are not defined in this document.</p>
 <h1 id="rfc.section.5">
 <a href="#rfc.section.5">5.</a> <a href="#local-deployment" id="local-deployment">Local Resolver Deployment Considerations</a>
@@ -619,17 +635,20 @@ ul.toc li {
 </h1>
 <p id="rfc.section.6.p.1">One of the challenges with cloud-based DNS approaches, such as Adaptive DNS, is that the address of the recursive resolver is sometimes used as input into DNS geographic load balancing sytems. These systems assume the address of the recursive resolver and the terminal client are similar. In other cases, the client&#8217;s actual address is forwarded to the authoritative server by the recursive using the EDNS0 Client Subnet feature. DoH discourages this practice privacy reasons. Sharing this address, while detrimental to privacy, can result in better targeted DNS resolutions.</p>
 <p id="rfc.section.6.p.2">Adaptive DNS makes the observation that this informaton is sensitive when used with, and therefore excluded from, the Target server but is much less sensitive when used with a Designated DoH Server. This is true because the Designated DoH Server controls the value of the addressing information being returned to the client.</p>
-<p id="rfc.section.6.p.3">Based on these properties, clients SHOULD prefer lookups via Designated DoH Servers over obfuscated mecahnisms whenever possible.  Servers can encourgage this by setting large TTLs for DOHNS records and using longer TTLs for responses returned by their Designated DoH Server endpoints which can be more confident they have accurate addressing informaton.</p>
+<p id="rfc.section.6.p.3">Based on these properties, clients SHOULD prefer lookups via Designated DoH Servers over obfuscated mecahnisms whenever possible.  Servers can encourgage this by setting large TTLs for SVCB records and using longer TTLs for responses returned by their Designated DoH Server endpoints which can be more confident they have accurate addressing informaton.</p>
 <h1 id="rfc.section.7">
 <a href="#rfc.section.7">7.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
 </h1>
 <p id="rfc.section.7.p.1">In order to avoid interception and modification of the information retrieved by clients using Adaptive DNS, all exchanges between clients and servers are performed over TLS connections.</p>
-<p id="rfc.section.7.p.2">Clients must also be careful in determining which DoH servers they send queries to directly, without obfuscation. In order to avoid the possibility of a spoofed DOHNS record defining a malicious DoH server as authoritiative, clients MUST ensure that such records validate using DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a>. Even servers that are officially designated can risk leaking or logging information about client lookups.  Such risk can be mitigated by validating that the DoH servers can present proof of logging audits, or by a local whitelist of servers maintained by a client.</p>
+<p id="rfc.section.7.p.2">Clients must also be careful in determining which DoH servers they send queries to directly, without obfuscation. In order to avoid the possibility of a spoofed SVCB record defining a malicious DoH server as authoritiative, clients MUST ensure that such records validate using DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a>. Even servers that are officially designated can risk leaking or logging information about client lookups.  Such risk can be mitigated by validating that the DoH servers can present proof of logging audits, or by a local whitelist of servers maintained by a client.</p>
 <p id="rfc.section.7.p.3">Clients should take caution when using obfuscated responses from resolvers that do not carry DNSSEC signatures. An adversarial Target resolver that wishes to learn the IP address of clients requesting resolution for sensitive domains can redirect clients to addresses of its choosing. Clients that use these answers to open direct connections to the server may then leak their local IP address. Privacy-Sensitive Connections concerned about this attack SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or some other tunneling mechanism.</p>
 <h1 id="rfc.section.8">
 <a href="#rfc.section.8">8.</a> <a href="#iana" id="iana">IANA Considerations</a>
 </h1>
-<p id="rfc.section.8.p.1">This document adds a key to the &#8220;Additional Information PvD Keys&#8221; registry, defined by <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>.</p>
+<h1 id="rfc.section.8.1">
+<a href="#rfc.section.8.1">8.1.</a> <a href="#doh-template-pvd-key" id="doh-template-pvd-key">DoH Template PvD Key</a>
+</h1>
+<p id="rfc.section.8.1.p.1">This document adds a key to the &#8220;Additional Information PvD Keys&#8221; registry, defined by <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>.</p>
 <table cellpadding="3" cellspacing="0" class="tt full center">
 <thead><tr>
 <th class="left">JSON key</th>
@@ -645,6 +664,22 @@ ul.toc li {
 <td class="left">&#8220;https://dnsserver.example.net/dns-query{?dns}&#8221;</td>
 </tr></tbody>
 </table>
+<h1 id="rfc.section.8.2">
+<a href="#rfc.section.8.2">8.2.</a> <a href="#doh-uri-template-dns-parameter" id="doh-uri-template-dns-parameter">DoH URI Template DNS Parameter</a>
+</h1>
+<p id="rfc.section.8.2.p.1">If present, this parameters indicates the URI template of a DoH server that is designated for use with the name being resolved. This is a string encoded as UTF-8 characters.</p>
+<p></p>
+
+<dl>
+<dt>Name:</dt>
+<dd style="margin-left: 8">dohuri</dd>
+<dt>SvcParamKey:</dt>
+<dd style="margin-left: 8">4</dd>
+<dt>Meaning:</dt>
+<dd style="margin-left: 8">URI template for a designated DoH server</dd>
+<dt>Reference:</dt>
+<dd style="margin-left: 8">This document.</dd>
+</dl>
 <h1 id="rfc.section.9">
 <a href="#rfc.section.9">9.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
 </h1>
@@ -670,6 +705,11 @@ ul.toc li {
 <a>Barnes, R.</a> and <a>K. Bhargavan</a>, "<a href="https://tools.ietf.org/html/draft-irtf-cfrg-hpke-00">Hybrid Public Key Encryption</a>", Internet-Draft draft-irtf-cfrg-hpke-00, July 2019.</td>
 </tr>
 <tr>
+<td class="reference"><b id="I-D.nygren-httpbis-httpssvc">[I-D.nygren-httpbis-httpssvc]</b></td>
+<td class="top">
+<a>Schwartz, B.</a>, <a>Bishop, M.</a> and <a>E. Nygren</a>, "<a href="https://tools.ietf.org/html/draft-nygren-httpbis-httpssvc-03">HTTPSSVC service location and parameter specification via the DNS (DNS HTTPSSVC)</a>", Internet-Draft draft-nygren-httpbis-httpssvc-03, July 2019.</td>
+</tr>
+<tr>
 <td class="reference"><b id="OBFUSCATION">[OBFUSCATION]</b></td>
 <td class="top">"<a>Obfuscated DNS Over HTTPS</a>", n.d..</td>
 </tr>
@@ -687,10 +727,6 @@ ul.toc li {
 <td class="reference"><b id="RFC8484">[RFC8484]</b></td>
 <td class="top">
 <a>Hoffman, P.</a> and <a>P. McManus</a>, "<a href="https://tools.ietf.org/html/rfc8484">DNS Queries over HTTPS (DoH)</a>", RFC 8484, DOI 10.17487/RFC8484, October 2018.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RRTYPE">[RRTYPE]</b></td>
-<td class="top">"<a>Designated Encrypted Resolver Records</a>", n.d..</td>
 </tr>
 </tbody></table>
 <h1 id="rfc.references.2">

@@ -5,10 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: March 6, 2020                                        Apple Inc.
+Expires: March 8, 2020                                        Apple Inc.
                                                               P. McManus
                                                                   Fastly
-                                                      September 03, 2019
+                                                      September 05, 2019
 
 
                        Obfuscated DNS Over HTTPS
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 6, 2020.
+   This Internet-Draft will expire on March 8, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kinnear, et al.           Expires March 6, 2020                 [Page 1]
+Kinnear, et al.           Expires March 8, 2020                 [Page 1]
 
 Internet-Draft               Obfuscated DoH               September 2019
 
@@ -68,22 +68,25 @@ Table of Contents
      1.1.  Specification of Requirements . . . . . . . . . . . . . .   3
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Deployment Requirements . . . . . . . . . . . . . . . . . . .   3
-   4.  HTTP Exchange . . . . . . . . . . . . . . . . . . . . . . . .   3
+   4.  HTTP Exchange . . . . . . . . . . . . . . . . . . . . . . . .   4
      4.1.  HTTP Request  . . . . . . . . . . . . . . . . . . . . . .   4
-     4.2.  HTTP Request Example  . . . . . . . . . . . . . . . . . .   4
+     4.2.  HTTP Request Example  . . . . . . . . . . . . . . . . . .   5
      4.3.  HTTP Response . . . . . . . . . . . . . . . . . . . . . .   5
      4.4.  HTTP Response Example . . . . . . . . . . . . . . . . . .   5
-   5.  Obfuscated DNS Public Key Format  . . . . . . . . . . . . . .   5
-   6.  Obfuscated DNS Message Format . . . . . . . . . . . . . . . .   6
-     6.1.  Obfuscated Queries  . . . . . . . . . . . . . . . . . . .   6
-     6.2.  Obfuscated Responses  . . . . . . . . . . . . . . . . . .   7
-   7.  Security Considerations . . . . . . . . . . . . . . . . . . .   8
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
-   9.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .   9
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .   9
-     10.2.  Informative References . . . . . . . . . . . . . . . . .  10
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
+   5.  Public Key Discovery  . . . . . . . . . . . . . . . . . . . .   5
+   6.  Obfuscated DNS Public Key Format  . . . . . . . . . . . . . .   6
+   7.  Obfuscated DNS Message Format . . . . . . . . . . . . . . . .   6
+     7.1.  Obfuscated Queries  . . . . . . . . . . . . . . . . . . .   7
+     7.2.  Obfuscated Responses  . . . . . . . . . . . . . . . . . .   8
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
+     9.1.  Obfuscated DoH Message Media Type . . . . . . . . . . . .   9
+     9.2.  Obfuscated DoH Public Key DNS Parameter . . . . . . . . .  10
+   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  10
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  10
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
 
 1.  Introduction
 
@@ -102,17 +105,19 @@ Table of Contents
    allow increased privacy by not allowing any single DNS server to be
    aware of both the client IP address and the message contents.
 
+
+
+
+
+Kinnear, et al.           Expires March 8, 2020                 [Page 2]
+
+Internet-Draft               Obfuscated DoH               September 2019
+
+
    This document defines Obfuscated DoH, an extension to DoH that allows
    for a proxied mode of resolution, in which DNS messages are encrypted
    in such a way that no DoH server can independently read both the
    client IP address and the DNS message contents.
-
-
-
-Kinnear, et al.           Expires March 6, 2020                 [Page 2]
-
-Internet-Draft               Obfuscated DoH               September 2019
-
 
    This mechanism is intended to be used as one option for resolving
    privacy-sensitive content in the broader context of Adaptive DNS
@@ -146,13 +151,24 @@ Internet-Draft               Obfuscated DoH               September 2019
       the other can act as an Obfuscation Target.
 
    o  Public keys for encrypting DNS queries that are passed from a
-      client through a proxy to a target.
+      client through a proxy to a target (Section 6).
 
    o  Client ability to generate one-time-use symmetric keys to encrypt
       DNS responses.
 
    The mechanism for discovering and provisioning the DoH URI Templates
-   and public keys is a DNS resource record, DOHNS [RRTYPE].
+   and public keys is via parameters added to DNS resource records.  The
+   mechanism for discovering the public key is decribed in Section 5.
+   The mechanism for discovering a DoH URI Template is described in
+   [ADNS].
+
+
+
+
+Kinnear, et al.           Expires March 8, 2020                 [Page 3]
+
+Internet-Draft               Obfuscated DoH               September 2019
+
 
 4.  HTTP Exchange
 
@@ -160,15 +176,6 @@ Internet-Draft               Obfuscated DoH               September 2019
    involves three parties:
 
    1.  The Client, which generates queries.
-
-
-
-
-
-Kinnear, et al.           Expires March 6, 2020                 [Page 3]
-
-Internet-Draft               Obfuscated DoH               September 2019
-
 
    2.  The Obfuscation Proxy, which is a resolution server that receives
        encrypted queries from the client and passes them on to another
@@ -206,25 +213,24 @@ Internet-Draft               Obfuscated DoH               September 2019
    obfuscated-dns-message" Content-Type, the DoH server looks at the
    :authority and :path psuedo-headers.  If the fields match the DoH
    server's own hostname and configured path, then it is the target of
-   the query, and can decrypt the query Section 6.  If the fields do not
+   the query, and can decrypt the query Section 7.  If the fields do not
    match the local server, then the server is acting as an Obfuscation
    Proxy.  If it is a proxy, it is expected to send the request on to
    the Obfuscation Target based on the authority identified in the HTTP
    request.
+
+
+
+Kinnear, et al.           Expires March 8, 2020                 [Page 4]
+
+Internet-Draft               Obfuscated DoH               September 2019
+
 
 4.2.  HTTP Request Example
 
    The following example shows how a client requests that an Obfuscation
    Proxy, "dnsproxy.example.net", forwards an encrypted message to
    "dnstarget.example.net".
-
-
-
-
-Kinnear, et al.           Expires March 6, 2020                 [Page 4]
-
-Internet-Draft               Obfuscated DoH               September 2019
-
 
    :method = POST
    :scheme = https
@@ -245,7 +251,7 @@ Internet-Draft               Obfuscated DoH               September 2019
    Target.  It MUST set the Content-Type HTTP header to "application/
    obfuscated-dns-message" for all successful responses.  The body of
    the response contains a DNS message that is encrypted with the
-   client's symmetric key Section 6.
+   client's symmetric key Section 7.
 
    All other aspects of the HTTP response and error handling are
    inherited from standard DoH.
@@ -261,7 +267,30 @@ Internet-Draft               Obfuscated DoH               September 2019
 
  <Bytes containing the encrypted payload for an Obfuscated DNS response>
 
-5.  Obfuscated DNS Public Key Format
+5.  Public Key Discovery
+
+   In order to use a DoH server as an Obfuscation Target, the client
+   must know a public key to use for encrypting its queries.  This key
+   can be discovered using the SVCB or HTTPSSVC record type
+   ([I-D.nygren-httpbis-httpssvc]) for a name owned by the server.
+
+
+
+
+Kinnear, et al.           Expires March 8, 2020                 [Page 5]
+
+Internet-Draft               Obfuscated DoH               September 2019
+
+
+   The key name is "odohkey", and has an encoded SvcParamKey value of 5.
+   If present, this key/value pair contains the public key to use when
+   encrypting obfuscated messages that will be targeted at a DoH server.
+   The format of the key is defined in Section 6.
+
+   Clients MUST only use keys that were retrieved from records protected
+   by DNSSEC [RFC4033] to encrypt messages to an Obfuscation Target.
+
+6.  Obfuscated DNS Public Key Format
 
    An Obfuscated DNS public key is a structure encoded, using [RFC8446]-
    style encoding, as follows:
@@ -273,15 +302,6 @@ Internet-Draft               Obfuscated DoH               September 2019
       opaque public_key<1..2^16-1>;
    } ObfuscatedDNSKey;
 
-
-
-
-
-Kinnear, et al.           Expires March 6, 2020                 [Page 5]
-
-Internet-Draft               Obfuscated DoH               September 2019
-
-
    It contains the information needed to encrypt a message under
    ObfuscatedDNSKey.public_key such that only the owner of the
    corresponding private key can decrypt the message.  The values for
@@ -290,7 +310,7 @@ Internet-Draft               Obfuscated DoH               September 2019
    Section 7.  For convenience, let Identifier(ObfuscatedDNSKey) be
    defined as the SHA256 value of ObfuscatedDNSKey serialized.
 
-6.  Obfuscated DNS Message Format
+7.  Obfuscated DNS Message Format
 
    There are two types of Obfuscated DNS messages: Queries (0x01) and
    Responses (0x02).  Both are encoded as follows:
@@ -310,7 +330,15 @@ Internet-Draft               Obfuscated DoH               September 2019
    Response messages).  The following sections describe how these
    meessage bodies are constructed.
 
-6.1.  Obfuscated Queries
+
+
+
+Kinnear, et al.           Expires March 8, 2020                 [Page 6]
+
+Internet-Draft               Obfuscated DoH               September 2019
+
+
+7.1.  Obfuscated Queries
 
    Obfuscated DNS Query messages must carry the following information:
 
@@ -329,14 +357,6 @@ Internet-Draft               Obfuscated DoH               September 2019
    Let M be a DNS message a client wishes to send obfuscated.  When
    sending an Obfuscated DNS Query for resolving M to an Obfuscation
    Target with ObfuscatedDNSKey key pk, a client does the following:
-
-
-
-
-Kinnear, et al.           Expires March 6, 2020                 [Page 6]
-
-Internet-Draft               Obfuscated DoH               September 2019
-
 
    1.  Generate a random 64-bit query_id and random symmetric_key whose
        length matches that of the AEAD ciphersuite in pk.aead_id.  (All
@@ -361,6 +381,19 @@ Internet-Draft               Obfuscated DoH               September 2019
    The client then sends Q to the Obfuscated Proxy according to
    Section 4.1.
 
+
+
+
+
+
+
+
+
+Kinnear, et al.           Expires March 8, 2020                 [Page 7]
+
+Internet-Draft               Obfuscated DoH               September 2019
+
+
    def encrypt_query_body(pkR, query_id, pt):
      enc, context = SetupBaseI(pkR, "odns-query")
      aad = 0x01 || query_id
@@ -368,7 +401,7 @@ Internet-Draft               Obfuscated DoH               September 2019
      blob = enc || ct
      return blob
 
-6.2.  Obfuscated Responses
+7.2.  Obfuscated Responses
 
    Obfuscated DNS Response messages carry the DNS response.  Its
    encoding is as follows:
@@ -385,14 +418,6 @@ Internet-Draft               Obfuscated DoH               September 2019
        be the private key corresponding to this public key, or one
        chosen for trial decryption, and pk be the corresponding
        ObfuscatedDNSKey.
-
-
-
-
-Kinnear, et al.           Expires March 6, 2020                 [Page 7]
-
-Internet-Draft               Obfuscated DoH               September 2019
-
 
    2.  Compute pt, error = decrypt_query_body(Q.encrypted_message).
        HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are
@@ -413,6 +438,18 @@ Internet-Draft               Obfuscated DoH               September 2019
        R_encrypted, R.key_id = nil, and R.message_length equals the
        length of the entire structure.
 
+
+
+
+
+
+
+
+Kinnear, et al.           Expires March 8, 2020                 [Page 8]
+
+Internet-Draft               Obfuscated DoH               September 2019
+
+
    def decrypt_query_body(encrypted_message):
      enc || ct = Q.encrypted_message
      dec, context = SetupBaseR(skR, "odns-query")
@@ -427,9 +464,11 @@ Internet-Draft               Obfuscated DoH               September 2019
 
    The Target then sends R to the Proxy according to Section 4.3.
 
-7.  Security Considerations
+8.  Security Considerations
 
-8.  IANA Considerations
+9.  IANA Considerations
+
+9.1.  Obfuscated DoH Message Media Type
 
    This document registers a new media type, "application/obfuscated-
    dns-message".
@@ -441,14 +480,6 @@ Internet-Draft               Obfuscated DoH               September 2019
    Required parameters: N/A
 
    Optional parameters: N/A
-
-
-
-
-Kinnear, et al.           Expires March 6, 2020                 [Page 8]
-
-Internet-Draft               Obfuscated DoH               September 2019
-
 
    Encoding considerations: This is a binary format, containing
    encrypted DNS requests and responses, as defined in this document.
@@ -467,6 +498,14 @@ Internet-Draft               Obfuscated DoH               September 2019
 
    Additional information: None
 
+
+
+
+Kinnear, et al.           Expires March 8, 2020                 [Page 9]
+
+Internet-Draft               Obfuscated DoH               September 2019
+
+
    Person and email address to contact for further information: See
    Authors' Addresses section
 
@@ -478,16 +517,30 @@ Internet-Draft               Obfuscated DoH               September 2019
 
    Change controller: IETF
 
-9.  Acknowledgments
+9.2.  Obfuscated DoH Public Key DNS Parameter
+
+   This document defines one new key to be added to the Service Binding
+   (SVCB) Parameter Registry, as defined in
+   [I-D.nygren-httpbis-httpssvc].
+
+   Name:  odohkey
+
+   SvcParamKey:  5
+
+   Meaning:  Public key used to encrypt messages in Obfuscated DoH
+
+   Reference:  This document.
+
+10.  Acknowledgments
 
    This work is inspired by Oblivious DNS
    [I-D.annee-dprive-oblivious-dns].  Thanks to all of the authors of
    that document.  Thanks to Frederic Jacobs for feedback on this
    document.
 
-10.  References
+11.  References
 
-10.1.  Normative References
+11.1.  Normative References
 
    [ADNS]     "Adaptive DNS: Improving Privacy of Name Resolution",
               n.d..
@@ -501,10 +554,24 @@ Internet-Draft               Obfuscated DoH               September 2019
 
 
 
-Kinnear, et al.           Expires March 6, 2020                 [Page 9]
+
+
+
+Kinnear, et al.           Expires March 8, 2020                [Page 10]
 
 Internet-Draft               Obfuscated DoH               September 2019
 
+
+   [I-D.nygren-httpbis-httpssvc]
+              Schwartz, B., Bishop, M., and E. Nygren, "HTTPSSVC service
+              location and parameter specification via the DNS (DNS
+              HTTPSSVC)", draft-nygren-httpbis-httpssvc-03 (work in
+              progress), July 2019.
+
+   [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
+              Rose, "DNS Security Introduction and Requirements",
+              RFC 4033, DOI 10.17487/RFC4033, March 2005,
+              <https://www.rfc-editor.org/info/rfc4033>.
 
    [RFC4086]  Eastlake 3rd, D., Schiller, J., and S. Crocker,
               "Randomness Requirements for Security", BCP 106, RFC 4086,
@@ -519,9 +586,7 @@ Internet-Draft               Obfuscated DoH               September 2019
               (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
               <https://www.rfc-editor.org/info/rfc8484>.
 
-   [RRTYPE]   "Designated Encrypted Resolver Records", n.d..
-
-10.2.  Informative References
+11.2.  Informative References
 
    [I-D.annee-dprive-oblivious-dns]
               Edmundson, A., Schmitt, P., Feamster, N., and A. Mankin,
@@ -540,6 +605,19 @@ Internet-Draft               Obfuscated DoH               September 2019
 
 Authors' Addresses
 
+
+
+
+
+
+
+
+
+Kinnear, et al.           Expires March 8, 2020                [Page 11]
+
+Internet-Draft               Obfuscated DoH               September 2019
+
+
    Eric Kinnear
    Apple Inc.
    One Apple Park Way
@@ -547,19 +625,6 @@ Authors' Addresses
    United States of America
 
    Email: ekinnear@apple.com
-
-
-
-
-
-
-
-
-
-
-Kinnear, et al.           Expires March 6, 2020                [Page 10]
-
-Internet-Draft               Obfuscated DoH               September 2019
 
 
    Tommy Pauly
@@ -604,13 +669,4 @@ Internet-Draft               Obfuscated DoH               September 2019
 
 
 
-
-
-
-
-
-
-
-
-
-Kinnear, et al.           Expires March 6, 2020                [Page 11]
+Kinnear, et al.           Expires March 8, 2020                [Page 12]
