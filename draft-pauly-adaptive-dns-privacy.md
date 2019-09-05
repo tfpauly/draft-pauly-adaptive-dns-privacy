@@ -277,15 +277,15 @@ When a Designated DoH Server is discovered, clients SHOULD also check to see
 if this server provides an extended configuration in the form of a Web PvD {{configuration}}.
 To do this, the client performs a GET request to the DoH URI, indicating that it accepts
 a media type of “application/pvd+json” ({{!I-D.ietf-intarea-provisioning-domains}})
-and not providing any query value off of the path.
+and with empty query and fragment components.
 
 In response, the server will return the JSON content for the PvD, if present. The content-type
 MUST be "application/pvd+json".
 
-The following exchange shows and example of a client retrieving a Web PvD configuration
+The following exchange shows an example of a client retrieving a Web PvD configuration
 for a DoH server with the URI Template "https://dnsserver.example.net/dns-query".
 
-The client can send:
+The client sends:
 
 ~~~
 :method = GET
@@ -295,7 +295,7 @@ The client can send:
 accept = application/pvd+json
 ~~~
 
-And the server can reply:
+And the server replies:
 
 ~~~
 :status = 200
@@ -307,7 +307,7 @@ cache-control = max-age=86400
 ~~~
 
 If the server does not support retrieving any extended PvD information, it MUST
-reply with HTTP status code 415 {{!RFC7231}}.
+reply with HTTP status code 415 (Unsupported Media Type, {{!RFC7231}}).
 
 If the retrieved JSON contains a "dnsZones" array ({{!I-D.ietf-intarea-provisioning-domains}}),
 the client SHOULD perform an SVCB record lookup of each of the listed zones on the DoH
