@@ -363,7 +363,7 @@ is used as the last resort for any connection that is not explicitly Privacy-Sen
 If the system allows the user to specify a preferred encrypted resolver, such as
 allowing the user to manually configure a DoH server URI to use by default, the use
 of this resolver SHOULD come between steps 2 and 3. This ensures that VPN-managed
-and locally-accessible names remain accessible, but that all other names are resolved
+and locally-accessible names remain accessible while all other names are resolved
 using the user preference.
 
 ## Obfuscated Resolution {#obfuscation}
