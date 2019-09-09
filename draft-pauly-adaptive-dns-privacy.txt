@@ -5,10 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: March 8, 2020                                        Apple Inc.
+Expires: March 12, 2020                                       Apple Inc.
                                                               P. McManus
                                                                   Fastly
-                                                      September 05, 2019
+                                                      September 09, 2019
 
 
            Adaptive DNS: Improving Privacy of Name Resolution
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 8, 2020.
+   This Internet-Draft will expire on March 12, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kinnear, et al.           Expires March 8, 2020                 [Page 1]
+Kinnear, et al.          Expires March 12, 2020                 [Page 1]
 
 Internet-Draft                ADNS Privacy                September 2019
 
@@ -74,27 +74,27 @@ Table of Contents
        3.1.1.  Whitelisting Designated DoH Servers . . . . . . . . .   7
        3.1.2.  Accessing Extended Information  . . . . . . . . . . .   7
      3.2.  Discovering Local Resolvers . . . . . . . . . . . . . . .   8
-     3.3.  Hostname Resolution Algorithm . . . . . . . . . . . . . .   8
-     3.4.  Obfuscated Resolution . . . . . . . . . . . . . . . . . .   9
+     3.3.  Hostname Resolution Algorithm . . . . . . . . . . . . . .   9
+     3.4.  Obfuscated Resolution . . . . . . . . . . . . . . . . . .  10
    4.  Server Requirements . . . . . . . . . . . . . . . . . . . . .  10
-     4.1.  Provide a DoH Server  . . . . . . . . . . . . . . . . . .  10
-       4.1.1.  Obfuscated DoH Proxy  . . . . . . . . . . . . . . . .  10
-       4.1.2.  Obfuscated DoH Target . . . . . . . . . . . . . . . .  10
-       4.1.3.  Keying Material . . . . . . . . . . . . . . . . . . .  10
+     4.1.  Provide a DoH Server  . . . . . . . . . . . . . . . . . .  11
+       4.1.1.  Obfuscated DoH Proxy  . . . . . . . . . . . . . . . .  11
+       4.1.2.  Obfuscated DoH Target . . . . . . . . . . . . . . . .  11
+       4.1.3.  Keying Material . . . . . . . . . . . . . . . . . . .  11
      4.2.  Advertise the DoH Server  . . . . . . . . . . . . . . . .  11
      4.3.  Provide Extended Configuration as a Web PvD . . . . . . .  11
-   5.  Local Resolver Deployment Considerations  . . . . . . . . . .  12
-     5.1.  Local Designated DoH Servers  . . . . . . . . . . . . . .  12
-   6.  Performance Considerations  . . . . . . . . . . . . . . . . .  13
-   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  13
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  14
-     8.1.  DoH Template PvD Key  . . . . . . . . . . . . . . . . . .  14
-     8.2.  DoH URI Template DNS Parameter  . . . . . . . . . . . . .  14
+   5.  Local Resolver Deployment Considerations  . . . . . . . . . .  13
+     5.1.  Local Designated DoH Servers  . . . . . . . . . . . . . .  13
+   6.  Performance Considerations  . . . . . . . . . . . . . . . . .  14
+   7.  Security Considerations . . . . . . . . . . . . . . . . . . .  14
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  15
+     8.1.  DoH Template PvD Key  . . . . . . . . . . . . . . . . . .  15
+     8.2.  DoH URI Template DNS Parameter  . . . . . . . . . . . . .  15
    9.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  15
    10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  15
      10.1.  Normative References . . . . . . . . . . . . . . . . . .  15
      10.2.  Informative References . . . . . . . . . . . . . . . . .  16
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  16
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  17
 
 1.  Introduction
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Kinnear, et al.           Expires March 8, 2020                 [Page 2]
+Kinnear, et al.          Expires March 12, 2020                 [Page 2]
 
 Internet-Draft                ADNS Privacy                September 2019
 
@@ -165,7 +165,7 @@ Internet-Draft                ADNS Privacy                September 2019
 
 
 
-Kinnear, et al.           Expires March 8, 2020                 [Page 3]
+Kinnear, et al.          Expires March 12, 2020                 [Page 3]
 
 Internet-Draft                ADNS Privacy                September 2019
 
@@ -221,7 +221,7 @@ Internet-Draft                ADNS Privacy                September 2019
 
 
 
-Kinnear, et al.           Expires March 8, 2020                 [Page 4]
+Kinnear, et al.          Expires March 12, 2020                 [Page 4]
 
 Internet-Draft                ADNS Privacy                September 2019
 
@@ -277,7 +277,7 @@ Internet-Draft                ADNS Privacy                September 2019
 
 
 
-Kinnear, et al.           Expires March 8, 2020                 [Page 5]
+Kinnear, et al.          Expires March 12, 2020                 [Page 5]
 
 Internet-Draft                ADNS Privacy                September 2019
 
@@ -333,7 +333,7 @@ Internet-Draft                ADNS Privacy                September 2019
 
 
 
-Kinnear, et al.           Expires March 8, 2020                 [Page 6]
+Kinnear, et al.          Expires March 12, 2020                 [Page 6]
 
 Internet-Draft                ADNS Privacy                September 2019
 
@@ -383,21 +383,53 @@ Internet-Draft                ADNS Privacy                September 2019
 
    When a Designated DoH Server is discovered, clients SHOULD also check
    to see if this server provides an extended configuration in the form
-   of a Web PvD Section 4.3.  To do this, the client performs a lookup
-   of https://<DoH Server>/.well-known/pvd, requesting a media type of
-   "application/pvd+json".
+   of a Web PvD Section 4.3.  To do this, the client performs a GET
+   request to the DoH URI, indicating that it accepts a media type of
 
 
 
-Kinnear, et al.           Expires March 8, 2020                 [Page 7]
+
+Kinnear, et al.          Expires March 12, 2020                 [Page 7]
 
 Internet-Draft                ADNS Privacy                September 2019
 
 
-   If the retrieved JSON contains a "dnsZones" array, the client SHOULD
-   perform an SVCB record lookup of each of the listed zones on the DoH
-   server and validate that the DoH server is a designated server for
-   the domain; and if it is, add the domain to the local configuration.
+   "application/pvd+json" ([I-D.ietf-intarea-provisioning-domains]) and
+   with empty query and fragment components.
+
+   In response, the server will return the JSON content for the PvD, if
+   present.  The content-type MUST be "application/pvd+json".
+
+   The following exchange shows an example of a client retrieving a Web
+   PvD configuration for a DoH server with the URI Template
+   "https://dnsserver.example.net/dns-query".
+
+   The client sends:
+
+   :method = GET
+   :scheme = https
+   :authority = dnsserver.example.net
+   :path = /dns-query
+   accept = application/pvd+json
+
+   And the server replies:
+
+   :status = 200
+   content-type = application/pvd+json
+   content-length = 175
+   cache-control = max-age=86400
+
+   <JSON content of the Web PvD>
+
+   If the server does not support retrieving any extended PvD
+   information, it MUST reply with HTTP status code 415 (Unsupported
+   Media Type, [RFC7231]).
+
+   If the retrieved JSON contains a "dnsZones" array
+   ([I-D.ietf-intarea-provisioning-domains]), the client SHOULD perform
+   an SVCB record lookup of each of the listed zones on the DoH server
+   and validate that the DoH server is a designated server for the
+   domain; and if it is, add the domain to the local configuration.
 
 3.2.  Discovering Local Resolvers
 
@@ -410,6 +442,14 @@ Internet-Draft                ADNS Privacy                September 2019
    PvD that has additional information, and this additional information
    JSON dictionary contains the key "dohTemplate" Section 8, then the
    client SHOULD add this DoH server to its list of known DoH
+
+
+
+Kinnear, et al.          Expires March 12, 2020                 [Page 8]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
    configurations.  The domains that the DoH server claims authority for
    are listed in the "dnsZones" key.  Clients MUST use a SVCB record
    from the locally-provisioned DoH server and validate the answer with
@@ -442,14 +482,6 @@ Internet-Draft                ADNS Privacy                September 2019
        matching prefix of the hostname.  For example, given two
        Designated DoH Servers, one for foo.example.com and another
        example.com, clients connecting to bar.foo.example.com should use
-
-
-
-Kinnear, et al.           Expires March 8, 2020                 [Page 8]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
        the former.  If the resolution fails, the connection will try an
        obfuscated query.
 
@@ -461,6 +493,18 @@ Internet-Draft                ADNS Privacy                September 2019
    5.  The default Direct Resolver, generally the resolver provisioned
        by the local router, is used as the last resort for any
        connection that is not explicitly Privacy-Sensitive.
+
+
+
+
+
+
+
+
+Kinnear, et al.          Expires March 12, 2020                 [Page 9]
+
+Internet-Draft                ADNS Privacy                September 2019
+
 
 3.4.  Obfuscated Resolution
 
@@ -496,16 +540,6 @@ Internet-Draft                ADNS Privacy                September 2019
    determined limit for the number of fallback attempts that will be
    performed.
 
-
-
-
-
-
-Kinnear, et al.           Expires March 8, 2020                 [Page 9]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
 4.  Server Requirements
 
    Any server deployment that provides a set of services within one or
@@ -517,6 +551,16 @@ Internet-Draft                ADNS Privacy                September 2019
 
    The basic requirements to participate as a server node in this
    architecture are described below.
+
+
+
+
+
+
+Kinnear, et al.          Expires March 12, 2020                [Page 10]
+
+Internet-Draft                ADNS Privacy                September 2019
+
 
 4.1.  Provide a DoH Server
 
@@ -550,18 +594,6 @@ Internet-Draft                ADNS Privacy                September 2019
    encrypt the Server Name Indication field in TLS handshakes to the DoH
    server.
 
-
-
-
-
-
-
-
-Kinnear, et al.           Expires March 8, 2020                [Page 10]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
 4.2.  Advertise the DoH Server
 
    The primary mechanism for advertising a Designated DoH Server is a
@@ -578,6 +610,14 @@ Internet-Draft                ADNS Privacy                September 2019
    provide a mechanism that allows clients to look up properties and
    configuration for the server deployment.  Amongst other information,
    this configuration can optionally contain a list of some popular
+
+
+
+Kinnear, et al.          Expires March 12, 2020                [Page 11]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
    domains for which this server is designated.  Clients can use this
    list to optimize lookups for common names.
 
@@ -592,16 +632,17 @@ Internet-Draft                ADNS Privacy                September 2019
    format, and share the registry of keys defined as "Additional
    Information PvD Keys".
 
-   If present, the PvD JSON configuration MUST be available at the URI
-   with the format https://<DoH Server>/.well-known/pvd, using the well-
-   known URI format defined in [I-D.ietf-intarea-provisioning-domains].
-   HTTP requests and responses for the extended configuration
-   information use the "application/pvd+json" media type.  Clients
-   SHOULD include this media type as an Accept header in their GET
-   requests, and servers MUST mark this media type as their Content-Type
-   header in responses.
+   If present, the PvD JSON configuration MUST be made available to
+   clients that request the "application/pvd+json" media type in a GET
+   request to the DoH server's URI
+   [I-D.ietf-intarea-provisioning-domains].  Clients MUST include this
+   media type as an Accept header in their GET requests, and servers
+   MUST mark this media type as their Content-Type header in responses.
+   If the PvD JSON format is not supported, the server MUST reply with
+   HTTP status code 415 [RFC7231].
 
-   The "identifer" key SHOULD be the hostname of the DoH Server itself.
+   The "identifier" key in the JSON configuration SHOULD be the hostname
+   of the DoH Server itself.
 
    For Web PvDs, the "prefixes" key within the JSON configuration SHOULD
    contain an empty array.
@@ -610,14 +651,6 @@ Internet-Draft                ADNS Privacy                September 2019
    indicates the zones that belong to the PvD.  Any zone that is listed
    in this array for a Web PvD MUST have a corresponding SVCB record
    that defines the DoH server as designated for the zone.  Servers
-
-
-
-Kinnear, et al.           Expires March 8, 2020                [Page 11]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
    SHOULD include in this array any names that are considered default or
    well-known for the deployment, but is not required or expected to
    list all zones or domains for which it is designated.  The trade-off
@@ -633,6 +666,13 @@ Internet-Draft                ADNS Privacy                September 2019
    to generic server-driven content).  Servers can choose to pre-
    emptively transfer the relevant SVCB records if the dictionary
    retrieval is done with an HTTP version that supports PUSH semantics.
+
+
+
+Kinnear, et al.          Expires March 12, 2020                [Page 12]
+
+Internet-Draft                ADNS Privacy                September 2019
+
 
    This document also registers one new key in the Additional
    Information PvD Keys registry, to identify the URI Template for the
@@ -666,14 +706,6 @@ Internet-Draft                ADNS Privacy                September 2019
    [I-D.ietf-intarea-provisioning-domains].  The PvD RA option SHOULD
    set the H-flag to indicate that Additional Information is available.
    This Additional Information JSON object SHOULD include both the
-
-
-
-Kinnear, et al.           Expires March 8, 2020                [Page 12]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
    "dohTemplate" and "dnsZones" keys to define the local DoH server and
    which domains it claims authority over.
 
@@ -685,6 +717,18 @@ Internet-Draft                ADNS Privacy                September 2019
    behavior if the DoH server designated by the local network is known
    to be a non-local service, such as when a local network configures a
    centralized public resolver to handle its DNS operations.
+
+
+
+
+
+
+
+
+Kinnear, et al.          Expires March 12, 2020                [Page 13]
+
+Internet-Draft                ADNS Privacy                September 2019
+
 
 6.  Performance Considerations
 
@@ -722,14 +766,6 @@ Internet-Draft                ADNS Privacy                September 2019
    possibility of a spoofed SVCB record defining a malicious DoH server
    as authoritiative, clients MUST ensure that such records validate
    using DNSSEC [RFC4033].  Even servers that are officially designated
-
-
-
-Kinnear, et al.           Expires March 8, 2020                [Page 13]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
    can risk leaking or logging information about client lookups.  Such
    risk can be mitigated by validating that the DoH servers can present
    proof of logging audits, or by a local whitelist of servers
@@ -742,6 +778,14 @@ Internet-Draft                ADNS Privacy                September 2019
    its choosing.  Clients that use these answers to open direct
    connections to the server may then leak their local IP address.
    Privacy-Sensitive Connections concerned about this attack SHOULD
+
+
+
+Kinnear, et al.          Expires March 12, 2020                [Page 14]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
    conceal their IP address via a TLS- or HTTP-layer proxy or some other
    tunneling mechanism.
 
@@ -776,16 +820,6 @@ Internet-Draft                ADNS Privacy                September 2019
 
    Reference:  This document.
 
-
-
-
-
-
-Kinnear, et al.           Expires March 8, 2020                [Page 14]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
 9.  Acknowledgments
 
    Thanks to Erik Nygren, Lorenzo Colitti, and Patrick McManus for their
@@ -800,6 +834,13 @@ Internet-Draft                ADNS Privacy                September 2019
               Shao, "Discovering Provisioning Domain Names and Data",
               draft-ietf-intarea-provisioning-domains-06 (work in
               progress), August 2019.
+
+
+
+Kinnear, et al.          Expires March 12, 2020                [Page 15]
+
+Internet-Draft                ADNS Privacy                September 2019
+
 
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. Wood,
@@ -825,6 +866,11 @@ Internet-Draft                ADNS Privacy                September 2019
               RFC 4033, DOI 10.17487/RFC4033, March 2005,
               <https://www.rfc-editor.org/info/rfc4033>.
 
+   [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
+              Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
+              DOI 10.17487/RFC7231, June 2014,
+              <https://www.rfc-editor.org/info/rfc7231>.
+
    [RFC7858]  Hu, Z., Zhu, L., Heidemann, J., Mankin, A., Wessels, D.,
               and P. Hoffman, "Specification for DNS over Transport
               Layer Security (TLS)", RFC 7858, DOI 10.17487/RFC7858, May
@@ -833,14 +879,6 @@ Internet-Draft                ADNS Privacy                September 2019
    [RFC8484]  Hoffman, P. and P. McManus, "DNS Queries over HTTPS
               (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
               <https://www.rfc-editor.org/info/rfc8484>.
-
-
-
-
-Kinnear, et al.           Expires March 8, 2020                [Page 15]
-
-Internet-Draft                ADNS Privacy                September 2019
-
 
 10.2.  Informative References
 
@@ -852,6 +890,13 @@ Internet-Draft                ADNS Privacy                September 2019
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+
+
+Kinnear, et al.          Expires March 12, 2020                [Page 16]
+
+Internet-Draft                ADNS Privacy                September 2019
+
 
 Authors' Addresses
 
@@ -893,4 +938,15 @@ Authors' Addresses
 
 
 
-Kinnear, et al.           Expires March 8, 2020                [Page 16]
+
+
+
+
+
+
+
+
+
+
+
+Kinnear, et al.          Expires March 12, 2020                [Page 17]
