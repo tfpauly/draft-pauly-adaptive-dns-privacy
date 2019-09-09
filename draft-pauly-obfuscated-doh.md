@@ -132,7 +132,7 @@ server. Likewise, when connecting to the proxy the client should use
 the proxy target's information for HTTPS certificate selection via SNI
 and when validating the resulting certificate.
 
-Obfuscated DoH exchanges cannot be effectively reused by caching
+Obfuscated DoH messages have no cache value since both requests and responses are encrypted using ephemeral key material.
 proxies to satisfy future requests due to the nature of their
 encrypted message bodies. Clients SHOULD use HTTP and DoH methods and
 headers that will prevent unhelpful cache storage of these exchanges.
