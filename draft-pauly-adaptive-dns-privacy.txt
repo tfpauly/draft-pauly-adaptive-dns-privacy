@@ -494,10 +494,10 @@ Internet-Draft                ADNS Privacy                September 2019
        by the local router, is used as the last resort for any
        connection that is not explicitly Privacy-Sensitive.
 
-
-
-
-
+   If the system allows the user to specify a preferred encrypted
+   resolver, such as allowing the user to manually configure a DoH
+   server URI to use by default, the use of this resolver SHOULD come
+   between steps 2 and 3.  This ensures that VPN-managed and locally-
 
 
 
@@ -505,6 +505,9 @@ Kinnear, et al.          Expires March 12, 2020                 [Page 9]
 
 Internet-Draft                ADNS Privacy                September 2019
 
+
+   accessible names remain accessible while all other names are resolved
+   using the user preference.
 
 3.4.  Obfuscated Resolution
 
@@ -551,9 +554,6 @@ Internet-Draft                ADNS Privacy                September 2019
 
    The basic requirements to participate as a server node in this
    architecture are described below.
-
-
-
 
 
 

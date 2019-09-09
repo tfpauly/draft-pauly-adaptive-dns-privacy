@@ -593,6 +593,7 @@ cache-control = max-age=86400
 <li>Obfuscated queries using multiple DoH Servers (<a href="#obfuscation" class="xref">Section 3.4</a>). If this resolution fails, Privacy-Sensitive Connections will fail. All other connections will use the last resort, the default Direct Resolvers.</li>
 <li>The default Direct Resolver, generally the resolver provisioned by the local router, is used as the last resort for any connection that is not explicitly Privacy-Sensitive.</li>
 </ol>
+<p id="rfc.section.3.3.p.3">If the system allows the user to specify a preferred encrypted resolver, such as allowing the user to manually configure a DoH server URI to use by default, the use of this resolver SHOULD come between steps 2 and 3. This ensures that VPN-managed and locally-accessible names remain accessible while all other names are resolved using the user preference.</p>
 <h1 id="rfc.section.3.4">
 <a href="#rfc.section.3.4">3.4.</a> <a href="#obfuscation" id="obfuscation">Obfuscated Resolution</a>
 </h1>
