@@ -1,7 +1,7 @@
 ---
-title: "Obfuscated DNS Over HTTPS"
-abbrev: Obfuscated DoH
-docname: draft-pauly-obfuscated-doh-latest
+title: "Oblivious DNS Over HTTPS"
+abbrev: Oblivious DoH
+docname: draft-pauly-oblivious-doh-latest
 date:
 category: std
 
@@ -51,10 +51,10 @@ normative:
 
 --- abstract
 
-This document describes an extension to DNS Over HTTPS (DoH) that allows obfuscation
-of client addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing
-any one server entity to be aware of both the client IP address and the content of DNS
-queries and answers.
+This document describes an extension to DNS Over HTTPS (DoH) that allows hiding
+client IP addresses via proxying encrypted DNS transactions. This improves privacy of
+DNS operations by not allowing any one server entity to be aware of both the client IP
+address and the content of DNS queries and answers.
 
 --- middle
 
@@ -72,7 +72,7 @@ Proposals such as Oblivious DNS ({{?I-D.annee-dprive-oblivious-dns}}) allow incr
 by not allowing any single DNS server to be aware of both the client IP address and the
 message contents.
 
-This document defines Obfuscated DoH, an extension to DoH that allows for a proxied mode
+This document defines Oblivious DoH, an extension to DoH that allows for a proxied mode
 of resolution, in which DNS messages are encrypted in such a way that no DoH server
 can independently read both the client IP address and the DNS message contents.
 
@@ -91,20 +91,20 @@ they appear in all capitals, as shown here.
 
 This document defines the following terms:
 
-Obfuscation Proxy:
+Oblivious Proxy:
 : A resolution server that proxies encrypted client DNS queries to another resolution server that
-will be able to decrypt the query (the Obfuscation Target).
+will be able to decrypt the query (the Oblivious Target).
 
-Obfuscation Target:
+Oblivious Target:
 : A resolution server that receives encrypted client DNS queries and
-generates encrypted DNS responses transferred via an Obfuscation Proxy.
+generates encrypted DNS responses transferred via an Oblivious Proxy.
 
 # Deployment Requirements
 
-Obfuscated DoH requires, at a minimum:
+Oblivious DoH requires, at a minimum:
 
-- Two DoH servers, where one can act as an Obfuscation Proxy, and the other can act as an
-Obfuscation Target.
+- Two DoH servers, where one can act as an Oblivious Proxy, and the other can act as an
+Oblivious Target.
 - Public keys for encrypting DNS queries that are passed from a client through a proxy
 to a target ({{publickey}}).
 - Client ability to generate one-time-use symmetric keys to encrypt DNS responses.
@@ -116,48 +116,48 @@ described in {{ADNS}}.
 
 # HTTP Exchange
 
-Unlike direct resolution, obfuscated hostname resolution over DoH involves three parties:
+Unlike direct resolution, oblivious hostname resolution over DoH involves three parties:
 
 1. The Client, which generates queries.
-2. The Obfuscation Proxy, which is a resolution server that receives encrypted queries from the client
+2. The Oblivious Proxy, which is a resolution server that receives encrypted queries from the client
 and passes them on to another resolution server.
-3. The Obfuscation Target, which is a resolution server that receives proxied queries from the client
-via the Obfuscation Proxy.
+3. The Oblivious Target, which is a resolution server that receives proxied queries from the client
+via the Oblivious Proxy.
 
-## HTTP Request {#obfuscated-request}
+## HTTP Request {#oblivious-request}
 
-Obfuscated DoH queries are created by the Client, and sent to the
-Obfuscation Proxy. The proxy's address is determined from the
+Oblivious DoH queries are created by the Client, and sent to the
+Oblivious Proxy. The proxy's address is determined from the
 authority of the proxy server's URI, while the authority information
 of the HTTP request reflects the authority of the target
 server. Likewise, when connecting to the proxy the client should use
 the proxy target's information for HTTPS certificate selection via SNI
 and when validating the resulting certificate.
 
-Obfuscated DoH messages have no cache value since both requests and responses are encrypted using ephemeral key material.
+Oblivious DoH messages have no cache value since both requests and responses are encrypted using ephemeral key material.
 proxies to satisfy future requests due to the nature of their
 encrypted message bodies. Clients SHOULD use HTTP and DoH methods and
 headers that will prevent unhelpful cache storage of these exchanges.
 
-Clients MUST set the HTTP Content-Type header to "application/obfuscated-dns-message"
-to indicate that this request is an obfuscated query intended for proxying. Clients also SHOULD
+Clients MUST set the HTTP Content-Type header to "application/oblivious-dns-message"
+to indicate that this request is an Oblivious DoH query intended for proxying. Clients also SHOULD
 set this same value for the HTTP Accept header.
 
 The HTTP authority information (e.g. The HTTP/2 :authority
-psuedo-header or the HTTP/1 host header) MUST indicate the hostname of the Obfuscation Target (not the Obfuscation
-Proxy that initially receives the request), and the path information MUST conform to the path specified
-by the Obfuscation Target's DoH URI Template.
+psuedo-header or the HTTP/1 host header) MUST indicate the hostname of the Oblivious Target
+(not the Oblivious Proxy that initially receives the request), and the path information MUST
+conform to the path specified by the Oblivious Target's DoH URI Template.
 
-Upon receiving a request that contains a "application/obfuscated-dns-message" Content-Type,
+Upon receiving a request that contains a "application/oblivious-dns-message" Content-Type,
 the DoH server looks at the :authority and :path psuedo-headers. If the fields match the DoH server's
 own hostname and configured path, then it is the target of the query, and can decrypt the query {{encryption}}.
-If the fields do not match the local server, then the server is acting as an Obfuscation Proxy. If it is
-a proxy, it is expected to send the request on to the Obfuscation Target based on the
+If the fields do not match the local server, then the server is acting as an Oblivious Proxy. If it is
+a proxy, it is expected to send the request on to the Oblivious Target based on the
 authority identified in the HTTP request.
 
 ## HTTP Request Example
 
-The following example shows how a client requests that an Obfuscation Proxy, "dnsproxy.example.net",
+The following example shows how a client requests that an Oblivious Proxy, "dnsproxy.example.net",
 forwards an encrypted message to "dnstarget.example.net".
 
 ~~~
@@ -165,53 +165,53 @@ forwards an encrypted message to "dnstarget.example.net".
 :scheme = https
 :authority = dnstarget.example.net
 :path = /dns-query
-accept = application/obfuscated-dns-message
+accept = application/oblivious-dns-message
 cache-control = no-cache, no-store
-content-type = application/obfuscated-dns-message
+content-type = application/oblivious-dns-message
 content-length = 106
 
-<Bytes containing the encrypted payload for an Obfuscated DNS query>
+<Bytes containing the encrypted payload for an Oblivious DNS query>
 ~~~
 
-The Obfuscation Proxy then sends the exact same request on to the Obfuscation Target, without modification.
+The Oblivious Proxy then sends the exact same request on to the Oblivious Target, without modification.
 
-## HTTP Response {#obfuscated-response}
+## HTTP Response {#oblivious-response}
 
-The response to an obfuscated query is generated by the Obfuscation Target. It MUST set the
-Content-Type HTTP header to "application/obfuscated-dns-message" for all successful responses.
+The response to an Oblivious DoH query is generated by the Oblivious Target. It MUST set the
+Content-Type HTTP header to "application/oblivious-dns-message" for all successful responses.
 The body of the response contains a DNS message that is encrypted with the client's symmetric key {{encryption}}.
 
 All other aspects of the HTTP response and error handling are inherited from standard DoH.
 
 ## HTTP Response Example
 
-The following example shows a response that can be sent from an Obfuscation Target
-to a client via an Obfuscation Proxy.
+The following example shows a response that can be sent from an Oblivious Target
+to a client via an Oblivious Proxy.
 
 ~~~
 :status = 200
-content-type = application/obfuscated-dns-message
+content-type = application/oblivious-dns-message
 content-length = 154
 
-<Bytes containing the encrypted payload for an Obfuscated DNS response>
+<Bytes containing the encrypted payload for an Oblivious DNS response>
 ~~~
 
 # Public Key Discovery {#keydiscovery}
 
-In order to use a DoH server as an Obfuscation Target, the client must know a public key to use
+In order to use a DoH server as an Oblivious Target, the client must know a public key to use
 for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type
 ({{!I-D.nygren-httpbis-httpssvc}}) for a name owned by the server.
 
 The key name is "odohkey", and has an encoded SvcParamKey value of 5. If present, this key/value
-pair contains the public key to use when encrypting obfuscated messages
+pair contains the public key to use when encrypting Oblivious DoH messages
 that will be targeted at a DoH server. The format of the key is defined in {{publickey}}.
 
 Clients MUST only use keys that were retrieved from records protected by DNSSEC {{!RFC4033}}
-to encrypt messages to an Obfuscation Target.
+to encrypt messages to an Oblivious Target.
 
-# Obfuscated DNS Public Key Format {#publickey}
+# Oblivious DoH Public Key Format {#publickey}
 
-An Obfuscated DNS public key is a structure encoded, using {{!RFC8446}}-style encoding, as follows:
+An Oblivious DNS public key is a structure encoded, using {{!RFC8446}}-style encoding, as follows:
 
 ~~~
 struct {
@@ -219,18 +219,18 @@ struct {
    uint16 kdf_id;
    uint16 aead_id;
    opaque public_key<1..2^16-1>;
-} ObfuscatedDNSKey;
+} ObliviousDNSKey;
 ~~~
 
-It contains the information needed to encrypt a message under ObfuscatedDNSKey.public_key
+It contains the information needed to encrypt a message under ObliviousDNSKey.public_key
 such that only the owner of the corresponding private key can decrypt the message. The
-values for ObfuscatedDNSKey.kem_id, ObfuscatedDNSKey.kdf_id, and ObfuscatedDNSKey.aead_id
+values for ObliviousDNSKey.kem_id, ObliviousDNSKey.kdf_id, and ObliviousDNSKey.aead_id
 are described in {{!I-D.irtf-cfrg-hpke}}, Section 7. For convenience, let
-Identifier(ObfuscatedDNSKey) be defined as the SHA256 value of ObfuscatedDNSKey serialized.
+Identifier(ObliviousDNSKey) be defined as the SHA256 value of ObliviousDNSKey serialized.
 
-# Obfuscated DNS Message Format {#encryption}
+# Oblivious DoH Message Format {#encryption}
 
-There are two types of Obfuscated DNS messages: Queries (0x01) and Responses (0x02). Both
+There are two types of Oblivious DoH messages: Queries (0x01) and Responses (0x02). Both
 are encoded as follows:
 
 ~~~
@@ -240,18 +240,18 @@ struct {
    uint64 query_id;
    opaque key_id<0..2^16-1>;
    opaque encrypted_message<1..2^16-1>;
-} ObfuscatedDNSMessage;
+} ObliviousDNSMessage;
 ~~~
 
-ObfuscatedDNSMessage.message_type = 0x01 for Query messages and
-ObfuscatedDNSMessage.message_type = 0x02 for Response messages.
-ObfuscatedDNSMessage.encrypted_message contains an encrypted message for the Obfuscation Target
+ObliviousDNSMessage.message_type = 0x01 for Query messages and
+ObliviousDNSMessage.message_type = 0x02 for Response messages.
+ObliviousDNSMessage.encrypted_message contains an encrypted message for the Oblivious Target
 (for Query messages) or client (for Response messages). The following sections describe how
 these meessage bodies are constructed.
 
-## Obfuscated Queries
+## Oblivious Queries
 
-Obfuscated DNS Query messages must carry the following information:
+Oblivious DoH Query messages must carry the following information:
 
 1. A symmetric key and ciphersuite under which the DNS response will be encrypted.
 2. A DNS query message which the client wishes to resolve.
@@ -262,25 +262,25 @@ And is encoded as follows:
 struct {
    opaque symmetric_key<1..2^16-1>;
    opaque dns_message<1..2^16-1>;
-} ObfuscatedDNSQueryBody;
+} ObliviousDNSQueryBody;
 ~~~
 
-Let M be a DNS message a client wishes to send obfuscated. When sending an Obfuscated DNS Query
-for resolving M to an Obfuscation Target with ObfuscatedDNSKey key pk, a client does the following:
+Let M be a DNS message a client wishes to protect with Oblivious DoH. When sending an Oblivious DoH Query
+for resolving M to an Oblivious Target with ObliviousDNSKey key pk, a client does the following:
 
 1. Generate a random 64-bit query_id and random symmetric_key whose length matches
 that of the AEAD ciphersuite in pk.aead_id. (All randomness must be generated
 according to {{!RFC4086}}.)
-2. Create a ObfuscatedDNSQueryBody structure, carrying symmetric_key and the message M, to produce pt.
+2. Create a ObliviousDNSQueryBody structure, carrying symmetric_key and the message M, to produce pt.
 3. Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.
 4. Compute the encrypted message blob as blob = encrypt_query_body(pkR, query_id, pt).
 HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are instantiated from pk.
 (See definition for encrypt_query_body below.)
-5. Output a ObfuscatedDNSMessage message Q where Q.message_type = 0x01,
+5. Output a ObliviousDNSMessage message Q where Q.message_type = 0x01,
 M.query_id = query_id, and M.encrypted_message = blob, M.key_id carries
 Identifier(pk), and M.message_length equals the length of the entire structure.
 
-The client then sends Q to the Obfuscated Proxy according to {{obfuscated-request}}.
+The client then sends Q to the Oblivious Proxy according to {{oblivious-request}}.
 
 ~~~
 def encrypt_query_body(pkR, query_id, pt):
@@ -291,30 +291,30 @@ def encrypt_query_body(pkR, query_id, pt):
   return blob
 ~~~
 
-## Obfuscated Responses
+## Oblivious Responses
 
-Obfuscated DNS Response messages carry the DNS response. Its encoding is as follows:
+An Oblivious DoH Response message carries the DNS response. Its encoding is as follows:
 
 ~~~
 struct {
    opaque dns_answer<1..2^16-1>;
-} ObfuscatedDNSResponseBody;
+} ObliviousDNSResponseBody;
 ~~~
 
 Targets that receive a Query message Q decrypt and process it as follows:
 
-1. Look up the ObfuscatedDNSKey according to Q.key_id. If no such key exists,
+1. Look up the ObliviousDNSKey according to Q.key_id. If no such key exists,
 the Target MAY discard the query. Otherwise, let skR be the private key
 corresponding to this public key, or one chosen for trial decryption, and pk
-be the corresponding ObfuscatedDNSKey.
+be the corresponding ObliviousDNSKey.
 2. Compute pt, error = decrypt_query_body(Q.encrypted_message).
 HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are instantiated from pk.
 (See definition for decrypt_query_body below.)
-3. If no error was returned, process pt as a ObfuscatedDNSQueryBody Qb.
-4. Resolve ObfuscatedDNSQueryBody.dns_message as needed, yielding answer Rb.
+3. If no error was returned, process pt as an ObliviousDNSQueryBody Qb.
+4. Resolve ObliviousDNSQueryBody.dns_message as needed, yielding answer Rb.
 5. Compute R_encrypted = encrypt_response_body(Q.query_id, Rb). (See definition
 for encrypt_response_body below.)
-6. Output a ObfuscatedDNSMessage message R where R.message_type = 0x02,
+6. Output a ObliviousDNSMessage message R where R.message_type = 0x02,
 R.query_id = Q.query_id, and R.encrypted_message = R_encrypted, R.key_id = nil,
 and R.message_length equals the length of the entire structure.
 
@@ -329,24 +329,24 @@ def decrypt_query_body(encrypted_message):
 
 ~~~
 def encrypt_response_body(query_id, response):
-  aad = 0x02 || ObfuscatedDNSMessage.query_id
+  aad = 0x02 || ObliviousDNSMessage.query_id
   R_encrypted = Seal(Q.symmetic_key, 0^Nn, aad, Rb)
   return R_encrypted
 ~~~
 
-The Target then sends R to the Proxy according to {{obfuscated-response}}.
+The Target then sends R to the Proxy according to {{oblivious-response}}.
 
 # Security Considerations
 
 # IANA Considerations
 
-## Obfuscated DoH Message Media Type
+## Oblivious DoH Message Media Type
 
-This document registers a new media type, "application/obfuscated-dns-message".
+This document registers a new media type, "application/oblivious-dns-message".
 
 Type name: application
 
-Subtype name: obfuscated-dns-message
+Subtype name: oblivious-dns-message
 
 Required parameters: N/A
 
@@ -364,7 +364,7 @@ conforming messages and the interpretation thereof.
 Published specification: This document.
 
 Applications that use this media type: This media type is intended
-to be used by clients wishing to obfuscate their DNS queries when
+to be used by clients wishing to hide their DNS queries when
 using DNS over HTTPS.
 
 Additional information: None
@@ -380,7 +380,7 @@ Author: IETF
 
 Change controller: IETF
 
-## Obfuscated DoH Public Key DNS Parameter
+## Oblivious DoH Public Key DNS Parameter
 
 This document defines one new key to be added to the Service Binding (SVCB) Parameter Registry,
 as defined in {{!I-D.nygren-httpbis-httpssvc}}.
@@ -392,7 +392,7 @@ SvcParamKey:
 : 5
 
 Meaning:
-: Public key used to encrypt messages in Obfuscated DoH
+: Public key used to encrypt messages in Oblivious DoH
 
 Reference:
 : This document.

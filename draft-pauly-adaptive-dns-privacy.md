@@ -43,8 +43,8 @@ author:
     email: mcmanus@ducksong.com
 
 normative:
-  OBFUSCATION:
-    title: Obfuscated DNS Over HTTPS
+  OBLIVIOUS:
+    title: Oblivious DNS Over HTTPS
     authors:
       -
         T. Pauly
@@ -56,7 +56,7 @@ discover designated resolvers that offer encrypted DNS services, and use them
 in an adaptive way that improves privacy while co-existing with locally
 provisioned resolvers. These resolvers can be used directly when
 looking up names for which they are designated. These resolvers also provide the ability
-to proxy encrypted queries, thus obfuscating the identity of the client requesting resolution.
+to proxy encrypted queries, thus hiding the identity of the client requesting resolution.
 
 --- middle
 
@@ -107,11 +107,11 @@ This architecture is composed of several mechanisms:
 
 - A DNS record that indicates a designated DoH server associated with a name ({{designated-discovery}});
 
-- an extension to DoH that allows queries to be obfuscated ({{OBFUSCATION}});
+- an extension to DoH that allows client IP addresses to be disassociated from queries via proxying ({{OBLIVIOUS}});
 
 - a DoH server that responds to queries directly and supports proxying ({{server}});
 
-- and client behavior rules for how to resolve names using a combination of designated DoH resolvers, obfuscated queries, and local resolvers ({{client}}).
+- and client behavior rules for how to resolve names using a combination of designated DoH resolvers, proxied queries, and local resolvers ({{client}}).
 
 ## Specification of Requirements
 
@@ -127,7 +127,7 @@ This document defines the following terms:
 
 Adaptive DNS:
 : Adaptive DNS is a technique to provide an encrypted transport for DNS queries that can
-be sent directly to a Designated DoH Server, use Obfuscated DoH to hide the client
+be sent directly to a Designated DoH Server, use Oblivious DoH to hide the client
 IP address, or use Direct Resolvers when required or appropriate.
 
 Designated DoH Server:
@@ -141,16 +141,16 @@ Exclusive Direct Resolver:
 : A Direct Resolver that requires the client to use it exclusively for a given set of domains, such
 as private domains managed by a VPN. This status is governed by local system policy.
 
-Obfuscated DoH:
-: A technique that uses multiple DoH servers to proxy queries in a way that obfuscates
-the client's IP address.
+Oblivious DoH:
+: A technique that uses multiple DoH servers to proxy queries in a way that disassociates
+the client's IP address from query content.
 
-Obfuscation Proxy:
+Oblivious Proxy:
 : A resolution server that proxies encrypted client DNS queries to another resolution server that
-will be able to decrypt the query (the Obfuscation Target).
+will be able to decrypt the query (the Oblivious Target).
 
-Obfuscation Target:
-: A resolution server that receives encrypted client DNS queries via an Obfuscation Proxy.
+Oblivious Target:
+: A resolution server that receives encrypted client DNS queries via an Oblivious Proxy.
 
 Privacy-Sensitive Connections:
 : Connections made by clients that are explicitly Privacy-Sensitive are treated differently
@@ -188,25 +188,24 @@ An algorithm for determining how to resolve a given name in a manner that satisf
 these properties is described in {{resolution-algorithm}}. Note that this algorithm
 does not guarantee that responses that are not signed with DNSSEC are valid, and clients
 that establish connections to unsigned addresses may still expose their local IP addresses
-to attackers that control their terminal resolver even if obfuscated
-during resolution.
+to attackers that control their terminal resolver even if hidden during resolution.
 
 ## Discovering Designated DoH Servers {#designated-discovery}
 
-All direct (non-obfuscated) queries for names in privacy-sensitive connections MUST be sent to a
+All direct (non-oblivious) queries for names in privacy-sensitive connections MUST be sent to a
 server that both provides encryption and is designated for the domain.
 
 Clients dynamically build and maintain a set of known Designated DoH Servers. The information
 that is associated with each server is:
 
 - The URI Template of the DoH server {{!RFC8484}}
-- The public HPKE {{!I-D.irtf-cfrg-hpke}} key of the DoH server used for proxied obfuscated queries, as defined in {{OBFUSCATION}}
+- The public HPKE {{!I-D.irtf-cfrg-hpke}} key of the DoH server used for proxied oblivious queries, as defined in {{OBLIVIOUS}}
 - A list of domains for which the DoH server is designated
 
 This information can be retrieved from several different sources. The primary source
 for discovering Designated DoH Server configurations is from properties stored in a
 SVCB (or a SVCB-conformant type like HTTPSSVC) DNS Record {{!I-D.nygren-httpbis-httpssvc}}.
-This record provides the URI Template and the public obfuscation key of a DoH server
+This record provides the URI Template and the public Oblivious DoH key of a DoH server
 that is designated for a specific domain. A specific domain may have more
 than one such record.
 
@@ -215,7 +214,7 @@ add the "dohuri", which has a SvcParamKey value of 4. The value stored in the pa
 is a URI, which is the DoH URI template {{!RFC8484}}.
 
 The format for the parameter that contains the public key of the DoH server is defined in
-{{OBFUSCATION}}.
+{{OBLIVIOUS}}.
 
 The following example shows a record containing a DoH URI, as returned by a query for
 the HTTPSSVC variant of the SVCB record type on "example.com".
@@ -253,12 +252,12 @@ connections, clients MUST whitelist the server.
 
 The requirements for whitelisting are:
 
-- Support for acting as an Obfuscation Proxy. Each Designated DoH Server is
-expected to support acting as a proxy for Obfuscation. A client MUST issue at
+- Support for acting as an Oblivious Proxy. Each Designated DoH Server is
+expected to support acting as a proxy for Oblivious DoH. A client MUST issue at
 least one query that is proxied through the server before sending direct queries
 to the server.
-- Support for acting as an Obfuscation Target. Each Designated DoH Server is
-expected to support acting as a target for Obfuscation. A client MUST issue at
+- Support for acting as an Oblivious Target. Each Designated DoH Server is
+expected to support acting as a target for Oblivious DoH. A client MUST issue at
 least one query that is targeted at the server through a proxy before sending direct queries
 to the server.
 
@@ -350,10 +349,10 @@ the connection will try the next resolver configuration based on this list.
 containing the hostname, i.e., the designated DoH server which is associated with the longest
 matching prefix of the hostname. For example, given two Designated DoH Servers, one for
 foo.example.com and another example.com, clients connecting to bar.foo.example.com
-should use the former. If the resolution fails, the connection will try an obfuscated
+should use the former. If the resolution fails, the connection will try an Oblivious DoH
 query.
 
-4. Obfuscated queries using multiple DoH Servers ({{obfuscation}}). If this resolution fails,
+4. Oblivious DoH queries using multiple DoH Servers ({{oblivious}}). If this resolution fails,
 Privacy-Sensitive Connections will fail. All other connections will use the last resort,
 the default Direct Resolvers.
 
@@ -366,24 +365,24 @@ of this resolver SHOULD come between steps 2 and 3. This ensures that VPN-manage
 and locally-accessible names remain accessible while all other names are resolved
 using the user preference.
 
-## Obfuscated Resolution {#obfuscation}
+## Oblivious Resolution {#oblivious}
 
 For all privacy-sensitive connection queries for names that do not correspond
-to a Designated DoH Server, the client SHOULD use obfuscation to help
+to a Designated DoH Server, the client SHOULD use Oblivious DoH to help
 conceal its IP address from eavesdroppers and untrusted resolvers.
 
-DNS obfuscation is achieved by using Obfuscated DoH ({{OBFUSCATION}}). This
-extension to DoH allows a client to encrypt a query with a target DoH server's public
+Disassociation of client IPs from query content is achieved by using Oblivious DoH ({{OBLIVIOUS}}).
+This extension to DoH allows a client to encrypt a query with a target DoH server's public
 key, and proxy the query through another server. The query is packaged with a unique
 client-defined symmetric key that is used to sign the DNS answer, which is sent
 back to the client via the proxy.
 
 All DoH Servers that are used as Designated DoH Servers by the client
-MUST support being both an Obfuscation Proxy and an Obfuscation Target,
+MUST support being both an Oblivious Proxy and an Oblivious Target,
 as described in the server requirements ({{server}}).
 
 Since each Designated DoH Server can act as one of two roles in an
-obfuscated exchange, there are (N) * (N - 1) / 2 possible pairs of servers, where
+proxied exchange, there are (N) * (N - 1) / 2 possible pairs of servers, where
 N is the number of whitelisted servers. While clients SHOULD use a variety of
 server pairs in rotation to decrease the ability for any given server to track
 client queries, it is not expected that all possible combinations will be used.
@@ -392,7 +391,7 @@ better latency properties than others. To optimize performance, clients SHOULD
 maintain statistics to track the performance characteristics and success rates of
 particular pairs.
 
-Clients that are performing obfuscated resolution SHOULD fall back to another
+Clients that are performing Oblivious DoH resolution SHOULD fall back to another
 pair of servers if a first query times out, with a locally-determined limit for the
 number of fallback attempts that will be performed.
 
@@ -411,26 +410,26 @@ described below.
 ## Provide a DoH Server
 
 Each server node is primarily defined by a DoH server {{!RFC8484}} that is designated
-for a set of domains, and also provides Obfuscated DoH functionality. As such, the DoH servers
+for a set of domains, and also provides Oblivious DoH functionality. As such, the DoH servers
 MUST be able to act as recursive resolvers that accept queries for records and domains beyond
 those for which the servers are specifically designated.
 
-### Obfuscated DoH Proxy
+### Oblivious DoH Proxy
 
-The DoH servers MUST be able to act as Obfuscation Proxies. In this function, they will proxy
-encrypted queries and answers between clients and Obfuscation Target DoH servers.
+The DoH servers MUST be able to act as Oblivious Proxies. In this function, they will proxy
+encrypted queries and answers between clients and Oblivious Target DoH servers.
 
-### Obfuscated DoH Target
+### Oblivious DoH Target
 
-The DoH servers MUST be able to act as Obfuscation Targets. In this function, they will accept
-encrypted proxied queries from clients via Obfuscation Proxy DoH servers, and provide encrypted
+The DoH servers MUST be able to act as Oblivious Targets. In this function, they will accept
+encrypted proxied queries from clients via Oblivious Proxy DoH servers, and provide encrypted
 answers using client keys.
 
 ### Keying Material
 
-In order to support acting as an Obfuscation Target, a DoH server needs to provide a public
+In order to support acting as an Oblivious Target, a DoH server needs to provide a public
 HPKE {{!I-D.irtf-cfrg-hpke}} key that can be used to encrypt client queries. This key is advertised
-in the SVCB record, and encoded according to {{OBFUSCATION}}.
+in the SVCB record, and encoded according to {{OBLIVIOUS}}.
 
 DoH servers also SHOULD provide an ESNI {{!I-D.ietf-tls-esni}} key to encrypt the Server
 Name Indication field in TLS handshakes to the DoH server.
@@ -439,7 +438,7 @@ Name Indication field in TLS handshakes to the DoH server.
 
 The primary mechanism for advertising a Designated DoH Server is a SVCB DNS
 record ({{designated-discovery}}). This record MUST contain both the URI Template of the DoH
-Server as well as the Obfuscation Public Key. It MAY contain the ESNI key {{!I-D.ietf-tls-esni}}.
+Server as well as the Oblivious DoH Public Key. It MAY contain the ESNI key {{!I-D.ietf-tls-esni}}.
 
 Servers MUST ensure that any SVCB records are signed with DNSSEC {{!RFC4033}}.
 
@@ -486,7 +485,7 @@ DoH Servers.
 
 Clients that retrieve the Web PvD JSON dictionary SHOULD perform an SVCB record
 query for each of the entries in the "dnsZones" array in order to populate the
-mappings of domains. These MAY be performed in an obfuscated fashion, but
+mappings of domains. These MAY be performed in an oblivious fashion, but
 MAY also be queried directly on the DoH server (since the information is not user-specific,
 but in response to generic server-driven content). Servers can choose
 to pre-emptively transfer the relevant SVCB records if the
@@ -520,8 +519,8 @@ The PvD RA option SHOULD set the H-flag to indicate that Additional Information 
 This Additional Information JSON object SHOULD include both the "dohTemplate" and "dnsZones"
 keys to define the local DoH server and which domains it claims authority over.
 
-Although local Designated DoH Servers MAY support proxying obfuscated DNS queries, a client SHOULD
-NOT select one of these servers as an Obfuscation Proxy. Doing so might reveal the client's location
+Although local Designated DoH Servers MAY support proxying Oblivious DoH queries, a client SHOULD
+NOT select one of these servers as an Oblivious Proxy. Doing so might reveal the client's location
 to the Target based on the address of the proxy, which could contribute to deanonymizing the client.
 Clients can make an exception to this behavior if the DoH server designated by the local network is known
 to be a non-local service, such as when a local network configures a centralized public resolver to handle
@@ -547,7 +546,7 @@ controls the value of the addressing information being
 returned to the client.
 
 Based on these properties, clients SHOULD prefer lookups via
-Designated DoH Servers over obfuscated mecahnisms whenever possible.
+Designated DoH Servers over oblivious mecahnisms whenever possible.
 Servers can encourgage this by setting large TTLs for SVCB records
 and using longer TTLs for responses returned by their Designated DoH
 Server endpoints which can be more confident they have accurate
@@ -560,14 +559,14 @@ using Adaptive DNS, all exchanges between clients and servers are performed over
 TLS connections.
 
 Clients must also be careful in determining which DoH servers they send queries to
-directly, without obfuscation. In order to avoid the possibility of a spoofed SVCB
+directly without proxying. In order to avoid the possibility of a spoofed SVCB
 record defining a malicious DoH server as authoritiative, clients MUST ensure that
 such records validate using DNSSEC {{!RFC4033}}. Even servers that are officially designated
 can risk leaking or logging information about client lookups.
 Such risk can be mitigated by validating that the DoH servers can present proof
 of logging audits, or by a local whitelist of servers maintained by a client.
 
-Clients should take caution when using obfuscated responses from resolvers that do not
+Clients should take caution when using Oblivious DoH responses from resolvers that do not
 carry DNSSEC signatures. An adversarial Target resolver that wishes to learn the IP address
 of clients requesting resolution for sensitive domains can redirect clients to addresses
 of its choosing. Clients that use these answers to open direct connections to the server
