@@ -5,10 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: March 12, 2020                                       Apple Inc.
+Expires: March 15, 2020                                       Apple Inc.
                                                               P. McManus
                                                                   Fastly
-                                                      September 09, 2019
+                                                      September 12, 2019
 
 
            Adaptive DNS: Improving Privacy of Name Resolution
@@ -22,7 +22,7 @@ Abstract
    co-existing with locally provisioned resolvers.  These resolvers can
    be used directly when looking up names for which they are designated.
    These resolvers also provide the ability to proxy encrypted queries,
-   thus obfuscating the identity of the client requesting resolution.
+   thus hiding the identity of the client requesting resolution.
 
 Status of This Memo
 
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 12, 2020.
+   This Internet-Draft will expire on March 15, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kinnear, et al.          Expires March 12, 2020                 [Page 1]
+Kinnear, et al.          Expires March 15, 2020                 [Page 1]
 
 Internet-Draft                ADNS Privacy                September 2019
 
@@ -72,17 +72,17 @@ Table of Contents
    3.  Client Behavior . . . . . . . . . . . . . . . . . . . . . . .   5
      3.1.  Discovering Designated DoH Servers  . . . . . . . . . . .   6
        3.1.1.  Whitelisting Designated DoH Servers . . . . . . . . .   7
-       3.1.2.  Accessing Extended Information  . . . . . . . . . . .   7
+       3.1.2.  Accessing Extended Information  . . . . . . . . . . .   8
      3.2.  Discovering Local Resolvers . . . . . . . . . . . . . . .   8
      3.3.  Hostname Resolution Algorithm . . . . . . . . . . . . . .   9
-     3.4.  Obfuscated Resolution . . . . . . . . . . . . . . . . . .  10
-   4.  Server Requirements . . . . . . . . . . . . . . . . . . . . .  10
+     3.4.  Oblivious Resolution  . . . . . . . . . . . . . . . . . .  10
+   4.  Server Requirements . . . . . . . . . . . . . . . . . . . . .  11
      4.1.  Provide a DoH Server  . . . . . . . . . . . . . . . . . .  11
-       4.1.1.  Obfuscated DoH Proxy  . . . . . . . . . . . . . . . .  11
-       4.1.2.  Obfuscated DoH Target . . . . . . . . . . . . . . . .  11
+       4.1.1.  Oblivious DoH Proxy . . . . . . . . . . . . . . . . .  11
+       4.1.2.  Oblivious DoH Target  . . . . . . . . . . . . . . . .  11
        4.1.3.  Keying Material . . . . . . . . . . . . . . . . . . .  11
-     4.2.  Advertise the DoH Server  . . . . . . . . . . . . . . . .  11
-     4.3.  Provide Extended Configuration as a Web PvD . . . . . . .  11
+     4.2.  Advertise the DoH Server  . . . . . . . . . . . . . . . .  12
+     4.3.  Provide Extended Configuration as a Web PvD . . . . . . .  12
    5.  Local Resolver Deployment Considerations  . . . . . . . . . .  13
      5.1.  Local Designated DoH Servers  . . . . . . . . . . . . . .  13
    6.  Performance Considerations  . . . . . . . . . . . . . . . . .  14
@@ -90,10 +90,10 @@ Table of Contents
    8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  15
      8.1.  DoH Template PvD Key  . . . . . . . . . . . . . . . . . .  15
      8.2.  DoH URI Template DNS Parameter  . . . . . . . . . . . . .  15
-   9.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  15
-   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  15
-     10.1.  Normative References . . . . . . . . . . . . . . . . . .  15
-     10.2.  Informative References . . . . . . . . . . . . . . . . .  16
+   9.  Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  16
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .  16
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .  16
+     10.2.  Informative References . . . . . . . . . . . . . . . . .  17
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  17
 
 1.  Introduction
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Kinnear, et al.          Expires March 12, 2020                 [Page 2]
+Kinnear, et al.          Expires March 15, 2020                 [Page 2]
 
 Internet-Draft                ADNS Privacy                September 2019
 
@@ -165,7 +165,7 @@ Internet-Draft                ADNS Privacy                September 2019
 
 
 
-Kinnear, et al.          Expires March 12, 2020                 [Page 3]
+Kinnear, et al.          Expires March 15, 2020                 [Page 3]
 
 Internet-Draft                ADNS Privacy                September 2019
 
@@ -173,14 +173,14 @@ Internet-Draft                ADNS Privacy                September 2019
    o  A DNS record that indicates a designated DoH server associated
       with a name (Section 3.1);
 
-   o  an extension to DoH that allows queries to be obfuscated
-      ([OBFUSCATION]);
+   o  an extension to DoH that allows client IP addresses to be
+      disassociated from queries via proxying ([OBLIVIOUS]);
 
    o  a DoH server that responds to queries directly and supports
       proxying (Section 4);
 
    o  and client behavior rules for how to resolve names using a
-      combination of designated DoH resolvers, obfuscated queries, and
+      combination of designated DoH resolvers, proxied queries, and
       local resolvers (Section 3).
 
 1.1.  Specification of Requirements
@@ -197,7 +197,7 @@ Internet-Draft                ADNS Privacy                September 2019
 
    Adaptive DNS:  Adaptive DNS is a technique to provide an encrypted
       transport for DNS queries that can be sent directly to a
-      Designated DoH Server, use Obfuscated DoH to hide the client IP
+      Designated DoH Server, use Oblivious DoH to hide the client IP
       address, or use Direct Resolvers when required or appropriate.
 
    Designated DoH Server:  A DNS resolver that provides connectivity
@@ -212,22 +212,26 @@ Internet-Draft                ADNS Privacy                September 2019
       private domains managed by a VPN.  This status is governed by
       local system policy.
 
-   Obfuscated DoH:  A technique that uses multiple DoH servers to proxy
-      queries in a way that obfuscates the client's IP address.
-
-   Obfuscation Proxy:  A resolution server that proxies encrypted client
-      DNS queries to another resolution server that will be able to
-      decrypt the query (the Obfuscation Target).
+   Oblivious DoH:  A technique that uses multiple DoH servers to proxy
+      queries in a way that disassociates the client's IP address from
+      query content.
 
 
 
-Kinnear, et al.          Expires March 12, 2020                 [Page 4]
+
+
+
+Kinnear, et al.          Expires March 15, 2020                 [Page 4]
 
 Internet-Draft                ADNS Privacy                September 2019
 
 
-   Obfuscation Target:  A resolution server that receives encrypted
-      client DNS queries via an Obfuscation Proxy.
+   Oblivious Proxy:  A resolution server that proxies encrypted client
+      DNS queries to another resolution server that will be able to
+      decrypt the query (the Oblivious Target).
+
+   Oblivious Target:  A resolution server that receives encrypted client
+      DNS queries via an Oblivious Proxy.
 
    Privacy-Sensitive Connections:  Connections made by clients that are
       explicitly Privacy-Sensitive are treated differently from
@@ -270,21 +274,21 @@ Internet-Draft                ADNS Privacy                September 2019
    that satisfies these properties is described in Section 3.3.  Note
    that this algorithm does not guarantee that responses that are not
    signed with DNSSEC are valid, and clients that establish connections
-   to unsigned addresses may still expose their local IP addresses to
-   attackers that control their terminal resolver even if obfuscated
-   during resolution.
 
 
 
-
-Kinnear, et al.          Expires March 12, 2020                 [Page 5]
+Kinnear, et al.          Expires March 15, 2020                 [Page 5]
 
 Internet-Draft                ADNS Privacy                September 2019
 
 
+   to unsigned addresses may still expose their local IP addresses to
+   attackers that control their terminal resolver even if hidden during
+   resolution.
+
 3.1.  Discovering Designated DoH Servers
 
-   All direct (non-obfuscated) queries for names in privacy-sensitive
+   All direct (non-oblivious) queries for names in privacy-sensitive
    connections MUST be sent to a server that both provides encryption
    and is designated for the domain.
 
@@ -294,7 +298,7 @@ Internet-Draft                ADNS Privacy                September 2019
    o  The URI Template of the DoH server [RFC8484]
 
    o  The public HPKE [I-D.irtf-cfrg-hpke] key of the DoH server used
-      for proxied obfuscated queries, as defined in [OBFUSCATION]
+      for proxied oblivious queries, as defined in [OBLIVIOUS]
 
    o  A list of domains for which the DoH server is designated
 
@@ -303,8 +307,8 @@ Internet-Draft                ADNS Privacy                September 2019
    configurations is from properties stored in a SVCB (or a SVCB-
    conformant type like HTTPSSVC) DNS Record
    [I-D.nygren-httpbis-httpssvc].  This record provides the URI Template
-   and the public obfuscation key of a DoH server that is designated for
-   a specific domain.  A specific domain may have more than one such
+   and the public Oblivious DoH key of a DoH server that is designated
+   for a specific domain.  A specific domain may have more than one such
    record.
 
    In order to designate a DoH server for a domain, a SVCB record can
@@ -313,7 +317,7 @@ Internet-Draft                ADNS Privacy                September 2019
    [RFC8484].
 
    The format for the parameter that contains the public key of the DoH
-   server is defined in [OBFUSCATION].
+   server is defined in [OBLIVIOUS].
 
    The following example shows a record containing a DoH URI, as
    returned by a query for the HTTPSSVC variant of the SVCB record type
@@ -327,17 +331,16 @@ Internet-Draft                ADNS Privacy                September 2019
    Clients MUST ignore any DoH server URI that was not retrieved from a
    DNSSEC-signed record [RFC4033].
 
-   When a client resolves a name (based on the order in Section 3.3) it
-   SHOULD determine the Designated DoH Server via a SVCB record for any
-   name that does not fall within known Designated DoH Server's
 
 
-
-Kinnear, et al.          Expires March 12, 2020                 [Page 6]
+Kinnear, et al.          Expires March 15, 2020                 [Page 6]
 
 Internet-Draft                ADNS Privacy                September 2019
 
 
+   When a client resolves a name (based on the order in Section 3.3) it
+   SHOULD determine the Designated DoH Server via a SVCB record for any
+   name that does not fall within known Designated DoH Server's
    configuration.  The client MAY also issue queries for the SVCB record
    for more specific names to discover further Designated DoH Servers.
 
@@ -358,15 +361,15 @@ Internet-Draft                ADNS Privacy                September 2019
 
    The requirements for whitelisting are:
 
-   o  Support for acting as an Obfuscation Proxy.  Each Designated DoH
-      Server is expected to support acting as a proxy for Obfuscation.
+   o  Support for acting as an Oblivious Proxy.  Each Designated DoH
+      Server is expected to support acting as a proxy for Oblivious DoH.
       A client MUST issue at least one query that is proxied through the
       server before sending direct queries to the server.
 
-   o  Support for acting as an Obfuscation Target.  Each Designated DoH
-      Server is expected to support acting as a target for Obfuscation.
-      A client MUST issue at least one query that is targeted at the
-      server through a proxy before sending direct queries to the
+   o  Support for acting as an Oblivious Target.  Each Designated DoH
+      Server is expected to support acting as a target for Oblivious
+      DoH.  A client MUST issue at least one query that is targeted at
+      the server through a proxy before sending direct queries to the
       server.
 
    Clients MAY further choose to restrict the whitelist by other local
@@ -379,21 +382,24 @@ Internet-Draft                ADNS Privacy                September 2019
    Clients SHOULD NOT whitelist authority mappings for effective top-
    level domains (eTLDs), such as ".com".
 
+
+
+
+
+
+
+
+Kinnear, et al.          Expires March 15, 2020                 [Page 7]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
 3.1.2.  Accessing Extended Information
 
    When a Designated DoH Server is discovered, clients SHOULD also check
    to see if this server provides an extended configuration in the form
    of a Web PvD Section 4.3.  To do this, the client performs a GET
    request to the DoH URI, indicating that it accepts a media type of
-
-
-
-
-Kinnear, et al.          Expires March 12, 2020                 [Page 7]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
    "application/pvd+json" ([I-D.ietf-intarea-provisioning-domains]) and
    with empty query and fragment components.
 
@@ -435,6 +441,15 @@ Internet-Draft                ADNS Privacy                September 2019
 
    If the local network provides configuration with an Explicit
    Provisioning Domain (PvD), as defined by
+
+
+
+
+Kinnear, et al.          Expires March 15, 2020                 [Page 8]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
    [I-D.ietf-intarea-provisioning-domains], clients can learn about
    domains for which the local network's resolver is authoritative.
 
@@ -442,14 +457,6 @@ Internet-Draft                ADNS Privacy                September 2019
    PvD that has additional information, and this additional information
    JSON dictionary contains the key "dohTemplate" Section 8, then the
    client SHOULD add this DoH server to its list of known DoH
-
-
-
-Kinnear, et al.          Expires March 12, 2020                 [Page 8]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
    configurations.  The domains that the DoH server claims authority for
    are listed in the "dnsZones" key.  Clients MUST use a SVCB record
    from the locally-provisioned DoH server and validate the answer with
@@ -483,12 +490,21 @@ Internet-Draft                ADNS Privacy                September 2019
        Designated DoH Servers, one for foo.example.com and another
        example.com, clients connecting to bar.foo.example.com should use
        the former.  If the resolution fails, the connection will try an
-       obfuscated query.
+       Oblivious DoH query.
 
-   4.  Obfuscated queries using multiple DoH Servers (Section 3.4).  If
-       this resolution fails, Privacy-Sensitive Connections will fail.
-       All other connections will use the last resort, the default
-       Direct Resolvers.
+   4.  Oblivious DoH queries using multiple DoH Servers (Section 3.4).
+       If this resolution fails, Privacy-Sensitive Connections will
+       fail.  All other connections will use the last resort, the
+       default Direct Resolvers.
+
+
+
+
+
+Kinnear, et al.          Expires March 15, 2020                 [Page 9]
+
+Internet-Draft                ADNS Privacy                September 2019
+
 
    5.  The default Direct Resolver, generally the resolver provisioned
        by the local router, is used as the last resort for any
@@ -498,37 +514,29 @@ Internet-Draft                ADNS Privacy                September 2019
    resolver, such as allowing the user to manually configure a DoH
    server URI to use by default, the use of this resolver SHOULD come
    between steps 2 and 3.  This ensures that VPN-managed and locally-
-
-
-
-Kinnear, et al.          Expires March 12, 2020                 [Page 9]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
    accessible names remain accessible while all other names are resolved
    using the user preference.
 
-3.4.  Obfuscated Resolution
+3.4.  Oblivious Resolution
 
    For all privacy-sensitive connection queries for names that do not
    correspond to a Designated DoH Server, the client SHOULD use
-   obfuscation to help conceal its IP address from eavesdroppers and
+   Oblivious DoH to help conceal its IP address from eavesdroppers and
    untrusted resolvers.
 
-   DNS obfuscation is achieved by using Obfuscated DoH ([OBFUSCATION]).
-   This extension to DoH allows a client to encrypt a query with a
-   target DoH server's public key, and proxy the query through another
-   server.  The query is packaged with a unique client-defined symmetric
-   key that is used to sign the DNS answer, which is sent back to the
-   client via the proxy.
+   Disassociation of client IPs from query content is achieved by using
+   Oblivious DoH ([OBLIVIOUS]).  This extension to DoH allows a client
+   to encrypt a query with a target DoH server's public key, and proxy
+   the query through another server.  The query is packaged with a
+   unique client-defined symmetric key that is used to sign the DNS
+   answer, which is sent back to the client via the proxy.
 
    All DoH Servers that are used as Designated DoH Servers by the client
-   MUST support being both an Obfuscation Proxy and an Obfuscation
-   Target, as described in the server requirements (Section 4).
+   MUST support being both an Oblivious Proxy and an Oblivious Target,
+   as described in the server requirements (Section 4).
 
    Since each Designated DoH Server can act as one of two roles in an
-   obfuscated exchange, there are (N) * (N - 1) / 2 possible pairs of
+   proxied exchange, there are (N) * (N - 1) / 2 possible pairs of
    servers, where N is the number of whitelisted servers.  While clients
    SHOULD use a variety of server pairs in rotation to decrease the
    ability for any given server to track client queries, it is not
@@ -538,10 +546,21 @@ Internet-Draft                ADNS Privacy                September 2019
    performance, clients SHOULD maintain statistics to track the
    performance characteristics and success rates of particular pairs.
 
-   Clients that are performing obfuscated resolution SHOULD fall back to
-   another pair of servers if a first query times out, with a locally-
-   determined limit for the number of fallback attempts that will be
-   performed.
+   Clients that are performing Oblivious DoH resolution SHOULD fall back
+   to another pair of servers if a first query times out, with a
+   locally-determined limit for the number of fallback attempts that
+   will be performed.
+
+
+
+
+
+
+
+Kinnear, et al.          Expires March 15, 2020                [Page 10]
+
+Internet-Draft                ADNS Privacy                September 2019
+
 
 4.  Server Requirements
 
@@ -555,51 +574,56 @@ Internet-Draft                ADNS Privacy                September 2019
    The basic requirements to participate as a server node in this
    architecture are described below.
 
-
-
-Kinnear, et al.          Expires March 12, 2020                [Page 10]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
 4.1.  Provide a DoH Server
 
    Each server node is primarily defined by a DoH server [RFC8484] that
-   is designated for a set of domains, and also provides Obfuscated DoH
+   is designated for a set of domains, and also provides Oblivious DoH
    functionality.  As such, the DoH servers MUST be able to act as
    recursive resolvers that accept queries for records and domains
    beyond those for which the servers are specifically designated.
 
-4.1.1.  Obfuscated DoH Proxy
+4.1.1.  Oblivious DoH Proxy
 
-   The DoH servers MUST be able to act as Obfuscation Proxies.  In this
+   The DoH servers MUST be able to act as Oblivious Proxies.  In this
    function, they will proxy encrypted queries and answers between
-   clients and Obfuscation Target DoH servers.
+   clients and Oblivious Target DoH servers.
 
-4.1.2.  Obfuscated DoH Target
+4.1.2.  Oblivious DoH Target
 
-   The DoH servers MUST be able to act as Obfuscation Targets.  In this
+   The DoH servers MUST be able to act as Oblivious Targets.  In this
    function, they will accept encrypted proxied queries from clients via
-   Obfuscation Proxy DoH servers, and provide encrypted answers using
+   Oblivious Proxy DoH servers, and provide encrypted answers using
    client keys.
 
 4.1.3.  Keying Material
 
-   In order to support acting as an Obfuscation Target, a DoH server
-   needs to provide a public HPKE [I-D.irtf-cfrg-hpke] key that can be
-   used to encrypt client queries.  This key is advertised in the SVCB
-   record, and encoded according to [OBFUSCATION].
+   In order to support acting as an Oblivious Target, a DoH server needs
+   to provide a public HPKE [I-D.irtf-cfrg-hpke] key that can be used to
+   encrypt client queries.  This key is advertised in the SVCB record,
+   and encoded according to [OBLIVIOUS].
 
    DoH servers also SHOULD provide an ESNI [I-D.ietf-tls-esni] key to
    encrypt the Server Name Indication field in TLS handshakes to the DoH
    server.
 
+
+
+
+
+
+
+
+Kinnear, et al.          Expires March 15, 2020                [Page 11]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
 4.2.  Advertise the DoH Server
 
    The primary mechanism for advertising a Designated DoH Server is a
    SVCB DNS record (Section 3.1).  This record MUST contain both the URI
-   Template of the DoH Server as well as the Obfuscation Public Key. It
-   MAY contain the ESNI key [I-D.ietf-tls-esni].
+   Template of the DoH Server as well as the Oblivious DoH Public Key.
+   It MAY contain the ESNI key [I-D.ietf-tls-esni].
 
    Servers MUST ensure that any SVCB records are signed with DNSSEC
    [RFC4033].
@@ -610,14 +634,6 @@ Internet-Draft                ADNS Privacy                September 2019
    provide a mechanism that allows clients to look up properties and
    configuration for the server deployment.  Amongst other information,
    this configuration can optionally contain a list of some popular
-
-
-
-Kinnear, et al.          Expires March 12, 2020                [Page 11]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
    domains for which this server is designated.  Clients can use this
    list to optimize lookups for common names.
 
@@ -650,6 +666,14 @@ Internet-Draft                ADNS Privacy                September 2019
    The key "dnsZones", which contains an array of domains as strings,
    indicates the zones that belong to the PvD.  Any zone that is listed
    in this array for a Web PvD MUST have a corresponding SVCB record
+
+
+
+Kinnear, et al.          Expires March 15, 2020                [Page 12]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
    that defines the DoH server as designated for the zone.  Servers
    SHOULD include in this array any names that are considered default or
    well-known for the deployment, but is not required or expected to
@@ -661,18 +685,11 @@ Internet-Draft                ADNS Privacy                September 2019
    Clients that retrieve the Web PvD JSON dictionary SHOULD perform an
    SVCB record query for each of the entries in the "dnsZones" array in
    order to populate the mappings of domains.  These MAY be performed in
-   an obfuscated fashion, but MAY also be queried directly on the DoH
+   an oblivious fashion, but MAY also be queried directly on the DoH
    server (since the information is not user-specific, but in response
    to generic server-driven content).  Servers can choose to pre-
    emptively transfer the relevant SVCB records if the dictionary
    retrieval is done with an HTTP version that supports PUSH semantics.
-
-
-
-Kinnear, et al.          Expires March 12, 2020                [Page 12]
-
-Internet-Draft                ADNS Privacy                September 2019
-
 
    This document also registers one new key in the Additional
    Information PvD Keys registry, to identify the URI Template for the
@@ -705,30 +722,26 @@ Internet-Draft                ADNS Privacy                September 2019
    provisioning domain, as defined in
    [I-D.ietf-intarea-provisioning-domains].  The PvD RA option SHOULD
    set the H-flag to indicate that Additional Information is available.
+
+
+
+Kinnear, et al.          Expires March 15, 2020                [Page 13]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
    This Additional Information JSON object SHOULD include both the
    "dohTemplate" and "dnsZones" keys to define the local DoH server and
    which domains it claims authority over.
 
-   Although local Designated DoH Servers MAY support proxying obfuscated
-   DNS queries, a client SHOULD NOT select one of these servers as an
-   Obfuscation Proxy.  Doing so might reveal the client's location to
-   the Target based on the address of the proxy, which could contribute
-   to deanonymizing the client.  Clients can make an exception to this
+   Although local Designated DoH Servers MAY support proxying Oblivious
+   DoH queries, a client SHOULD NOT select one of these servers as an
+   Oblivious Proxy.  Doing so might reveal the client's location to the
+   Target based on the address of the proxy, which could contribute to
+   deanonymizing the client.  Clients can make an exception to this
    behavior if the DoH server designated by the local network is known
    to be a non-local service, such as when a local network configures a
    centralized public resolver to handle its DNS operations.
-
-
-
-
-
-
-
-
-Kinnear, et al.          Expires March 12, 2020                [Page 13]
-
-Internet-Draft                ADNS Privacy                September 2019
-
 
 6.  Performance Considerations
 
@@ -749,7 +762,7 @@ Internet-Draft                ADNS Privacy                September 2019
    addressing information being returned to the client.
 
    Based on these properties, clients SHOULD prefer lookups via
-   Designated DoH Servers over obfuscated mecahnisms whenever possible.
+   Designated DoH Servers over oblivious mecahnisms whenever possible.
    Servers can encourgage this by setting large TTLs for SVCB records
    and using longer TTLs for responses returned by their Designated DoH
    Server endpoints which can be more confident they have accurate
@@ -762,30 +775,30 @@ Internet-Draft                ADNS Privacy                September 2019
    clients and servers are performed over TLS connections.
 
    Clients must also be careful in determining which DoH servers they
-   send queries to directly, without obfuscation.  In order to avoid the
+   send queries to directly without proxying.  In order to avoid the
    possibility of a spoofed SVCB record defining a malicious DoH server
    as authoritiative, clients MUST ensure that such records validate
+
+
+
+Kinnear, et al.          Expires March 15, 2020                [Page 14]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
    using DNSSEC [RFC4033].  Even servers that are officially designated
    can risk leaking or logging information about client lookups.  Such
    risk can be mitigated by validating that the DoH servers can present
    proof of logging audits, or by a local whitelist of servers
    maintained by a client.
 
-   Clients should take caution when using obfuscated responses from
+   Clients should take caution when using Oblivious DoH responses from
    resolvers that do not carry DNSSEC signatures.  An adversarial Target
    resolver that wishes to learn the IP address of clients requesting
    resolution for sensitive domains can redirect clients to addresses of
    its choosing.  Clients that use these answers to open direct
    connections to the server may then leak their local IP address.
    Privacy-Sensitive Connections concerned about this attack SHOULD
-
-
-
-Kinnear, et al.          Expires March 12, 2020                [Page 14]
-
-Internet-Draft                ADNS Privacy                September 2019
-
-
    conceal their IP address via a TLS- or HTTP-layer proxy or some other
    tunneling mechanism.
 
@@ -820,6 +833,15 @@ Internet-Draft                ADNS Privacy                September 2019
 
    Reference:  This document.
 
+
+
+
+
+Kinnear, et al.          Expires March 15, 2020                [Page 15]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
 9.  Acknowledgments
 
    Thanks to Erik Nygren, Lorenzo Colitti, and Patrick McManus for their
@@ -834,13 +856,6 @@ Internet-Draft                ADNS Privacy                September 2019
               Shao, "Discovering Provisioning Domain Names and Data",
               draft-ietf-intarea-provisioning-domains-06 (work in
               progress), August 2019.
-
-
-
-Kinnear, et al.          Expires March 12, 2020                [Page 15]
-
-Internet-Draft                ADNS Privacy                September 2019
-
 
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. Wood,
@@ -858,8 +873,8 @@ Internet-Draft                ADNS Privacy                September 2019
               HTTPSSVC)", draft-nygren-httpbis-httpssvc-03 (work in
               progress), July 2019.
 
-   [OBFUSCATION]
-              "Obfuscated DNS Over HTTPS", n.d..
+   [OBLIVIOUS]
+              "Oblivious DNS Over HTTPS", n.d..
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
@@ -876,6 +891,13 @@ Internet-Draft                ADNS Privacy                September 2019
               Layer Security (TLS)", RFC 7858, DOI 10.17487/RFC7858, May
               2016, <https://www.rfc-editor.org/info/rfc7858>.
 
+
+
+Kinnear, et al.          Expires March 15, 2020                [Page 16]
+
+Internet-Draft                ADNS Privacy                September 2019
+
+
    [RFC8484]  Hoffman, P. and P. McManus, "DNS Queries over HTTPS
               (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
               <https://www.rfc-editor.org/info/rfc8484>.
@@ -890,13 +912,6 @@ Internet-Draft                ADNS Privacy                September 2019
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
-
-
-
-Kinnear, et al.          Expires March 12, 2020                [Page 16]
-
-Internet-Draft                ADNS Privacy                September 2019
-
 
 Authors' Addresses
 
@@ -934,19 +949,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Kinnear, et al.          Expires March 12, 2020                [Page 17]
+Kinnear, et al.          Expires March 15, 2020                [Page 17]
