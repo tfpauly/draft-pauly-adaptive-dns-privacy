@@ -534,16 +534,17 @@ splitting the traffic.
 If a server deployment wants to easily control the split of traffic between different
 content providers, it ought to use the latter model of using a single designated DoH server
 that can better control which IP addresses are provided to clients. Otherwise, if a
-client is aware of multiple DoH servers, it might use a single resolver exclusively.
+client is aware of multiple DoH servers, it might use a single resolver exclusively,
+which may lead to inconsistent behavior between clients that choose different resolvers.
 
 ## Avoid Narrow Deployments
 
-One of the main privacy benefits of resolution using designated DoH servers is
-the fact that a server can be designated by many different names within
-one or more domains. This limits the amount of information leaked to an attacker
-observing traffic between a client and a DoH server; it only tells
-the attacker that the client might be resolving one of the many names for which the server
-is designated (and might be performing an Oblivious query).
+Using designated DoH servers can improve the privacy of name resolution whenever
+a DoH server is designated by many different names within one or more domains.
+This limits the amount of information leaked to an attacker observing traffic between a
+client and a DoH server: the attacker only learns that the client might be resolving
+one of the many names for which the server is designated (or might be performing
+an Oblivious query).
 
 However, if a deployment designates a given DoH server for only one name, or a
 very small set of names, then it becomes easier for an attacker to infer that a specific
