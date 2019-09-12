@@ -525,10 +525,10 @@ control the percentage of traffic that flows to each content provider.
 
 In these scenarios, there can either be:
 
-- multiple different designated DoH servers that are advertised via SVCB DNS Records; or,
+- multiple designated DoH servers that are advertised via SVCB DNS Records; or,
 
 - a single designated DoH server that can be referenced by one or more SVCB DNS Records,
-that is operated by a party that is aware of both content providers and can manage
+operated by a party that is aware of both content providers and can manage
 splitting the traffic.
 
 If a server deployment wants to easily control the split of traffic between different
@@ -540,8 +540,8 @@ client is aware of multiple DoH servers, it might use a single resolver exclusiv
 
 One of the main privacy benefits of resolution using designated DoH servers is
 the fact that a server can be designated by many different names within
-one or more domains. This means that the amount of information leaked to an attacker
-observing traffic between a client and a DoH server about is limited; it only tells
+one or more domains. This limits the amount of information leaked to an attacker
+observing traffic between a client and a DoH server; it only tells
 the attacker that the client might be resolving one of the many names for which the server
 is designated (and might be performing an Oblivious query).
 
@@ -552,7 +552,7 @@ to avoid deploying a DoH server that is only designated by a small number of nam
 Clients can also choose to only whitelist DoH servers that are associated with
 many names.
 
-Beyond the benefits to privacy, having a larger number of names designated
+Beyond the benefits to privacy, having a larger number of names designate
 a given DoH server improves the opportunity for DoH connection reuse, which
 can improve the performance of name resolutions.
 
