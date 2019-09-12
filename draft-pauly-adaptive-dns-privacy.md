@@ -500,6 +500,62 @@ Beyond providing resolution configuration, the Web PvD configuration can be exte
 to offer information about proxies and other services offered by the server deployment.
 Such keys are not defined in this document.
 
+# Server Deployment Considerations
+
+When servers designate DoH servers for their names, the specific deployment
+model can impact the effective privacy and performance characteristics.
+
+## Single Content Provider
+
+If a name always resolves to server IP addresses that are hosted by a single
+content provider, the name ought to designate a single DoH server. This
+DoH server will be most optimal when it is designated by many or all names
+that are hosted by the same content provider. This ensures that clients
+can increase connection reuse to reduce latency in connection setup.
+
+A DoH server that corresponds to the content provider that hosts content has an
+opportunity to tune the responses provided to a client based on the location
+inferred by the client IP address.
+
+## Multiple Content Providers
+
+Some hostnames may resolve to server IP addresses that are hosted by multiple
+content providers. In such scenarios, the deployment may want to be able to
+control the percentage of traffic that flows to each content provider.
+
+In these scenarios, there can either be:
+
+- multiple different designated DoH servers that are advertised via SVCB DNS Records; or,
+
+- a single designated DoH server that can be referenced by one or more SVCB DNS Records,
+that is operated by a party that is aware of both content providers and can manage
+splitting the traffic.
+
+If a server deployment wants to easily control the split of traffic between different
+content providers, it ought to use the latter model of using a single designated DoH server
+that can better control which IP addresses are provided to clients. Otherwise, if a
+client is aware of multiple DoH servers, it might use a single resolver exclusively.
+
+## Avoid Narrow Deployments
+
+One of the main privacy benefits of resolution using designated DoH servers is
+the fact that a server can be designated by many different names within
+one or more domains. This means that the amount of information leaked to an attacker
+observing traffic between a client and a DoH server about is limited; it only tells
+the attacker that the client might be resolving one of the many names for which the server
+is designated (and might be performing an Oblivious query).
+
+However, if a deployment designates a given DoH server for only one name, or a
+very small set of names, then it becomes easier for an attacker to infer that a specific
+name is being accessed by a client. For this reason, deployments are encouraged
+to avoid deploying a DoH server that is only designated by a small number of names.
+Clients can also choose to only whitelist DoH servers that are associated with
+many names.
+
+Beyond the benefits to privacy, having a larger number of names designated
+a given DoH server improves the opportunity for DoH connection reuse, which
+can improve the performance of name resolutions.
+
 # Local Resolver Deployment Considerations {#local-deployment}
 
 A key goal of Adaptive DNS is that clients will be able to use Designated DoH Servers
