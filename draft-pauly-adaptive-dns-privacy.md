@@ -578,8 +578,8 @@ keys to define the local DoH server and the domains over which it claims authori
 
 In order to validate that a local resolver is designated for a given zone, the client SHOULD issue
 a SVCB record query for the names specified in the PvD information, using the DoH server specified
-in the PvD information. If there is no SVCB record that points to the DoH server that can be validated
-using DNSSEC, the client SHOULD NOT automatically create a designation from the name to DoH server.
+in the PvD information. If there is no SVCB record for a name that points to the DoH server that can be validated
+using DNSSEC, the client SHOULD NOT automatically create a designation from the domain name to DoH server.
 See specific use cases in {{local-use-cases}} for cases in which a local resolver may still be used.
 
 Although local Designated DoH Servers MAY support proxying Oblivious DoH queries, a client SHOULD
@@ -608,7 +608,7 @@ locally resolvable. For example, an enterprise that owns "private.example.org" w
 "private.example.org" in its PvD information along with a DoH URI template. Clients could then
 use that locally-configured resolver with names under "private.example.org" according to the rules in {{designating-local-servers}}.
 
-In general, clients only create designated DoH server associations when they can validate a SVCB
+In general, clients SHOULD only create designated DoH server associations when they can validate a SVCB
 record using DNSSEC. However, some deployments of private names might not want to sign all
 private names within a zone. There are thus a few possible deployment models:
 
@@ -623,12 +623,17 @@ for "example.org", thus steering all resolution under "example.org" to the local
 - No DNSSEC-signed SVCB record designates the local server. In this case, clients have a hint that
 the local network can serve names under "private.example.org", but do not have a way to validate
 the designation. Clients can in this case try to resolve names using external servers (such
-as via Oblivious DoH), and then fall back to using locally-provisioned resolvers if the names do not
+as via Oblivious DoH), and then MAY fall back to using locally-provisioned resolvers if the names do not
 resolve externally. This approach has the risk of exposing private names to public resolvers,
-which may be undesirable for certain enterprise deployments. Alternatively, if the client trusts
-the local network sufficiently, it can choose to resolve these names locally first. Note that this approach
-risks exposing names to a potentially malicious network that is masquerading as an authority
-for private names if the network cannot be validated in some other manner.
+which can be undesirable for certain enterprise deployments. Alternatively, if the client trusts
+the local network based on specific policy configured on the client, it can choose to resolve these names
+locally first. Note that this approach risks exposing names to a potentially malicious network that is
+masquerading as an authority for private names if the network cannot be validated in some other manner.
+
+Deployments SHOULD use the one of the first two approaches (signing their records) whenever possible;
+the case of providing unsigned names is only described as a possibility for handling legacy enterprise
+deployments. Clients SHOULD choose to ignore any locally designated names that are not
+signed unless there is a specific policy configuration on the client.
 
 ### Accessing Locally Optimized Content
 
@@ -664,7 +669,7 @@ In these cases, system traffic that is used for connecting to captive portals SH
 use local resolvers. In addition, clients MAY choose to fall back to using direct
 resolution without any encryption if they determine that all connectivity is blocked otherwise.
 Note that this comes with a risk of a network blocking connections in order to induce this
-fall-back behavior, so clients might want to inform users about this possible attack where
+fallback behavior, so clients might want to inform users about this possible attack where
 appropriate, or prefer to not fall back if there is a concern about leaking user data.
 
 ### Network-Based Filtering
