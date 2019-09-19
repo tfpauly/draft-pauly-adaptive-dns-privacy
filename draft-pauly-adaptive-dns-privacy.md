@@ -568,7 +568,7 @@ names will only be usable when a local resolver is used.
 In order to achieve this, a local network can advertise itself as authoritative for a domain,
 allowing it to be used prior to external servers in the client resolution algorithm {{resolution-algorithm}}.
 
-## Designating Local DoH Servers
+## Designating Local DoH Servers {#designating-local-servers}
 
 If a local network wants to have clients send queries for a set of private domains to its own resolver,
 it needs to define an explicit provisioning domain, as defined in {{!I-D.ietf-intarea-provisioning-domains}}.
@@ -580,7 +580,7 @@ In order to validate that a local resolver is designated for a given zone, the c
 a SVCB record query for the names specified in the PvD information, using the DoH server specified
 in the PvD information. If there is no SVCB record that points to the DoH server that can be validated
 using DNSSEC, the client SHOULD NOT automatically create a designation from the name to DoH server.
-See specific use cases below for cases in which a local resolver may still be used.
+See specific use cases in {{local-use-cases}} for cases in which a local resolver may still be used.
 
 Although local Designated DoH Servers MAY support proxying Oblivious DoH queries, a client SHOULD
 NOT select one of these servers as an Oblivious Proxy. Doing so might reveal the client's location
@@ -589,10 +589,10 @@ Clients can make an exception to this behavior if the DoH server designated by t
 to be a non-local service, such as when a local network configures a centralized public resolver to handle
 its DNS operations.
 
-## Local Use Cases
+## Local Use Cases {#local-use-cases}
 
 The various use cases for selecting locally-provisioned resolvers require different approaches for
-deployment and client resolution. This list is not exhaustive, but provides guidance on how
+deployment and client resolution. The following list is not exhaustive, but provides guidance on how
 these scenarios can be achieved using the Adaptive DNS algorithm.
 
 ### Accessing Local-Only Resolvable Content
@@ -606,7 +606,7 @@ private names.
 In these scenarios, the local network SHOULD designate a local DoH server for the domains that are
 locally resolvable. For example, an enterprise that owns "private.example.org" would advertise
 "private.example.org" in its PvD information along with a DoH URI template. Clients could then
-associate that locally-configured resolver with names under "private.example.org".
+use that locally-configured resolver with names under "private.example.org" according to the rules in {{designating-local-servers}}.
 
 In general, clients only create designated DoH server associations when they can validate a SVCB
 record using DNSSEC. However, some deployments of private names might not want to sign all
@@ -621,11 +621,11 @@ specified in the PvD information, and from that point on uses the local DoH serv
 for "example.org", thus steering all resolution under "example.org" to the local resolver.
 
 - No DNSSEC-signed SVCB record designates the local server. In this case, clients have a hint that
-the local network can serve names under "private.example.org", but does not have a way to validate
+the local network can serve names under "private.example.org", but do not have a way to validate
 the designation. Clients can in this case try to resolve names using external servers (such
 as via Oblivious DoH), and then fall back to using locally-provisioned resolvers if the names do not
 resolve externally. This approach has the risk of exposing private names to public resolvers,
-which may be undesirable for certain enterprise deployments. Alternatively, if the client does trust
+which may be undesirable for certain enterprise deployments. Alternatively, if the client trusts
 the local network sufficiently, it can choose to resolve these names locally first. Note that this approach
 risks exposing names to a potentially malicious network that is masquerading as an authority
 for private names if the network cannot be validated in some other manner.
@@ -641,7 +641,7 @@ record for the name. If a client discovers that a local resolver is designated f
 client SHOULD prefer using connections to this locally-hosted content rather than names resolved
 externally.
 
-Note that having a DNSSEC-signed designation to the local resolver provides an explicit indication
+Note that having a DNSSEC-signed designation to the local resolver provides a clear indication
 that the entity that manages a given name has an explicit relationship with the local network provider.
 
 ### Walled-Garden and Captive Network Deployments
@@ -658,10 +658,10 @@ If a walled-garden or captive network defines a PvD with additional information,
 define zones for names that it hosts, such as "airplane.example.com". It can also provide a
 locally-hosted encrypted DNS server.
 
-However, if such a network does not support explicitly advertising their local names,
+However, if such a network does not support explicitly advertising local names,
 clients that try to establish connections to DoH servers will experience connection failures.
 In these cases, system traffic that is used for connecting to captive portals SHOULD
-use local resolvers direction. In addition, clients MAY choose to fall back to using direct
+use local resolvers. In addition, clients MAY choose to fall back to using direct
 resolution without any encryption if they determine that all connectivity is blocked otherwise.
 Note that this comes with a risk of a network blocking connections in order to induce this
 fall-back behavior, so clients might want to inform users about this possible attack where
@@ -672,7 +672,7 @@ appropriate, or prefer to not fall back if there is a concern about leaking user
 Some networks currently rely on manipulating DNS name resolution in order to apply
 content filtering rules to clients associated with the network. Using encrypted DNS resolvers
 that are not participating in this filtering can bypass such enforcement. However, simply
-blocking connections for filtering can be indistinguishable from a malicious attack from
+blocking connections for filtering is indistinguishable from a malicious attack from
 a client's perspective.
 
 In order to indicate the presence of filtering requirements, a network deployment
@@ -688,10 +688,10 @@ that want to use it as a service to enforce desired policy.
 Clients that receive indication of filtering requirements SHOULD NOT use any other
 resolver for the filtered domains, but treat the network as claiming authority. However,
 since this filtering cannot be authenticated, this behavior SHOULD NOT be done
-silently without informing any user about the implications of such filtering.
+silently without informing users about the implications of such filtering.
 
-Networks that tries to interfere with connections to encrypted DNS resolvers without
-indicating a requirement for filtering cannot be easily distinguished from misconfigurations
+Networks that try to interfere with connections to encrypted DNS resolvers without
+indicating a requirement for filtering cannot be distinguished from misconfigurations
 or network attacks. Clients MAY choose to avoid sending any user-initiated connections
 on such networks to prevent malicious interception.
 
