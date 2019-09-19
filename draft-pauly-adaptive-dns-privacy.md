@@ -693,7 +693,7 @@ that want to use it as a service to enforce desired policy.
 Clients that receive indication of filtering requirements SHOULD NOT use any other
 resolver for the filtered domains, but treat the network as claiming authority. However,
 since this filtering cannot be authenticated, this behavior SHOULD NOT be done
-silently without informing users about the implications of such filtering.
+silently without user consent.
 
 Networks that try to interfere with connections to encrypted DNS resolvers without
 indicating a requirement for filtering cannot be distinguished from misconfigurations
