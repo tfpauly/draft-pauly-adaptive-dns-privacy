@@ -227,7 +227,7 @@ the HTTPSSVC variant of the SVCB record type on "example.com".
 ~~~
 
 Clients MUST ignore any DoH server URI that was not retrieved from a
-DNSSEC-signed record {{!RFC4033}}.
+DNSSEC-signed record that was validated by the client {{!RFC4033}}.
 
 When a client resolves a name (based on the order in
 {{resolution-algorithm}}) it SHOULD determine the Designated DoH
@@ -621,7 +621,7 @@ specified in the PvD information, and from that point on uses the local DoH serv
 for "example.org", thus steering all resolution under "example.org" to the local resolver.
 
 - No DNSSEC-signed SVCB record designates the local server. In this case, clients have a hint that
-the local network can server names under "private.example.org", but does not have a way to validate
+the local network can serve names under "private.example.org", but does not have a way to validate
 the designation. Clients can in this case try to resolve names using external servers (such
 as via Oblivious DoH), and then fall back to using locally-provisioned resolvers if the names do not
 resolve externally. This approach has the risk of exposing private names to public resolvers,
@@ -664,7 +664,8 @@ In these cases, system traffic that is used for connecting to captive portals SH
 use local resolvers direction. In addition, clients MAY choose to fall back to using direct
 resolution without any encryption if they determine that all connectivity is blocked otherwise.
 Note that this comes with a risk of a network blocking connections in order to induce this
-fall-back behavior, so this SHOULD NOT be done silently.
+fall-back behavior, so clients might want to inform users about this possible attack where
+appropriate, or prefer to not fall back if there is a concern about leaking user data.
 
 ### Network-Based Filtering
 
@@ -675,19 +676,24 @@ blocking connections for filtering can be indistinguishable from a malicious att
 a client's perspective.
 
 In order to indicate the presence of filtering requirements, a network deployment
-can add the "requireDNSFiltering" key to its PvD information. This can contain
-an array of strings, each of which is a domain name that the network requires
-clients to resolve using the local resolver. If the array contains the string ".",
-it indicates the network requires filtering for all domains.
+can add the "requireDNSFiltering" and "dnsFilteredZones" keys to its PvD information.
+The "dnsFilteredZones" entry can contain an array of strings, each of which is a domain
+name that the network requires clients to resolve using the local resolver. If the array contains
+the string ".", it indicates the network requires filtering for all domains. If "requireDNSFiltering"
+is present with a boolean value of true, the network is indicating that it expects all client systems
+to send the names indicated by "dnsFilteredZones" to the local resolver. If "requireDNSFiltering"
+is not present or set to false, then the filtering service is considered to be optional for clients
+that want to use it as a service to enforce desired policy.
 
 Clients that receive indication of filtering requirements SHOULD NOT use any other
 resolver for the filtered domains, but treat the network as claiming authority. However,
 since this filtering cannot be authenticated, this behavior SHOULD NOT be done
 silently without informing any user about the implications of such filtering.
 
-If a network tries to interfere with connections to encrypted DNS resolvers without
-indicating a requirement for filtering, clients SHOULD treat this as a misconfiguration
-or network attack, and prevent user traffic from using the network.
+Networks that tries to interfere with connections to encrypted DNS resolvers without
+indicating a requirement for filtering cannot be easily distinguished from misconfigurations
+or network attacks. Clients MAY choose to avoid sending any user-initiated connections
+on such networks to prevent malicious interception.
 
 # Performance Considerations
 
@@ -747,17 +753,21 @@ by {{!I-D.ietf-intarea-provisioning-domains}}.
 |:------------|:-----------------------|:---------------------|:------------|
 | dohTemplate     | DoH URI Template {{!RFC8484}} | String | "https://dnsserver.example.net/dns-query{?dns}" |
 
-## Require DNS Filtering PvD Key
+## DNS Filtering PvD Keys
 
 This document adds a key to the "Additional Information PvD Keys" registry, defined
 by {{!I-D.ietf-intarea-provisioning-domains}}.
 
 | JSON key | Description         | Type      | Example      |
 |:------------|:-----------------------|:---------------------|:------------|
-| requireDNSFiltering    | A flag to indicate that the network requires filtering all DNS traffic using the provisioned resolver. | Array of String | [ "." ] |
+| requireDNSFiltering    | A flag to indicate that the network requires filtering all DNS traffic using the provisioned resolver. | Boolean | true |
+| dnsFilteredZones    | A list of DNS domains as strings that represent domains that can be filtered by the provisioned resolver. | Array of String | [ "." ] |
 
-An "." in the array represents a wildcard, which can be used to indicate that filtering all names is required. Any more specific
-string represents a domain that requires filtering on the network.
+Any network that sets the "requireDNSFiltering" boolean to false but provides "dnsFilteredZones" advertises the optional
+service of filtering on the provisioned network.
+
+An "." in the "dnsFilteredZones" array represents a wildcard, which can be used to indicate that the network is requesting
+to filter all names. Any more specific string represents a domain that requires filtering on the network.
 
 ## DoH URI Template DNS Parameter
 
