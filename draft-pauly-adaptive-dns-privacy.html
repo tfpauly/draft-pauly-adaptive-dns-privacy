@@ -304,12 +304,18 @@ ul.toc li {
 <link href="#rfc.section.5.2" rel="Chapter" title="5.2 Multiple Content Providers">
 <link href="#rfc.section.5.3" rel="Chapter" title="5.3 Avoid Narrow Deployments">
 <link href="#rfc.section.6" rel="Chapter" title="6 Local Resolver Deployment Considerations">
-<link href="#rfc.section.6.1" rel="Chapter" title="6.1 Local Designated DoH Servers">
+<link href="#rfc.section.6.1" rel="Chapter" title="6.1 Designating Local DoH Servers">
+<link href="#rfc.section.6.2" rel="Chapter" title="6.2 Local Use Cases">
+<link href="#rfc.section.6.2.1" rel="Chapter" title="6.2.1 Accessing Local-Only Resolvable Content">
+<link href="#rfc.section.6.2.2" rel="Chapter" title="6.2.2 Accessing Locally Optimized Content">
+<link href="#rfc.section.6.2.3" rel="Chapter" title="6.2.3 Walled-Garden and Captive Network Deployments">
+<link href="#rfc.section.6.2.4" rel="Chapter" title="6.2.4 Network-Based Filtering">
 <link href="#rfc.section.7" rel="Chapter" title="7 Performance Considerations">
 <link href="#rfc.section.8" rel="Chapter" title="8 Security Considerations">
 <link href="#rfc.section.9" rel="Chapter" title="9 IANA Considerations">
 <link href="#rfc.section.9.1" rel="Chapter" title="9.1 DoH Template PvD Key">
-<link href="#rfc.section.9.2" rel="Chapter" title="9.2 DoH URI Template DNS Parameter">
+<link href="#rfc.section.9.2" rel="Chapter" title="9.2 DNS Filtering PvD Keys">
+<link href="#rfc.section.9.3" rel="Chapter" title="9.3 DoH URI Template DNS Parameter">
 <link href="#rfc.section.10" rel="Chapter" title="10 Acknowledgments">
 <link href="#rfc.references" rel="Chapter" title="11 References">
 <link href="#rfc.references.1" rel="Chapter" title="11.1 Normative References">
@@ -322,7 +328,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Kinnear, E., Pauly, T., Wood, C., and P. McManus" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-adaptive-dns-privacy-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-9-17" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-9-20" />
   <meta name="dct.abstract" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus hiding the identity of the client requesting resolution." />
   <meta name="description" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus hiding the identity of the client requesting resolution." />
 
@@ -346,7 +352,7 @@ ul.toc li {
 <td class="right">C. Wood</td>
 </tr>
 <tr>
-<td class="left">Expires: March 20, 2020</td>
+<td class="left">Expires: March 23, 2020</td>
 <td class="right">Apple Inc.</td>
 </tr>
 <tr>
@@ -359,7 +365,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">September 17, 2019</td>
+<td class="right">September 20, 2019</td>
 </tr>
 
     	
@@ -375,7 +381,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on March 20, 2020.</p>
+<p>This Internet-Draft will expire on March 23, 2020.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -429,9 +435,19 @@ ul.toc li {
 </li>
 </ul><li>6.   <a href="#rfc.section.6">Local Resolver Deployment Considerations</a>
 </li>
-<ul><li>6.1.   <a href="#rfc.section.6.1">Local Designated DoH Servers</a>
+<ul><li>6.1.   <a href="#rfc.section.6.1">Designating Local DoH Servers</a>
 </li>
-</ul><li>7.   <a href="#rfc.section.7">Performance Considerations</a>
+<li>6.2.   <a href="#rfc.section.6.2">Local Use Cases</a>
+</li>
+<ul><li>6.2.1.   <a href="#rfc.section.6.2.1">Accessing Local-Only Resolvable Content</a>
+</li>
+<li>6.2.2.   <a href="#rfc.section.6.2.2">Accessing Locally Optimized Content</a>
+</li>
+<li>6.2.3.   <a href="#rfc.section.6.2.3">Walled-Garden and Captive Network Deployments</a>
+</li>
+<li>6.2.4.   <a href="#rfc.section.6.2.4">Network-Based Filtering</a>
+</li>
+</ul></ul><li>7.   <a href="#rfc.section.7">Performance Considerations</a>
 </li>
 <li>8.   <a href="#rfc.section.8">Security Considerations</a>
 </li>
@@ -439,7 +455,9 @@ ul.toc li {
 </li>
 <ul><li>9.1.   <a href="#rfc.section.9.1">DoH Template PvD Key</a>
 </li>
-<li>9.2.   <a href="#rfc.section.9.2">DoH URI Template DNS Parameter</a>
+<li>9.2.   <a href="#rfc.section.9.2">DNS Filtering PvD Keys</a>
+</li>
+<li>9.3.   <a href="#rfc.section.9.3">DoH URI Template DNS Parameter</a>
 </li>
 </ul><li>10.   <a href="#rfc.section.10">Acknowledgments</a>
 </li>
@@ -545,7 +563,7 @@ ul.toc li {
                                        dohuri=https://doh.example.net/dns-query
                                        odohkey="..." )
 </pre>
-<p id="rfc.section.3.1.p.8">Clients MUST ignore any DoH server URI that was not retrieved from a DNSSEC-signed record <a href="#RFC4033" class="xref">[RFC4033]</a>.</p>
+<p id="rfc.section.3.1.p.8">Clients MUST ignore any DoH server URI that was not retrieved from a DNSSEC-signed record that was validated by the client <a href="#RFC4033" class="xref">[RFC4033]</a>.</p>
 <p id="rfc.section.3.1.p.9">When a client resolves a name (based on the order in <a href="#resolution-algorithm" class="xref">Section 3.3</a>) it SHOULD determine the Designated DoH Server via a SVCB record for any name that does not fall within known Designated DoH Server&#8217;s configuration. The client MAY also issue queries for the SVCB record for more specific names to discover further Designated DoH Servers.</p>
 <p id="rfc.section.3.1.p.10">In order to bootstrap discovery of Designated DoH Servers, client systems SHOULD have some saved list of at least two names that they use consistently to perform SVCB record queries on the Direct Resolvers configured by the local network. Since these queries are likely not private, they SHOULD NOT be associated with user action or contain user-identifying content. Rather, the expection is that all client systems of the same version and configuration would issue the same bootstrapping queries when joining a network for the first time when the list of Designated DoH Servers is empty.</p>
 <h1 id="rfc.section.3.1.1">
@@ -686,10 +704,49 @@ cache-control = max-age=86400
 <p id="rfc.section.6.p.1">A key goal of Adaptive DNS is that clients will be able to use Designated DoH Servers to improve the privacy of queries, without entirely bypassing local network authority and policy. For example, if a client is attached to an enterprise Wi-Fi network that provides access and resolution for private names not generally accessible on the Internet, such names will only be usable when a local resolver is used.</p>
 <p id="rfc.section.6.p.2">In order to achieve this, a local network can advertise itself as authoritative for a domain, allowing it to be used prior to external servers in the client resolution algorithm <a href="#resolution-algorithm" class="xref">Section 3.3</a>.</p>
 <h1 id="rfc.section.6.1">
-<a href="#rfc.section.6.1">6.1.</a> <a href="#local-designated-doh-servers" id="local-designated-doh-servers">Local Designated DoH Servers</a>
+<a href="#rfc.section.6.1">6.1.</a> <a href="#designating-local-servers" id="designating-local-servers">Designating Local DoH Servers</a>
 </h1>
-<p id="rfc.section.6.1.p.1">If a local network wants to have clients send queries for a set of private domains to its own resolver, it needs to define an explicit provisioning domain, as defined in <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>.  The PvD RA option SHOULD set the H-flag to indicate that Additional Information is available.  This Additional Information JSON object SHOULD include both the &#8220;dohTemplate&#8221; and &#8220;dnsZones&#8221; keys to define the local DoH server and which domains it claims authority over.</p>
-<p id="rfc.section.6.1.p.2">Although local Designated DoH Servers MAY support proxying Oblivious DoH queries, a client SHOULD NOT select one of these servers as an Oblivious Proxy. Doing so might reveal the client&#8217;s location to the Target based on the address of the proxy, which could contribute to deanonymizing the client.  Clients can make an exception to this behavior if the DoH server designated by the local network is known to be a non-local service, such as when a local network configures a centralized public resolver to handle its DNS operations.</p>
+<p id="rfc.section.6.1.p.1">If a local network wants to have clients send queries for a set of private domains to its own resolver, it needs to define an explicit provisioning domain, as defined in <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>.  The PvD RA option SHOULD set the H-flag to indicate that Additional Information is available.  This Additional Information JSON object SHOULD include both the &#8220;dohTemplate&#8221; and &#8220;dnsZones&#8221; keys to define the local DoH server and the domains over which it claims authority.</p>
+<p id="rfc.section.6.1.p.2">In order to validate that a local resolver is designated for a given zone, the client SHOULD issue a SVCB record query for the names specified in the PvD information, using the DoH server specified in the PvD information. If there is no SVCB record for a name that points to the DoH server that can be validated using DNSSEC, the client SHOULD NOT automatically create a designation from the domain name to DoH server.  See specific use cases in <a href="#local-use-cases" class="xref">Section 6.2</a> for cases in which a local resolver may still be used.</p>
+<p id="rfc.section.6.1.p.3">Although local Designated DoH Servers MAY support proxying Oblivious DoH queries, a client SHOULD NOT select one of these servers as an Oblivious Proxy. Doing so might reveal the client&#8217;s location to the Target based on the address of the proxy, which could contribute to deanonymizing the client.  Clients can make an exception to this behavior if the DoH server designated by the local network is known to be a non-local service, such as when a local network configures a centralized public resolver to handle its DNS operations.</p>
+<h1 id="rfc.section.6.2">
+<a href="#rfc.section.6.2">6.2.</a> <a href="#local-use-cases" id="local-use-cases">Local Use Cases</a>
+</h1>
+<p id="rfc.section.6.2.p.1">The various use cases for selecting locally-provisioned resolvers require different approaches for deployment and client resolution. The following list is not exhaustive, but provides guidance on how these scenarios can be achieved using the Adaptive DNS algorithm.</p>
+<h1 id="rfc.section.6.2.1">
+<a href="#rfc.section.6.2.1">6.2.1.</a> <a href="#accessing-local-only-resolvable-content" id="accessing-local-only-resolvable-content">Accessing Local-Only Resolvable Content</a>
+</h1>
+<p id="rfc.section.6.2.1.p.1">Some names are not resolvable using generic DNS resolvers, but require using a DNS server that can resolve private names. This is common in enterprise scenarios, in which an enterprise can have a set of private names that it allows to be resolved when connected to a VPN or an enterprise-managed Wi-Fi network. In this case, clients that do not use the locally-provisioned resolver will fail to resolve private names.</p>
+<p id="rfc.section.6.2.1.p.2">In these scenarios, the local network SHOULD designate a local DoH server for the domains that are locally resolvable. For example, an enterprise that owns &#8220;private.example.org&#8221; would advertise &#8220;private.example.org&#8221; in its PvD information along with a DoH URI template. Clients could then use that locally-configured resolver with names under &#8220;private.example.org&#8221; according to the rules in <a href="#designating-local-servers" class="xref">Section 6.1</a>.</p>
+<p id="rfc.section.6.2.1.p.3">In general, clients SHOULD only create designated DoH server associations when they can validate a SVCB record using DNSSEC. However, some deployments of private names might not want to sign all private names within a zone. There are thus a few possible deployment models:</p>
+<p></p>
+
+<ul>
+<li>&#8220;private.example.org&#8221; does have a DNSSEC-signed SVCB record that points to the local DoH server.  The client requests the SVCB record for &#8220;private.example.org&#8221; using the local DoH server that is specified in the PvD information, and from that point on uses the local DoH server for names under &#8220;private.example.org&#8221;.</li>
+<li>Instead of signing &#8220;private.example.org&#8221;, the deployment provides a DNSSEC-signed SVCB record for &#8220;example.org&#8221;, thus steering all resolution under &#8220;example.org&#8221; to the local resolver.</li>
+<li>No DNSSEC-signed SVCB record designates the local server. In this case, clients have a hint that the local network can serve names under &#8220;private.example.org&#8221;, but do not have a way to validate the designation. Clients can in this case try to resolve names using external servers (such as via Oblivious DoH), and then MAY fall back to using locally-provisioned resolvers if the names do not resolve externally. This approach has the risk of exposing private names to public resolvers, which can be undesirable for certain enterprise deployments. Alternatively, if the client trusts the local network based on specific policy configured on the client, it can choose to resolve these names locally first. Note that this approach risks exposing names to a potentially malicious network that is masquerading as an authority for private names if the network cannot be validated in some other manner.</li>
+</ul>
+<p id="rfc.section.6.2.1.p.5">Deployments SHOULD use the one of the first two approaches (signing their records) whenever possible; the case of providing unsigned names is only described as a possibility for handling legacy enterprise deployments. Clients SHOULD choose to ignore any locally designated names that are not signed unless there is a specific policy configuration on the client.</p>
+<h1 id="rfc.section.6.2.2">
+<a href="#rfc.section.6.2.2">6.2.2.</a> <a href="#accessing-locally-optimized-content" id="accessing-locally-optimized-content">Accessing Locally Optimized Content</a>
+</h1>
+<p id="rfc.section.6.2.2.p.1">Other names may be resolvable both publicly and on the local resolver, but have more optimized servers that are accessible only via the local network. For example, a Wi-Fi provider may provide access to a cache of video content that provides lower latency than publicly-accessible caches.</p>
+<p id="rfc.section.6.2.2.p.2">Names that are hosted locally in this way SHOULD use a designation with a DNSSEC-signed SVCB record for the name. If a client discovers that a local resolver is designated for a given name, the client SHOULD prefer using connections to this locally-hosted content rather than names resolved externally.</p>
+<p id="rfc.section.6.2.2.p.3">Note that having a DNSSEC-signed designation to the local resolver provides a clear indication that the entity that manages a given name has an explicit relationship with the local network provider.</p>
+<h1 id="rfc.section.6.2.3">
+<a href="#rfc.section.6.2.3">6.2.3.</a> <a href="#walled-garden-and-captive-network-deployments" id="walled-garden-and-captive-network-deployments">Walled-Garden and Captive Network Deployments</a>
+</h1>
+<p id="rfc.section.6.2.3.p.1">Some networks do not provide any access to the general Internet, but host local content that clients can access. For example, a network on an airplane can give access to flight information and in-flight media, but will not allow access to any external hosts or DNS servers. These networks are often described as &#8220;walled-gardens&#8221;.</p>
+<p id="rfc.section.6.2.3.p.2">Captive networks <a href="#I-D.ietf-capport-architecture" class="xref">[I-D.ietf-capport-architecture]</a> are similar in that they block access to external hosts, although they can provide generic access after some time.</p>
+<p id="rfc.section.6.2.3.p.3">If a walled-garden or captive network defines a PvD with additional information, it can define zones for names that it hosts, such as &#8220;airplane.example.com&#8221;. It can also provide a locally-hosted encrypted DNS server.</p>
+<p id="rfc.section.6.2.3.p.4">However, if such a network does not support explicitly advertising local names, clients that try to establish connections to DoH servers will experience connection failures.  In these cases, system traffic that is used for connecting to captive portals SHOULD use local resolvers. In addition, clients MAY choose to fall back to using direct resolution without any encryption if they determine that all connectivity is blocked otherwise.  Note that this comes with a risk of a network blocking connections in order to induce this fallback behavior, so clients might want to inform users about this possible attack where appropriate, or prefer to not fall back if there is a concern about leaking user data.</p>
+<h1 id="rfc.section.6.2.4">
+<a href="#rfc.section.6.2.4">6.2.4.</a> <a href="#network-based-filtering" id="network-based-filtering">Network-Based Filtering</a>
+</h1>
+<p id="rfc.section.6.2.4.p.1">Some networks currently rely on manipulating DNS name resolution in order to apply content filtering rules to clients associated with the network. Using encrypted DNS resolvers that are not participating in this filtering can bypass such enforcement. However, simply blocking connections for filtering is indistinguishable from a malicious attack from a client&#8217;s perspective.</p>
+<p id="rfc.section.6.2.4.p.2">In order to indicate the presence of filtering requirements, a network deployment can add the &#8220;requireDNSFiltering&#8221; and &#8220;dnsFilteredZones&#8221; keys to its PvD information.  The &#8220;dnsFilteredZones&#8221; entry can contain an array of strings, each of which is a domain name that the network requires clients to resolve using the local resolver. If the array contains the string &#8220;.&#8221;, it indicates the network requires filtering for all domains. If &#8220;requireDNSFiltering&#8221; is present with a boolean value of true, the network is indicating that it expects all client systems to send the names indicated by &#8220;dnsFilteredZones&#8221; to the local resolver. If &#8220;requireDNSFiltering&#8221; is not present or set to false, then the filtering service is considered to be optional for clients that want to use it as a service to enforce desired policy.</p>
+<p id="rfc.section.6.2.4.p.3">Clients that receive indication of filtering requirements SHOULD NOT use any other resolver for the filtered domains, but treat the network as claiming authority. However, since this filtering cannot be authenticated, this behavior SHOULD NOT be done silently without user consent.</p>
+<p id="rfc.section.6.2.4.p.4">Networks that try to interfere with connections to encrypted DNS resolvers without indicating a requirement for filtering cannot be distinguished from misconfigurations or network attacks. Clients MAY choose to avoid sending any user-initiated connections on such networks to prevent malicious interception.</p>
 <h1 id="rfc.section.7">
 <a href="#rfc.section.7">7.</a> <a href="#performance-considerations" id="performance-considerations">Performance Considerations</a>
 </h1>
@@ -725,9 +782,37 @@ cache-control = max-age=86400
 </tr></tbody>
 </table>
 <h1 id="rfc.section.9.2">
-<a href="#rfc.section.9.2">9.2.</a> <a href="#doh-uri-template-dns-parameter" id="doh-uri-template-dns-parameter">DoH URI Template DNS Parameter</a>
+<a href="#rfc.section.9.2">9.2.</a> <a href="#dns-filtering-pvd-keys" id="dns-filtering-pvd-keys">DNS Filtering PvD Keys</a>
 </h1>
-<p id="rfc.section.9.2.p.1">If present, this parameters indicates the URI template of a DoH server that is designated for use with the name being resolved. This is a string encoded as UTF-8 characters.</p>
+<p id="rfc.section.9.2.p.1">This document adds a key to the &#8220;Additional Information PvD Keys&#8221; registry, defined by <a href="#I-D.ietf-intarea-provisioning-domains" class="xref">[I-D.ietf-intarea-provisioning-domains]</a>.</p>
+<table cellpadding="3" cellspacing="0" class="tt full center">
+<thead><tr>
+<th class="left">JSON key</th>
+<th class="left">Description</th>
+<th class="left">Type</th>
+<th class="left">Example</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="left">requireDNSFiltering</td>
+<td class="left">A flag to indicate that the network requires filtering all DNS traffic using the provisioned resolver.</td>
+<td class="left">Boolean</td>
+<td class="left">true</td>
+</tr>
+<tr>
+<td class="left">dnsFilteredZones</td>
+<td class="left">A list of DNS domains as strings that represent domains that can be filtered by the provisioned resolver.</td>
+<td class="left">Array of String</td>
+<td class="left">[ &#8220;.&#8221; ]</td>
+</tr>
+</tbody>
+</table>
+<p id="rfc.section.9.2.p.2">Any network that sets the &#8220;requireDNSFiltering&#8221; boolean to false but provides &#8220;dnsFilteredZones&#8221; advertises the optional service of filtering on the provisioned network.</p>
+<p id="rfc.section.9.2.p.3">An &#8220;.&#8221; in the &#8220;dnsFilteredZones&#8221; array represents a wildcard, which can be used to indicate that the network is requesting to filter all names. Any more specific string represents a domain that requires filtering on the network.</p>
+<h1 id="rfc.section.9.3">
+<a href="#rfc.section.9.3">9.3.</a> <a href="#doh-uri-template-dns-parameter" id="doh-uri-template-dns-parameter">DoH URI Template DNS Parameter</a>
+</h1>
+<p id="rfc.section.9.3.p.1">If present, this parameters indicates the URI template of a DoH server that is designated for use with the name being resolved. This is a string encoded as UTF-8 characters.</p>
 <p></p>
 
 <dl>
@@ -797,6 +882,11 @@ cache-control = max-age=86400
 <h1 id="rfc.references.2">
 <a href="#rfc.references.2">11.2.</a> Informative References</h1>
 <table><tbody>
+<tr>
+<td class="reference"><b id="I-D.ietf-capport-architecture">[I-D.ietf-capport-architecture]</b></td>
+<td class="top">
+<a>Larose, K.</a> and <a>D. Dolson</a>, "<a href="https://tools.ietf.org/html/draft-ietf-capport-architecture-04">CAPPORT Architecture</a>", Internet-Draft draft-ietf-capport-architecture-04, June 2019.</td>
+</tr>
 <tr>
 <td class="reference"><b id="RFC2119">[RFC2119]</b></td>
 <td class="top">
