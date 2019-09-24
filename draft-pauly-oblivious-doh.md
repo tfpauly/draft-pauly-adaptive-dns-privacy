@@ -200,7 +200,7 @@ content-length = 154
 
 In order to use a DoH server as an Oblivious Target, the client must know a public key to use
 for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type
-({{!I-D.nygren-httpbis-httpssvc}}) for a name owned by the server.
+({{!I-D.nygren-dnsop-svcb-httpssvc}}) for a name owned by the server.
 
 The key name is "odohkey", and has an encoded SvcParamKey value of 5. If present, this key/value
 pair contains the public key to use when encrypting Oblivious DoH messages
@@ -383,7 +383,7 @@ Change controller: IETF
 ## Oblivious DoH Public Key DNS Parameter
 
 This document defines one new key to be added to the Service Binding (SVCB) Parameter Registry,
-as defined in {{!I-D.nygren-httpbis-httpssvc}}.
+as defined in {{!I-D.nygren-dnsop-svcb-httpssvc}}.
 
 Name:
 : odohkey

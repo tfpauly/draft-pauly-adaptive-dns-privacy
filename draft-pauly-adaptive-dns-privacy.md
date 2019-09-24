@@ -204,7 +204,7 @@ that is associated with each server is:
 
 This information can be retrieved from several different sources. The primary source
 for discovering Designated DoH Server configurations is from properties stored in a
-SVCB (or a SVCB-conformant type like HTTPSSVC) DNS Record {{!I-D.nygren-httpbis-httpssvc}}.
+SVCB (or a SVCB-conformant type like HTTPSSVC) DNS Record {{!I-D.nygren-dnsop-svcb-httpssvc}}.
 This record provides the URI Template and the public Oblivious DoH key of a DoH server
 that is designated for a specific domain. A specific domain may have more
 than one such record.
