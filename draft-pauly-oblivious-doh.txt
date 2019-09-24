@@ -5,10 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: March 15, 2020                                       Apple Inc.
+Expires: March 27, 2020                                       Apple Inc.
                                                               P. McManus
                                                                   Fastly
-                                                      September 12, 2019
+                                                      September 24, 2019
 
 
                         Oblivious DNS Over HTTPS
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 15, 2020.
+   This Internet-Draft will expire on March 27, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kinnear, et al.          Expires March 15, 2020                 [Page 1]
+Kinnear, et al.          Expires March 27, 2020                 [Page 1]
 
 Internet-Draft                Oblivious DoH               September 2019
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Kinnear, et al.          Expires March 15, 2020                 [Page 2]
+Kinnear, et al.          Expires March 27, 2020                 [Page 2]
 
 Internet-Draft                Oblivious DoH               September 2019
 
@@ -165,7 +165,7 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 15, 2020                 [Page 3]
+Kinnear, et al.          Expires March 27, 2020                 [Page 3]
 
 Internet-Draft                Oblivious DoH               September 2019
 
@@ -221,7 +221,7 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 15, 2020                 [Page 4]
+Kinnear, et al.          Expires March 27, 2020                 [Page 4]
 
 Internet-Draft                Oblivious DoH               September 2019
 
@@ -277,7 +277,7 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 15, 2020                 [Page 5]
+Kinnear, et al.          Expires March 27, 2020                 [Page 5]
 
 Internet-Draft                Oblivious DoH               September 2019
 
@@ -287,7 +287,7 @@ Internet-Draft                Oblivious DoH               September 2019
    In order to use a DoH server as an Oblivious Target, the client must
    know a public key to use for encrypting its queries.  This key can be
    discovered using the SVCB or HTTPSSVC record type
-   ([I-D.nygren-httpbis-httpssvc]) for a name owned by the server.
+   ([I-D.nygren-dnsop-svcb-httpssvc]) for a name owned by the server.
 
    The key name is "odohkey", and has an encoded SvcParamKey value of 5.
    If present, this key/value pair contains the public key to use when
@@ -333,7 +333,7 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 15, 2020                 [Page 6]
+Kinnear, et al.          Expires March 27, 2020                 [Page 6]
 
 Internet-Draft                Oblivious DoH               September 2019
 
@@ -389,7 +389,7 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 15, 2020                 [Page 7]
+Kinnear, et al.          Expires March 27, 2020                 [Page 7]
 
 Internet-Draft                Oblivious DoH               September 2019
 
@@ -445,7 +445,7 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 15, 2020                 [Page 8]
+Kinnear, et al.          Expires March 27, 2020                 [Page 8]
 
 Internet-Draft                Oblivious DoH               September 2019
 
@@ -501,7 +501,7 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 15, 2020                 [Page 9]
+Kinnear, et al.          Expires March 27, 2020                 [Page 9]
 
 Internet-Draft                Oblivious DoH               September 2019
 
@@ -521,7 +521,7 @@ Internet-Draft                Oblivious DoH               September 2019
 
    This document defines one new key to be added to the Service Binding
    (SVCB) Parameter Registry, as defined in
-   [I-D.nygren-httpbis-httpssvc].
+   [I-D.nygren-dnsop-svcb-httpssvc].
 
    Name:  odohkey
 
@@ -557,16 +557,16 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 15, 2020                [Page 10]
+Kinnear, et al.          Expires March 27, 2020                [Page 10]
 
 Internet-Draft                Oblivious DoH               September 2019
 
 
-   [I-D.nygren-httpbis-httpssvc]
-              Schwartz, B., Bishop, M., and E. Nygren, "HTTPSSVC service
-              location and parameter specification via the DNS (DNS
-              HTTPSSVC)", draft-nygren-httpbis-httpssvc-03 (work in
-              progress), July 2019.
+   [I-D.nygren-dnsop-svcb-httpssvc]
+              Schwartz, B., Bishop, M., and E. Nygren, "Service binding
+              and parameter specification via the DNS (DNS SVCB and
+              HTTPSSVC)", draft-nygren-dnsop-svcb-httpssvc-00 (work in
+              progress), September 2019.
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
@@ -613,7 +613,7 @@ Authors' Addresses
 
 
 
-Kinnear, et al.          Expires March 15, 2020                [Page 11]
+Kinnear, et al.          Expires March 27, 2020                [Page 11]
 
 Internet-Draft                Oblivious DoH               September 2019
 
@@ -669,4 +669,4 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 15, 2020                [Page 12]
+Kinnear, et al.          Expires March 27, 2020                [Page 12]
