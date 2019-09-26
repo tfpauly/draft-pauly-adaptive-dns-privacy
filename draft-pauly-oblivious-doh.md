@@ -134,10 +134,10 @@ server. Likewise, when connecting to the proxy the client should use
 the proxy target's information for HTTPS certificate selection via SNI
 and when validating the resulting certificate.
 
-Oblivious DoH messages have no cache value since both requests and responses are encrypted using ephemeral key material.
-proxies to satisfy future requests due to the nature of their
-encrypted message bodies. Clients SHOULD use HTTP and DoH methods and
-headers that will prevent unhelpful cache storage of these exchanges.
+Oblivious DoH messages have no cache value since both requests and responses are
+encrypted using ephemeral key material. Clients SHOULD prefer using HTTP methods and
+headers that will prevent unhelpful cache storage of these exchanges (i.e., preferring POST
+instead of GET).
 
 Clients MUST set the HTTP Content-Type header to "application/oblivious-dns-message"
 to indicate that this request is an Oblivious DoH query intended for proxying. Clients also SHOULD
