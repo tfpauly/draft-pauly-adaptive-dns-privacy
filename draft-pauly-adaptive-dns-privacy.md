@@ -793,4 +793,6 @@ Reference:
 
 # Acknowledgments
 
-Thanks to Erik Nygren, Lorenzo Colitti, and Patrick McManus for their input on this approach.
+Thanks to Erik Nygren, Lorenzo Colitti, Tommy Jensen, Mikael Abrahamsson,
+Ben Schwartz, Ask Hansen, Leif Hedstrom, and Ted Lemon for their feedback
+and input on this document.

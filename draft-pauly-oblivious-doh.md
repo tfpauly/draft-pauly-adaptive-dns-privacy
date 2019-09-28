@@ -400,4 +400,5 @@ Reference:
 # Acknowledgments
 
 This work is inspired by Oblivious DNS {{?I-D.annee-dprive-oblivious-dns}}. Thanks to all of the
-authors of that document. Thanks to Frederic Jacobs for feedback on this document.
+authors of that document. Thanks to Frederic Jacobs, Paul Schmitt, Brian Swander, and
+Tommy Jensen for the feedback and input.
