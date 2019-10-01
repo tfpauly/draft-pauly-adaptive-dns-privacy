@@ -260,7 +260,7 @@ expected to support acting as a target for Oblivious DoH. A client MUST issue at
 least one query that is targeted at the server through a proxy before sending direct queries
 to the server.
 
-Designated DoH Servers are expected to act both as Oblivious Proxies and Oblivious Targets
+Designated DoH Servers are expected to act both as Oblivious Proxies and as Oblivious Targets
 to ensure that clients have sufficient options for preserving privacy using Oblivious DoH.
 Oblivious Targets are expected to act as Oblivious Proxies to ensure that no Oblivious DoH server
 can act as only a target (thus being able to see patterns in name resolution, which might have
@@ -282,7 +282,7 @@ if this server provides an extended configuration in the form of a Web PvD ({{co
 To do this, the client performs a GET request to the DoH URI, indicating that it accepts
 a media type of “application/pvd+json” {{!I-D.ietf-intarea-provisioning-domains}}. When requesting
 the PvD information, the query and fragment components of the requested path SHOULD be left
-empty. Note that this is different from GET requests for the “application/dns-message” type,
+empty. Note that this is different from a GET request for the “application/dns-message” type,
 in which the query variable "dns" contains an encoded version of a DNS message.
 
 In response, the server will return the JSON content for the PvD, if present. The content-type
@@ -344,7 +344,7 @@ to first determine which resolver configuration ought to be used for DNS resolut
 
 Several of the steps outlined in this algorithm take into account the success or failure
 of name resolution. Failure can be indicated either by a DNS response, such as SERVFAIL
-NXDOMAIN, or by a connection-level failure, such as a TCP reset, and TLS handshake failure,
+or NXDOMAIN, or by a connection-level failure, such as a TCP reset, and TLS handshake failure,
 or an HTTP response error status. In effect, any unsuccessful attempt to resolve a name
 can cause the client to try another resolver if permitted by the algorithm. This is
 particularly useful for cases in which a name may not be resolvable over public DNS,
@@ -730,7 +730,7 @@ by the recursive using the EDNS0 Client Subnet feature. Oblvious DoH discourages
 for privacy reasons. However, sharing this subnet, while detrimental to privacy, can result in
 better targeted DNS resolutions.
 
-Adaptive DNS splits DoH queries up into two sets: those made to Designated DoH Servers,
+Adaptive DNS splits DoH queries into two sets: those made to Designated DoH Servers,
 and those made to Oblivious DoH servers. Oblivious queries are sensitive for privacy,
 and can encounter performance degradation as a result of not using the client subnet.
 Queries to designated DoH servers, on the other hand, are sent directly by clients, so
