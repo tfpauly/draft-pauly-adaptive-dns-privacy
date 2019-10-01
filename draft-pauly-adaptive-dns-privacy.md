@@ -127,8 +127,8 @@ This document defines the following terms:
 
 Adaptive DNS:
 : Adaptive DNS is a technique to provide an encrypted transport for DNS queries that can
-be sent directly to a Designated DoH Server, use Oblivious DoH to hide the client
-IP address, or use Direct Resolvers when required or appropriate.
+be sent directly to a Designated DoH Server, to use Oblivious DoH to hide the client
+IP address, or to use Direct Resolvers when required or appropriate.
 
 Designated DoH Server:
 : A DNS resolver that provides connectivity over HTTPS (DoH) that is designated as a
@@ -166,7 +166,7 @@ and other information that a server deployment makes available to clients. See {
 # Client Behavior {#client}
 
 Adaptive DNS allows client systems and applications to improve the privacy
-of their DNS queries and connections both by requiring confidentiality via encryption
+of their DNS queries and connections, both by requiring confidentiality via encryption,
 and by limiting the ability to correlate client IP addresses with query contents.
 Specifically, the goal for client queries is to achieve the following
 properties:
@@ -177,7 +177,7 @@ names being queried by the client or the answers being returned by the server.
 2. Only a designated DNS resolver associated with the deployment that is also
 hosting content will be able to read both the client IP address and queried names for
 Privacy-Sensitive Connections. For example, a resolver owned and operated by the same
-provider which hosts "example.com" would be able to link queries for "example.com" to specific clients
+provider that hosts "example.com" would be able to link queries for "example.com" to specific clients
 (by their IP address), since the server ultimately has this capability once clients subsequently
 establish secure (e.g., TLS) connections to an address to which "example.com" resolves.
 
@@ -199,7 +199,7 @@ Clients dynamically build and maintain a set of known Designated DoH Servers. Th
 that is associated with each server is:
 
 - The URI Template of the DoH server {{!RFC8484}}
-- The public HPKE {{!I-D.irtf-cfrg-hpke}} key of the DoH server used for proxied oblivious queries, as defined in {{OBLIVIOUS}}
+- The public HPKE {{!I-D.irtf-cfrg-hpke}} key of the DoH server used for proxied oblivious queries {{OBLIVIOUS}}
 - A list of domains for which the DoH server is designated
 
 This information can be retrieved from several different sources. The primary source
@@ -273,7 +273,7 @@ as ".com".
 ### Accessing Extended Information
 
 When a Designated DoH Server is discovered, clients SHOULD also check to see
-if this server provides an extended configuration in the form of a Web PvD {{configuration}}.
+if this server provides an extended configuration in the form of a Web PvD ({{configuration}}).
 To do this, the client performs a GET request to the DoH URI, indicating that it accepts
 a media type of “application/pvd+json” ({{!I-D.ietf-intarea-provisioning-domains}})
 and with empty query and fragment components.
@@ -308,7 +308,7 @@ cache-control = max-age=86400
 If the server does not support retrieving any extended PvD information, it MUST
 reply with HTTP status code 415 (Unsupported Media Type, {{!RFC7231}}).
 
-If the retrieved JSON contains a "dnsZones" array ({{!I-D.ietf-intarea-provisioning-domains}}),
+If the retrieved JSON contains a "dnsZones" array {{!I-D.ietf-intarea-provisioning-domains}},
 the client SHOULD perform an SVCB record lookup of each of the listed zones on the DoH
 server and validate that the DoH server is a designated server for the domain; and if it is,
 add the domain to the local configuration.
@@ -320,10 +320,10 @@ defined by {{!I-D.ietf-intarea-provisioning-domains}}, clients can learn about d
 for which the local network's resolver is authoritative.
 
 If an RA provided by the router on the network defines an Explicit PvD that has additional
-information, and this additional information JSON dictionary contains the key "dohTemplate" {{iana}},
+information, and this additional information JSON dictionary contains the key "dohTemplate" ({{iana}}),
 then the client SHOULD add this DoH server to its list of known DoH configurations. The
 domains that the DoH server claims authority for are listed in the "dnsZones" key. Clients
-MUST use a SVCB record from the locally-provisioned DoH server and validate
+MUST use an SVCB record from the locally-provisioned DoH server and validate
 the answer with DNSSEC {{!RFC4033}} before creating a mapping from the domain to the server.
 Once this has been validated, clients can use this server for resolution as described in
 step 2 of {{resolution-algorithm}}.
@@ -371,7 +371,7 @@ For all privacy-sensitive connection queries for names that do not correspond
 to a Designated DoH Server, the client SHOULD use Oblivious DoH to help
 conceal its IP address from eavesdroppers and untrusted resolvers.
 
-Disassociation of client IPs from query content is achieved by using Oblivious DoH ({{OBLIVIOUS}}).
+Disassociation of client IPs from query content is achieved by using Oblivious DoH {{OBLIVIOUS}}.
 This extension to DoH allows a client to encrypt a query with a target DoH server's public
 key, and proxy the query through another server. The query is packaged with a unique
 client-defined symmetric key that is used to sign the DNS answer, which is sent
@@ -429,7 +429,7 @@ answers using client keys.
 
 In order to support acting as an Oblivious Target, a DoH server needs to provide a public
 HPKE {{!I-D.irtf-cfrg-hpke}} key that can be used to encrypt client queries. This key is advertised
-in the SVCB record, and encoded according to {{OBLIVIOUS}}.
+in the SVCB record {{OBLIVIOUS}}.
 
 DoH servers also SHOULD provide an ESNI {{!I-D.ietf-tls-esni}} key to encrypt the Server
 Name Indication field in TLS handshakes to the DoH server.
@@ -571,7 +571,7 @@ allowing it to be used prior to external servers in the client resolution algori
 ## Designating Local DoH Servers {#designating-local-servers}
 
 If a local network wants to have clients send queries for a set of private domains to its own resolver,
-it needs to define an explicit provisioning domain, as defined in {{!I-D.ietf-intarea-provisioning-domains}}.
+it needs to define an explicit provisioning domain {{!I-D.ietf-intarea-provisioning-domains}}.
 The PvD RA option SHOULD set the H-flag to indicate that Additional Information is available.
 This Additional Information JSON object SHOULD include both the "dohTemplate" and "dnsZones"
 keys to define the local DoH server and the domains over which it claims authority.
@@ -732,7 +732,7 @@ In order to avoid interception and modification of the information retrieved by 
 using Adaptive DNS, all exchanges between clients and servers are performed over
 TLS connections.
 
-Clients must also be careful in determining which DoH servers they send queries to
+Clients must also be careful in determining to which DoH servers they send queries
 directly without proxying. In order to avoid the possibility of a spoofed SVCB
 record defining a malicious DoH server as authoritiative, clients MUST ensure that
 such records validate using DNSSEC {{!RFC4033}}. Even servers that are officially designated
@@ -740,7 +740,7 @@ can risk leaking or logging information about client lookups.
 Such risk can be mitigated by validating that the DoH servers can present proof
 of logging audits, or by a local whitelist of servers maintained by a client.
 
-Clients should take caution when using Oblivious DoH responses from resolvers that do not
+Clients should exercise caution when using Oblivious DoH responses from resolvers that do not
 carry DNSSEC signatures. An adversarial Target resolver that wishes to learn the IP address
 of clients requesting resolution for sensitive domains can redirect clients to addresses
 of its choosing. Clients that use these answers to open direct connections to the server
@@ -751,8 +751,7 @@ SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or some other tun
 
 ## DoH Template PvD Key
 
-This document adds a key to the "Additional Information PvD Keys" registry, defined
-by {{!I-D.ietf-intarea-provisioning-domains}}.
+This document adds a key to the "Additional Information PvD Keys" registry {{!I-D.ietf-intarea-provisioning-domains}}.
 
 | JSON key | Description         | Type      | Example      |
 |:------------|:-----------------------|:---------------------|:------------|
@@ -760,8 +759,7 @@ by {{!I-D.ietf-intarea-provisioning-domains}}.
 
 ## DNS Filtering PvD Keys
 
-This document adds a key to the "Additional Information PvD Keys" registry, defined
-by {{!I-D.ietf-intarea-provisioning-domains}}.
+This document adds a key to the "Additional Information PvD Keys" registry {{!I-D.ietf-intarea-provisioning-domains}}.
 
 | JSON key | Description         | Type      | Example      |
 |:------------|:-----------------------|:---------------------|:------------|
@@ -794,5 +792,5 @@ Reference:
 # Acknowledgments
 
 Thanks to Erik Nygren, Lorenzo Colitti, Tommy Jensen, Mikael Abrahamsson,
-Ben Schwartz, Ask Hansen, Leif Hedstrom, and Ted Lemon for their feedback
-and input on this document.
+Ben Schwartz, Ask Hansen, Leif Hedstrom, Tim McCoy, Stuart Cheshire, Miguel Vega,
+Joey Deng, and Ted Lemon for their feedback and input on this document.
