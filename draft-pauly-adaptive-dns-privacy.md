@@ -344,10 +344,10 @@ to first determine which resolver configuration ought to be used for DNS resolut
 
 Several of the steps outlined in this algorithm take into account the success or failure
 of name resolution. Failure can be indicated either by a DNS response, such as SERVFAIL
-or NXDOMAIN, or by a connection-level failure, such as a TCP reset, and TLS handshake failure,
+or NXDOMAIN, or by a connection-level failure, such as a TCP reset, TLS handshake failure,
 or an HTTP response error status. In effect, any unsuccessful attempt to resolve a name
 can cause the client to try another resolver if permitted by the algorithm. This is
-particularly useful for cases in which a name may not be resolvable over public DNS,
+particularly useful for cases in which a name may not be resolvable over public DNS
 but has a valid answer only on the local network.
 
 Given a specific hostname, the order of preference for which resolver to use

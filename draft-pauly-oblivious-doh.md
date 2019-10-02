@@ -108,7 +108,7 @@ Oblivious Target.
 - Public keys for encrypting DNS queries that are passed from a client through a proxy
 to a target ({{publickey}}). These keys guarantee that only the intended Oblivious Target
 can decrypt client queries.
-- Client ability to generate one-time-use symmetric keys to encrypt DNS responses. These
+- Client ability to generate random {{!RFC4086}} one-time-use symmetric keys to encrypt DNS responses. These
 symmetric keys ensure that only the client will be able to decrypt the response from the
 Oblivious Target. They are only used once to prevent the Oblivious Target from tracking
 clients based on keys.
