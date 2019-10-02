@@ -538,9 +538,7 @@ struct {
 <p id="rfc.section.7.p.1">There are two types of Oblivious DoH messages: Queries (0x01) and Responses (0x02). Both are encoded as follows:</p>
 <pre>
 struct {
-   uint16 message_length;
    uint8  message_type;
-   uint64 query_id;
    opaque key_id&lt;0..2^16-1&gt;;
    opaque encrypted_message&lt;1..2^16-1&gt;;
 } ObliviousDNSMessage;
@@ -553,13 +551,13 @@ struct {
 <p></p>
 
 <ol>
-<li>A symmetric key and ciphersuite under which the DNS response will be encrypted.</li>
+<li>A symmetric key under which the DNS response will be encrypted. The AEAD algorithm used for the client&#8217;s response key is the one associated with the server&#8217;s public key.</li>
 <li>A DNS query message which the client wishes to resolve.</li>
 </ol>
-<p id="rfc.section.7.1.p.3">And is encoded as follows:</p>
+<p id="rfc.section.7.1.p.3">The key and message are encoded using the following structure:</p>
 <pre>
 struct {
-   opaque symmetric_key&lt;1..2^16-1&gt;;
+   opaque response_key&lt;1..2^16-1&gt;;
    opaque dns_message&lt;1..2^16-1&gt;;
 } ObliviousDNSQueryBody;
 </pre>
@@ -567,56 +565,58 @@ struct {
 <p></p>
 
 <ol>
-<li>Generate a random 64-bit query_id and random symmetric_key whose length matches that of the AEAD ciphersuite in pk.aead_id. (All randomness must be generated according to <a href="#RFC4086" class="xref">[RFC4086]</a>.)</li>
-<li>Create an ObliviousDNSQueryBody structure, carrying symmetric_key and the message M, to produce pt.</li>
+<li>Generate a random symmetric response_key whose length matches that of the AEAD ciphersuite in pk.aead_id.  All randomness must be generated according to <a href="#RFC4086" class="xref">[RFC4086]</a>.</li>
+<li>Create an ObliviousDNSQueryBody structure, carrying response_key and the message M, to produce Q_plain.</li>
 <li>Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.</li>
-<li>Compute the encrypted message blob as blob = encrypt_query_body(pkR, query_id, pt).  HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are instantiated from pk.  (See definition for encrypt_query_body below.)</li>
-<li>Output a ObliviousDNSMessage message Q where Q.message_type = 0x01, M.query_id = query_id, and M.encrypted_message = blob, M.key_id carries Identifier(pk), and M.message_length equals the length of the entire structure.</li>
+<li>Compute the encrypted message as Q_encrypted = encrypt_query_body(pkR, key_id, Q_plain).  key_id is defined as Identifier(pk).</li>
+<li>Output a ObliviousDNSMessage message Q where Q.message_type = 0x01, Q.key_id carries Identifier(pk), and Q.encrypted_message = Q_encrypted.</li>
 </ol>
 <p id="rfc.section.7.1.p.6">The client then sends Q to the Oblivious Proxy according to <a href="#oblivious-request" class="xref">Section 4.1</a>.</p>
 <pre>
-def encrypt_query_body(pkR, query_id, pt):
+def encrypt_query_body(pkR, key_id, Q_plain):
   enc, context = SetupBaseI(pkR, "odns-query")
-  aad = 0x01 || query_id
-  ct = context.Seal(aad, pt)
-  blob = enc || ct
-  return blob
+  aad = 0x01 || key_id
+  ct = context.Seal(aad, Q_plain)
+  Q_encrypted = enc || ct
+  return Q_encrypted
 </pre>
 <h1 id="rfc.section.7.2">
 <a href="#rfc.section.7.2">7.2.</a> <a href="#oblivious-responses" id="oblivious-responses">Oblivious Responses</a>
 </h1>
-<p id="rfc.section.7.2.p.1">An Oblivious DoH Response message carries the DNS response. Its encoding is as follows:</p>
-<pre>
-struct {
-   opaque dns_answer&lt;1..2^16-1&gt;;
-} ObliviousDNSResponseBody;
-</pre>
+<p id="rfc.section.7.2.p.1">An Oblivious DoH Response message carries the DNS response encrypted with the client&#8217;s chosen response key.</p>
 <p id="rfc.section.7.2.p.2">Targets that receive a Query message Q decrypt and process it as follows:</p>
 <p></p>
 
 <ol>
 <li>Look up the ObliviousDNSKey according to Q.key_id. If no such key exists, the Target MAY discard the query. Otherwise, let skR be the private key corresponding to this public key, or one chosen for trial decryption, and pk be the corresponding ObliviousDNSKey.</li>
-<li>Compute pt, error = decrypt_query_body(Q.encrypted_message).  HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are instantiated from pk.  (See definition for decrypt_query_body below.)</li>
-<li>If no error was returned, process pt as an ObliviousDNSQueryBody Qb.</li>
-<li>Resolve ObliviousDNSQueryBody.dns_message as needed, yielding answer Rb.</li>
-<li>Compute R_encrypted = encrypt_response_body(Q.query_id, Rb). (See definition for encrypt_response_body below.)</li>
-<li>Output a ObliviousDNSMessage message R where R.message_type = 0x02, R.query_id = Q.query_id, and R.encrypted_message = R_encrypted, R.key_id = nil, and R.message_length equals the length of the entire structure.</li>
+<li>Compute Q_plain, error = decrypt_query_body(skR, Q.key_id, Q.encrypted_message).</li>
+<li>If no error was returned, resolve Q_plain.dns_message as needed, yielding answer R_plain.</li>
+<li>Compute R_encrypted = encrypt_response_body(R_plain, Q_plain). (See definition for encrypt_response_body below. The key_id field used for encryption is empty, yielding 0x0000 as part of the AAD.)</li>
+<li>Output a ObliviousDNSMessage message R where R.message_type = 0x02, R.key_id = nil, and R.encrypted_message = R_encrypted.</li>
 </ol>
 <pre>
-def decrypt_query_body(encrypted_message):
-  enc || ct = Q.encrypted_message
+def decrypt_query_body(skR, key_id, Q_encrypted):
+  enc || ct = Q_encrypted
   dec, context = SetupBaseR(skR, "odns-query")
-  aad = 0x01 || Q.query_id
-  pt, error = context.Open(aad, ct)
-  return pt, error
+  aad = 0x01 || key_id
+  Q_plain, error = context.Open(aad, ct)
+  return Q_plain, error
 </pre>
 <pre>
-def encrypt_response_body(query_id, response):
-  aad = 0x02 || ObliviousDNSMessage.query_id
-  R_encrypted = Seal(Q.symmetic_key, 0^Nn, aad, Rb)
+def encrypt_response_body(R_plain, Q_plain):
+  aad = 0x02 || 0x0000
+  R_encrypted = Seal(Q_plain.response_key, 0^Nn, aad, R_plain)
   return R_encrypted
 </pre>
 <p id="rfc.section.7.2.p.4">The Target then sends R to the Proxy according to <a href="#oblivious-response" class="xref">Section 4.3</a>.</p>
+<p id="rfc.section.7.2.p.5">The Proxy forwards the message R without modification back to the client as the HTTP response to the client&#8217;s original HTTP request.</p>
+<p id="rfc.section.7.2.p.6">Once the client receives the response, it can use its known response_key to decrypt encrypted R.encrypted_message.</p>
+<pre>
+def decrypt_response_body(R_encrypted):
+  aad = 0x02 || 0x0000
+  R_plain = Open(response_key, 0^Nn, aad, R_encrypted)
+  return R_plain
+</pre>
 <h1 id="rfc.section.8">
 <a href="#rfc.section.8">8.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
 </h1>
