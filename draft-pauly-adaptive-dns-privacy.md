@@ -64,7 +64,7 @@ to proxy encrypted queries, thus hiding the identity of the client requesting re
 
 When clients need to resolve names into addresses in order to establish networking connections,
 they traditionally use by default the DNS resolver that is provisioned
-by the local network along with their IP address. Alternatively, they
+by the local network along with their IP address {{?RFC2132}} {{?RFC8106}}. Alternatively, they
 can use a resolver indicated by a tunneling service such as a VPN.
 
 However, privacy-sensitive clients might prefer to use an encrypted DNS service other
@@ -210,11 +210,11 @@ that is designated for a specific domain. A specific domain may have more
 than one such record.
 
 In order to designate a DoH server for a domain, a SVCB record can
-add the "dohuri", which has a SvcParamKey value of 4. The value stored in the parameter
+contain the "dohuri", which has a SvcParamKey value of 4. The value stored in the parameter
 is a URI, which is the DoH URI template {{!RFC8484}}.
 
-The format for the parameter that contains the public key of the DoH server is defined in
-{{OBLIVIOUS}}.
+The public key of the DoH server is sent as the "odohkey", which has a
+SvcParamKey value of 5 {{OBLIVIOUS}}.
 
 The following example shows a record containing a DoH URI, as returned by a query for
 the HTTPSSVC variant of the SVCB record type on "example.com".
@@ -229,12 +229,11 @@ the HTTPSSVC variant of the SVCB record type on "example.com".
 Clients MUST ignore any DoH server URI that was not retrieved from a
 DNSSEC-signed record that was validated by the client {{!RFC4033}}.
 
-When a client resolves a name (based on the order in
-{{resolution-algorithm}}) it SHOULD determine the Designated DoH
-Server via a SVCB record for any name that does not fall within known
-Designated DoH Server's configuration. The client MAY also issue
-queries for the SVCB record for more specific names to discover
-further Designated DoH Servers.
+Whenever a client resolves a name for which it does not already have a Designated DoH Server,
+it SHOULD try to determine the Designated DoH Server by sending a query for the an SVCB
+record for the name. If there is no DoH server designated for the name or zone, signalled either
+by an NXDOMAIN answer or a SVCB record that does not contain a DoH URI, the client SHOULD
+suppress queries for the SVCB record for a given name until the time-to-live of the answer expires.
 
 In order to bootstrap discovery of Designated DoH Servers, client systems SHOULD
 have some saved list of at least two names that they use consistently to perform
@@ -261,6 +260,12 @@ expected to support acting as a target for Oblivious DoH. A client MUST issue at
 least one query that is targeted at the server through a proxy before sending direct queries
 to the server.
 
+Designated DoH Servers are expected to act both as Oblivious Proxies and as Oblivious Targets
+to ensure that clients have sufficient options for preserving privacy using Oblivious DoH.
+Oblivious Targets are expected to act as Oblivious Proxies to ensure that no Oblivious DoH server
+can act as only a target (thus being able to see patterns in name resolution, which might have
+value to a resolver) and require other servers to take on a disproportionate load of proxying.
+
 Clients MAY further choose to restrict the whitelist by other local policy. For example,
 a client system can have a list of trusted resolver configurations, and it can limit
 the whitelist of Designated DoH Servers to configurations that match this list.
@@ -275,8 +280,10 @@ as ".com".
 When a Designated DoH Server is discovered, clients SHOULD also check to see
 if this server provides an extended configuration in the form of a Web PvD ({{configuration}}).
 To do this, the client performs a GET request to the DoH URI, indicating that it accepts
-a media type of “application/pvd+json” ({{!I-D.ietf-intarea-provisioning-domains}})
-and with empty query and fragment components.
+a media type of “application/pvd+json” {{!I-D.ietf-intarea-provisioning-domains}}. When requesting
+the PvD information, the query and fragment components of the requested path are left
+empty. Note that this is different from a GET request for the “application/dns-message” type,
+in which the query variable "dns" contains an encoded version of a DNS message.
 
 In response, the server will return the JSON content for the PvD, if present. The content-type
 MUST be "application/pvd+json".
@@ -334,11 +341,20 @@ See {{local-deployment}} for local deployment considerations.
 
 When establishing a secure connection to a certain hostname, clients need
 to first determine which resolver configuration ought to be used for DNS resolution.
+
+Several of the steps outlined in this algorithm take into account the success or failure
+of name resolution. Failure can be indicated either by a DNS response, such as SERVFAIL
+or NXDOMAIN, or by a connection-level failure, such as a TCP reset, TLS handshake failure,
+or an HTTP response error status. In effect, any unsuccessful attempt to resolve a name
+can cause the client to try another resolver if permitted by the algorithm. This is
+particularly useful for cases in which a name may not be resolvable over public DNS
+but has a valid answer only on the local network.
+
 Given a specific hostname, the order of preference for which resolver to use
 SHOULD be:
 
 1. An Exclusive Direct Resolver, such as a resolver provisioned by a VPN,
-domain rules that include the hostname being resolved. If the resolution
+with domain rules that include the hostname being resolved. If the resolution
 fails, the connection will fail. See {{local-discovery}} and {{local-deployment}}.
 
 2. A Direct Resolver, such as a local router, with domain rules that are known to be
@@ -357,7 +373,7 @@ Privacy-Sensitive Connections will fail. All other connections will use the last
 the default Direct Resolvers.
 
 5. The default Direct Resolver, generally the resolver provisioned by the local router,
-is used as the last resort for any connection that is not explicitly Privacy-Sensitive.
+is used as the last resort for any connection that is not explicitly Privacy-Sensitive {{?RFC2132}} {{?RFC8106}}.
 
 If the system allows the user to specify a preferred encrypted resolver, such as
 allowing the user to manually configure a DoH server URI to use by default, the use
@@ -473,8 +489,8 @@ The "identifier" key in the JSON configuration SHOULD be the hostname of the DoH
 For Web PvDs, the "prefixes" key within the JSON configuration SHOULD contain
 an empty array.
 
-The key "dnsZones", which contains an array of domains as strings, indicates the
-zones that belong to the PvD. Any zone that is listed in this array for a Web PvD
+The key "dnsZones", which contains an array of domains as strings {{!I-D.ietf-intarea-provisioning-domains}},
+indicates the zones that belong to the PvD. Any zone that is listed in this array for a Web PvD
 MUST have a corresponding SVCB record that defines the DoH server as designated
 for the zone. Servers SHOULD include in this array any names that are considered
 default or well-known for the deployment, but is not required or expected to list
@@ -488,9 +504,12 @@ query for each of the entries in the "dnsZones" array in order to populate the
 mappings of domains. These MAY be performed in an oblivious fashion, but
 MAY also be queried directly on the DoH server (since the information is not user-specific,
 but in response to generic server-driven content). Servers can choose
-to pre-emptively transfer the relevant SVCB records if the
-dictionary retrieval is done with an HTTP version that supports PUSH
-semantics.
+to pre-emptively transfer the relevant SVCB records if the PvD information retrieval is done
+with an HTTP version that supports PUSH semantics. This allows the server to avoid a
+round trip in zone validation even before the client has started requested SVCB records.
+Once the client requests an SVCB record for one of the names included in the "dnsZones"
+array, the server can also include the SVCB records for the other names in the array in
+the Additionals section of the DNS response.
 
 This document also registers one new key in the Additional Information PvD Keys registry,
 to identify the URI Template for the DoH server {{iana}}. When included in Web PvDs, this URI
@@ -702,29 +721,27 @@ on such networks to prevent malicious interception.
 
 # Performance Considerations
 
-One of the challenges with cloud-based DNS approaches, such as
-Adaptive DNS, is that the address of the recursive resolver is
-sometimes used as input into DNS geographic load balancing
-sytems. These systems assume the address of the recursive resolver and
-the terminal client are similar. In other cases, the client's actual
-address is forwarded to the authoritative server by the recursive using the
-EDNS0 Client Subnet feature. DoH discourages this practice
-privacy reasons. Sharing this address, while detrimental to privacy,
-can result in better targeted DNS resolutions.
+One of the challenges of using non-local DNS servers (such as cloud-based DoH servers)
+is that recursive queries made by these servers will originate from an IP address that
+is not necessarily geographically related to the client. Many DNS servers make assumptions
+about the geographic locality of clients to their recursive resolvers to optimize answers.
+To avoid this problem, the client's subnet can be forwarded to the authoritative server
+by the recursive using the EDNS0 Client Subnet feature. Oblvious DoH discourages this practice
+for privacy reasons. However, sharing this subnet, while detrimental to privacy, can result in
+better targeted DNS resolutions.
 
-Adaptive DNS makes the observation that this
-informaton is sensitive when used with, and therefore excluded from,
-the Target server but is much less sensitive when used with a
-Designated DoH Server. This is true because the Designated DoH Server
-controls the value of the addressing information being
-returned to the client.
+Adaptive DNS splits DoH queries into two sets: those made to Designated DoH Servers,
+and those made to Oblivious DoH servers. Oblivious queries are sensitive for privacy,
+and can encounter performance degradation as a result of not using the client subnet.
+Queries to designated DoH servers, on the other hand, are sent directly by clients, so
+the client IP address is made available to these servers. Since these servers are
+designated by the authority for the names, they can use the IP address subnet information
+to tune DNS answers.
 
-Based on these properties, clients SHOULD prefer lookups via
-Designated DoH Servers over oblivious mecahnisms whenever possible.
-Servers can encourgage this by setting large TTLs for SVCB records
-and using longer TTLs for responses returned by their Designated DoH
-Server endpoints which can be more confident they have accurate
-addressing informaton.
+Based on these properties, clients SHOULD prefer lookups via Designated DoH Servers
+over oblivious mecahnisms whenever possible. Servers can encourgage this by setting large
+TTLs for SVCB records and using longer TTLs for responses returned by their Designated DoH
+Server endpoints which can be more confident they have accurate addressing informaton.
 
 # Security Considerations
 
@@ -744,8 +761,9 @@ Clients should exercise caution when using Oblivious DoH responses from resolver
 carry DNSSEC signatures. An adversarial Target resolver that wishes to learn the IP address
 of clients requesting resolution for sensitive domains can redirect clients to addresses
 of its choosing. Clients that use these answers to open direct connections to the server
-may then leak their local IP address. Privacy-Sensitive Connections concerned about this attack
-SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or some other tunneling mechanism.
+may then leak their local IP address. Thus, when Oblivious DoH answers are returned without DNSSEC,
+Privacy-Sensitive Connections concerned about this attack SHOULD conceal their IP address
+via a TLS- or HTTP-layer proxy or some other tunneling mechanism.
 
 # IANA Considerations {#iana}
 

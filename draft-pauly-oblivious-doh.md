@@ -106,8 +106,12 @@ Oblivious DoH requires, at a minimum:
 - Two DoH servers, where one can act as an Oblivious Proxy, and the other can act as an
 Oblivious Target.
 - Public keys for encrypting DNS queries that are passed from a client through a proxy
-to a target ({{publickey}}).
-- Client ability to generate one-time-use symmetric keys to encrypt DNS responses.
+to a target ({{publickey}}). These keys guarantee that only the intended Oblivious Target
+can decrypt client queries.
+- Client ability to generate random {{!RFC4086}} one-time-use symmetric keys to encrypt DNS responses. These
+symmetric keys ensure that only the client will be able to decrypt the response from the
+Oblivious Target. They are only used once to prevent the Oblivious Target from tracking
+clients based on keys.
 
 The mechanism for discovering and provisioning the DoH URI Templates and public keys
 is via parameters added to DNS resource records. The mechanism for discovering the public
@@ -149,11 +153,11 @@ psuedo-header or the HTTP/1 host header) MUST indicate the hostname of the Obliv
 conform to the path specified by the Oblivious Target's DoH URI Template.
 
 Upon receiving a request that contains a "application/oblivious-dns-message" Content-Type,
-the DoH server looks at the :authority and :path psuedo-headers. If the fields match the DoH server's
-own hostname and configured path, then it is the target of the query, and can decrypt the query {{encryption}}.
-If the fields do not match the local server, then the server is acting as an Oblivious Proxy. If it is
-a proxy, it is expected to send the request on to the Oblivious Target based on the
-authority identified in the HTTP request.
+the DoH server looks at the :authority and :path psuedo-headers. If the fields are equivalent to the DoH server's
+own hostname and configured path (Section 2.7.3 of {{?RFC7230}}), then it is the target of the query,
+and it can decrypt the query ({{encryption}}). If the fields do not indicate the local server, then the server
+is acting as an Oblivious Proxy. If it is a proxy, it is expected to send the request on to the Oblivious
+Target based on the authority identified in the HTTP request.
 
 ## HTTP Request Example
 
