@@ -230,8 +230,8 @@ Clients MUST ignore any DoH server URI that was not retrieved from a
 DNSSEC-signed record that was validated by the client {{!RFC4033}}.
 
 Whenever a client resolves a name for which it does not already have a Designated DoH Server,
-it SHOULD try to determine the Designated DoH Server by sending a query for the appropriate
-SVCB record. If there is no DoH server designated for the name or zone, signalled either
+it SHOULD try to determine the Designated DoH Server by sending a query for the an SVCB
+record for the name. If there is no DoH server designated for the name or zone, signalled either
 by an NXDOMAIN answer or a SVCB record that does not contain a DoH URI, the client SHOULD
 suppress queries for the SVCB record for a given name until the time-to-live of the answer expires.
 
@@ -281,7 +281,7 @@ When a Designated DoH Server is discovered, clients SHOULD also check to see
 if this server provides an extended configuration in the form of a Web PvD ({{configuration}}).
 To do this, the client performs a GET request to the DoH URI, indicating that it accepts
 a media type of “application/pvd+json” {{!I-D.ietf-intarea-provisioning-domains}}. When requesting
-the PvD information, the query and fragment components of the requested path SHOULD be left
+the PvD information, the query and fragment components of the requested path are left
 empty. Note that this is different from a GET request for the “application/dns-message” type,
 in which the query variable "dns" contains an encoded version of a DNS message.
 
