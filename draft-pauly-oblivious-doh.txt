@@ -5,10 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: March 31, 2020                                       Apple Inc.
+Expires: April 4, 2020                                        Apple Inc.
                                                               P. McManus
                                                                   Fastly
-                                                      September 28, 2019
+                                                        October 02, 2019
 
 
                         Oblivious DNS Over HTTPS
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 31, 2020.
+   This Internet-Draft will expire on April 4, 2020.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Kinnear, et al.          Expires March 31, 2020                 [Page 1]
+Kinnear, et al.           Expires April 4, 2020                 [Page 1]
 
-Internet-Draft                Oblivious DoH               September 2019
+Internet-Draft                Oblivious DoH                 October 2019
 
 
    include Simplified BSD License text as described in Section 4.e of
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Kinnear, et al.          Expires March 31, 2020                 [Page 2]
+Kinnear, et al.           Expires April 4, 2020                 [Page 2]
 
-Internet-Draft                Oblivious DoH               September 2019
+Internet-Draft                Oblivious DoH                 October 2019
 
 
    This document defines Oblivious DoH, an extension to DoH that allows
@@ -165,9 +165,9 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 31, 2020                 [Page 3]
+Kinnear, et al.           Expires April 4, 2020                 [Page 3]
 
-Internet-Draft                Oblivious DoH               September 2019
+Internet-Draft                Oblivious DoH                 October 2019
 
 
 4.  HTTP Exchange
@@ -205,7 +205,7 @@ Internet-Draft                Oblivious DoH               September 2019
    DoH query intended for proxying.  Clients also SHOULD set this same
    value for the HTTP Accept header.
 
-   The HTTP authority information (e.g.  The HTTP/2 :authority psuedo-
+   The HTTP authority information (e.g., the HTTP/2 :authority psuedo-
    header or the HTTP/1 host header) MUST indicate the hostname of the
    Oblivious Target (not the Oblivious Proxy that initially receives the
    request), and the path information MUST conform to the path specified
@@ -221,9 +221,9 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 31, 2020                 [Page 4]
+Kinnear, et al.           Expires April 4, 2020                 [Page 4]
 
-Internet-Draft                Oblivious DoH               September 2019
+Internet-Draft                Oblivious DoH                 October 2019
 
 
    is a proxy, it is expected to send the request on to the Oblivious
@@ -255,7 +255,7 @@ Internet-Draft                Oblivious DoH               September 2019
    Target.  It MUST set the Content-Type HTTP header to "application/
    oblivious-dns-message" for all successful responses.  The body of the
    response contains a DNS message that is encrypted with the client's
-   symmetric key Section 7.
+   symmetric key (Section 7).
 
    All other aspects of the HTTP response and error handling are
    inherited from standard DoH.
@@ -277,9 +277,9 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 31, 2020                 [Page 5]
+Kinnear, et al.           Expires April 4, 2020                 [Page 5]
 
-Internet-Draft                Oblivious DoH               September 2019
+Internet-Draft                Oblivious DoH                 October 2019
 
 
 5.  Public Key Discovery
@@ -292,7 +292,7 @@ Internet-Draft                Oblivious DoH               September 2019
    The key name is "odohkey", and has an encoded SvcParamKey value of 5.
    If present, this key/value pair contains the public key to use when
    encrypting Oblivious DoH messages that will be targeted at a DoH
-   server.  The format of the key is defined in Section 6.
+   server.  The format of the key is defined in (Section 6).
 
    Clients MUST only use keys that were retrieved from records protected
    by DNSSEC [RFC4033] to encrypt messages to an Oblivious Target.
@@ -333,9 +333,9 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 31, 2020                 [Page 6]
+Kinnear, et al.           Expires April 4, 2020                 [Page 6]
 
-Internet-Draft                Oblivious DoH               September 2019
+Internet-Draft                Oblivious DoH                 October 2019
 
 
    ObliviousDNSMessage.message_type = 0x01 for Query messages and
@@ -369,7 +369,7 @@ Internet-Draft                Oblivious DoH               September 2019
        length matches that of the AEAD ciphersuite in pk.aead_id.  (All
        randomness must be generated according to [RFC4086].)
 
-   2.  Create a ObliviousDNSQueryBody structure, carrying symmetric_key
+   2.  Create an ObliviousDNSQueryBody structure, carrying symmetric_key
        and the message M, to produce pt.
 
    3.  Unmarshal pk.public_key to produce a public key pkR of type
@@ -389,9 +389,9 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 31, 2020                 [Page 7]
+Kinnear, et al.           Expires April 4, 2020                 [Page 7]
 
-Internet-Draft                Oblivious DoH               September 2019
+Internet-Draft                Oblivious DoH                 October 2019
 
 
    The client then sends Q to the Oblivious Proxy according to
@@ -445,9 +445,9 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 31, 2020                 [Page 8]
+Kinnear, et al.           Expires April 4, 2020                 [Page 8]
 
-Internet-Draft                Oblivious DoH               September 2019
+Internet-Draft                Oblivious DoH                 October 2019
 
 
    def decrypt_query_body(encrypted_message):
@@ -501,9 +501,9 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 31, 2020                 [Page 9]
+Kinnear, et al.           Expires April 4, 2020                 [Page 9]
 
-Internet-Draft                Oblivious DoH               September 2019
+Internet-Draft                Oblivious DoH                 October 2019
 
 
    Person and email address to contact for further information: See
@@ -520,8 +520,7 @@ Internet-Draft                Oblivious DoH               September 2019
 9.2.  Oblivious DoH Public Key DNS Parameter
 
    This document defines one new key to be added to the Service Binding
-   (SVCB) Parameter Registry, as defined in
-   [I-D.nygren-dnsop-svcb-httpssvc].
+   (SVCB) Parameter Registry [I-D.nygren-dnsop-svcb-httpssvc].
 
    Name:  odohkey
 
@@ -550,23 +549,18 @@ Internet-Draft                Oblivious DoH               September 2019
               Encryption", draft-irtf-cfrg-hpke-00 (work in progress),
               July 2019.
 
-
-
-
-
-
-
-
-Kinnear, et al.          Expires March 31, 2020                [Page 10]
-
-Internet-Draft                Oblivious DoH               September 2019
-
-
    [I-D.nygren-dnsop-svcb-httpssvc]
               Schwartz, B., Bishop, M., and E. Nygren, "Service binding
               and parameter specification via the DNS (DNS SVCB and
               HTTPSSVC)", draft-nygren-dnsop-svcb-httpssvc-00 (work in
               progress), September 2019.
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 10]
+
+Internet-Draft                Oblivious DoH                 October 2019
+
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
@@ -605,19 +599,6 @@ Internet-Draft                Oblivious DoH               September 2019
 
 Authors' Addresses
 
-
-
-
-
-
-
-
-
-Kinnear, et al.          Expires March 31, 2020                [Page 11]
-
-Internet-Draft                Oblivious DoH               September 2019
-
-
    Eric Kinnear
    Apple Inc.
    One Apple Park Way
@@ -625,6 +606,16 @@ Internet-Draft                Oblivious DoH               September 2019
    United States of America
 
    Email: ekinnear@apple.com
+
+
+
+
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 11]
+
+Internet-Draft                Oblivious DoH                 October 2019
 
 
    Tommy Pauly
@@ -669,4 +660,13 @@ Internet-Draft                Oblivious DoH               September 2019
 
 
 
-Kinnear, et al.          Expires March 31, 2020                [Page 12]
+
+
+
+
+
+
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 12]
