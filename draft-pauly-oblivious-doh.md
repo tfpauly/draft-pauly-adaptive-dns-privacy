@@ -239,9 +239,7 @@ are encoded as follows:
 
 ~~~
 struct {
-   uint16 message_length;
    uint8  message_type;
-   uint64 query_id;
    opaque key_id<0..2^16-1>;
    opaque encrypted_message<1..2^16-1>;
 } ObliviousDNSMessage;
@@ -257,14 +255,15 @@ these meessage bodies are constructed.
 
 Oblivious DoH Query messages must carry the following information:
 
-1. A symmetric key and ciphersuite under which the DNS response will be encrypted.
+1. A symmetric key under which the DNS response will be encrypted. The AEAD algorithm
+used for the client's response key is the one associated with the server's public key.
 2. A DNS query message which the client wishes to resolve.
 
-And is encoded as follows:
+The key and message are encoded using the following structure:
 
 ~~~
 struct {
-   opaque symmetric_key<1..2^16-1>;
+   opaque response_key<1..2^16-1>;
    opaque dns_message<1..2^16-1>;
 } ObliviousDNSQueryBody;
 ~~~
@@ -272,38 +271,29 @@ struct {
 Let M be a DNS message a client wishes to protect with Oblivious DoH. When sending an Oblivious DoH Query
 for resolving M to an Oblivious Target with ObliviousDNSKey key pk, a client does the following:
 
-1. Generate a random 64-bit query_id and random symmetric_key whose length matches
-that of the AEAD ciphersuite in pk.aead_id. (All randomness must be generated
-according to {{!RFC4086}}.)
-2. Create an ObliviousDNSQueryBody structure, carrying symmetric_key and the message M, to produce pt.
+1. Generate a random symmetric response_key whose length matches that of the AEAD ciphersuite in pk.aead_id.
+All randomness must be generated according to {{!RFC4086}}.
+2. Create an ObliviousDNSQueryBody structure, carrying response_key and the message M, to produce Q_plain.
 3. Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.
-4. Compute the encrypted message blob as blob = encrypt_query_body(pkR, query_id, pt).
-HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are instantiated from pk.
-(See definition for encrypt_query_body below.)
+4. Compute the encrypted message as Q_encrypted = encrypt_query_body(pkR, key_id, Q_plain).
+key_id is defined as Identifier(pk).
 5. Output a ObliviousDNSMessage message Q where Q.message_type = 0x01,
-M.query_id = query_id, and M.encrypted_message = blob, M.key_id carries
-Identifier(pk), and M.message_length equals the length of the entire structure.
+Q.key_id carries Identifier(pk), and Q.encrypted_message = Q_encrypted.
 
 The client then sends Q to the Oblivious Proxy according to {{oblivious-request}}.
 
 ~~~
-def encrypt_query_body(pkR, query_id, pt):
+def encrypt_query_body(pkR, key_id, Q_plain):
   enc, context = SetupBaseI(pkR, "odns-query")
-  aad = 0x01 || query_id
-  ct = context.Seal(aad, pt)
-  blob = enc || ct
-  return blob
+  aad = 0x01 || key_id
+  ct = context.Seal(aad, Q_plain)
+  Q_encrypted = enc || ct
+  return Q_encrypted
 ~~~
 
 ## Oblivious Responses
 
-An Oblivious DoH Response message carries the DNS response. Its encoding is as follows:
-
-~~~
-struct {
-   opaque dns_answer<1..2^16-1>;
-} ObliviousDNSResponseBody;
-~~~
+An Oblivious DoH Response message carries the DNS response encrypted with the client's chosen response key.
 
 Targets that receive a Query message Q decrypt and process it as follows:
 
@@ -311,34 +301,43 @@ Targets that receive a Query message Q decrypt and process it as follows:
 the Target MAY discard the query. Otherwise, let skR be the private key
 corresponding to this public key, or one chosen for trial decryption, and pk
 be the corresponding ObliviousDNSKey.
-2. Compute pt, error = decrypt_query_body(Q.encrypted_message).
-HPKE KEM, KDF, and AEAD parameters for encrypt_query_body are instantiated from pk.
-(See definition for decrypt_query_body below.)
-3. If no error was returned, process pt as an ObliviousDNSQueryBody Qb.
-4. Resolve ObliviousDNSQueryBody.dns_message as needed, yielding answer Rb.
-5. Compute R_encrypted = encrypt_response_body(Q.query_id, Rb). (See definition
-for encrypt_response_body below.)
-6. Output a ObliviousDNSMessage message R where R.message_type = 0x02,
-R.query_id = Q.query_id, and R.encrypted_message = R_encrypted, R.key_id = nil,
-and R.message_length equals the length of the entire structure.
+2. Compute Q_plain, error = decrypt_query_body(skR, Q.key_id, Q.encrypted_message).
+3. If no error was returned, resolve Q_plain.dns_message as needed, yielding answer R_plain.
+4. Compute R_encrypted = encrypt_response_body(R_plain, Q_plain). (See definition
+for encrypt_response_body below. The key_id field used for encryption is empty, yielding 0x0000 as part of the AAD.)
+5. Output a ObliviousDNSMessage message R where R.message_type = 0x02,
+R.key_id = nil, and R.encrypted_message = R_encrypted.
 
 ~~~
-def decrypt_query_body(encrypted_message):
-  enc || ct = Q.encrypted_message
+def decrypt_query_body(skR, key_id, Q_encrypted):
+  enc || ct = Q_encrypted
   dec, context = SetupBaseR(skR, "odns-query")
-  aad = 0x01 || Q.query_id
-  pt, error = context.Open(aad, ct)
-  return pt, error
+  aad = 0x01 || key_id
+  Q_plain, error = context.Open(aad, ct)
+  return Q_plain, error
 ~~~
 
 ~~~
-def encrypt_response_body(query_id, response):
-  aad = 0x02 || ObliviousDNSMessage.query_id
-  R_encrypted = Seal(Q.symmetic_key, 0^Nn, aad, Rb)
+def encrypt_response_body(R_plain, Q_plain):
+  aad = 0x02 || 0x0000
+  R_encrypted = Seal(Q_plain.response_key, 0^Nn, aad, R_plain)
   return R_encrypted
 ~~~
 
 The Target then sends R to the Proxy according to {{oblivious-response}}.
+
+The Proxy forwards the message R without modification back to the client as
+the HTTP response to the client's original HTTP request.
+
+Once the client receives the response, it can use its known response_key
+to decrypt encrypted R.encrypted_message.
+
+~~~
+def decrypt_response_body(R_encrypted):
+  aad = 0x02 || 0x0000
+  R_plain = Open(response_key, 0^Nn, aad, R_encrypted)
+  return R_plain
+~~~
 
 # Security Considerations
 
