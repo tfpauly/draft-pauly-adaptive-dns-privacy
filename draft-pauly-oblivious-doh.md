@@ -256,7 +256,7 @@ these meessage bodies are constructed.
 Oblivious DoH Query messages must carry the following information:
 
 1. A symmetric key under which the DNS response will be encrypted. The AEAD algorithm
-used for the client's symmetric key is the same as the one used for the server's public key.
+used for the client's response key is the one associated with the server's public key.
 2. A DNS query message which the client wishes to resolve.
 
 The key and message are encoded using the following structure:
@@ -293,7 +293,7 @@ def encrypt_query_body(pkR, key_id, Q_plain):
 
 ## Oblivious Responses
 
-An Oblivious DoH Response message carries the DNS response.
+An Oblivious DoH Response message carries the DNS response encrypted with the client's chosen response key.
 
 Targets that receive a Query message Q decrypt and process it as follows:
 
@@ -304,7 +304,7 @@ be the corresponding ObliviousDNSKey.
 2. Compute Q_plain, error = decrypt_query_body(skR, Q.key_id, Q.encrypted_message).
 3. If no error was returned, resolve Q_plain.dns_message as needed, yielding answer R_plain.
 4. Compute R_encrypted = encrypt_response_body(R_plain, Q_plain). (See definition
-for encrypt_response_body below.)
+for encrypt_response_body below. The key_id field used for encryption is empty, yielding 0x0000 as part of the AAD.)
 5. Output a ObliviousDNSMessage message R where R.message_type = 0x02,
 R.key_id = nil, and R.encrypted_message = R_encrypted.
 
