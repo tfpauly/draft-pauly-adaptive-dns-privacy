@@ -86,7 +86,7 @@ Table of Contents
    11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
      11.1.  Normative References . . . . . . . . . . . . . . . . . .  10
      11.2.  Informative References . . . . . . . . . . . . . . . . .  11
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
 
 1.  Introduction
 
@@ -151,16 +151,16 @@ Internet-Draft                Oblivious DoH                 October 2019
       other can act as an Oblivious Target.
 
    o  Public keys for encrypting DNS queries that are passed from a
-      client through a proxy to a target (Section 6).
+      client through a proxy to a target (Section 6).  These keys
+      guarantee that only the intended Oblivious Target can decrypt
+      client queries.
 
-   o  Client ability to generate one-time-use symmetric keys to encrypt
-      DNS responses.
+   o  Client ability to generate random [RFC4086] one-time-use symmetric
+      keys to encrypt DNS responses.  These symmetric keys ensure that
+      only the client will be able to decrypt the response from the
+      Oblivious Target.  They are only used once to prevent the
+      Oblivious Target from tracking clients based on keys.
 
-   The mechanism for discovering and provisioning the DoH URI Templates
-   and public keys is via parameters added to DNS resource records.  The
-   mechanism for discovering the public key is decribed in Section 5.
-   The mechanism for discovering a DoH URI Template is described in
-   [ADNS].
 
 
 
@@ -169,6 +169,12 @@ Kinnear, et al.           Expires April 4, 2020                 [Page 3]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
+
+   The mechanism for discovering and provisioning the DoH URI Templates
+   and public keys is via parameters added to DNS resource records.  The
+   mechanism for discovering the public key is decribed in Section 5.
+   The mechanism for discovering a DoH URI Template is described in
+   [ADNS].
 
 4.  HTTP Exchange
 
@@ -211,12 +217,6 @@ Internet-Draft                Oblivious DoH                 October 2019
    request), and the path information MUST conform to the path specified
    by the Oblivious Target's DoH URI Template.
 
-   Upon receiving a request that contains a "application/oblivious-dns-
-   message" Content-Type, the DoH server looks at the :authority and
-   :path psuedo-headers.  If the fields match the DoH server's own
-   hostname and configured path, then it is the target of the query, and
-   can decrypt the query Section 7.  If the fields do not match the
-   local server, then the server is acting as an Oblivious Proxy.  If it
 
 
 
@@ -226,8 +226,15 @@ Kinnear, et al.           Expires April 4, 2020                 [Page 4]
 Internet-Draft                Oblivious DoH                 October 2019
 
 
-   is a proxy, it is expected to send the request on to the Oblivious
-   Target based on the authority identified in the HTTP request.
+   Upon receiving a request that contains a "application/oblivious-dns-
+   message" Content-Type, the DoH server looks at the :authority and
+   :path psuedo-headers.  If the fields are equivalent to the DoH
+   server's own hostname and configured path (Section 2.7.3 of
+   [RFC7230]), then it is the target of the query, and it can decrypt
+   the query (Section 7).  If the fields do not indicate the local
+   server, then the server is acting as an Oblivious Proxy.  If it is a
+   proxy, it is expected to send the request on to the Oblivious Target
+   based on the authority identified in the HTTP request.
 
 4.2.  HTTP Request Example
 
@@ -265,13 +272,6 @@ Internet-Draft                Oblivious DoH                 October 2019
    The following example shows a response that can be sent from an
    Oblivious Target to a client via an Oblivious Proxy.
 
-  :status = 200
-  content-type = application/oblivious-dns-message
-  content-length = 154
-
-  <Bytes containing the encrypted payload for an Oblivious DNS response>
-
-
 
 
 
@@ -281,6 +281,12 @@ Kinnear, et al.           Expires April 4, 2020                 [Page 5]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
+
+  :status = 200
+  content-type = application/oblivious-dns-message
+  content-length = 154
+
+  <Bytes containing the encrypted payload for an Oblivious DNS response>
 
 5.  Public Key Discovery
 
@@ -322,13 +328,7 @@ Internet-Draft                Oblivious DoH                 October 2019
    There are two types of Oblivious DoH messages: Queries (0x01) and
    Responses (0x02).  Both are encoded as follows:
 
-   struct {
-      uint16 message_length;
-      uint8  message_type;
-      uint64 query_id;
-      opaque key_id<0..2^16-1>;
-      opaque encrypted_message<1..2^16-1>;
-   } ObliviousDNSMessage;
+
 
 
 
@@ -337,6 +337,14 @@ Kinnear, et al.           Expires April 4, 2020                 [Page 6]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
+
+   struct {
+      uint16 message_length;
+      uint8  message_type;
+      uint64 query_id;
+      opaque key_id<0..2^16-1>;
+      opaque encrypted_message<1..2^16-1>;
+   } ObliviousDNSMessage;
 
    ObliviousDNSMessage.message_type = 0x01 for Query messages and
    ObliviousDNSMessage.message_type = 0x02 for Response messages.
@@ -377,14 +385,6 @@ Internet-Draft                Oblivious DoH                 October 2019
 
    4.  Compute the encrypted message blob as blob =
        encrypt_query_body(pkR, query_id, pt).  HPKE KEM, KDF, and AEAD
-       parameters for encrypt_query_body are instantiated from pk.  (See
-       definition for encrypt_query_body below.)
-
-   5.  Output a ObliviousDNSMessage message Q where Q.message_type =
-       0x01, M.query_id = query_id, and M.encrypted_message = blob,
-       M.key_id carries Identifier(pk), and M.message_length equals the
-       length of the entire structure.
-
 
 
 
@@ -393,6 +393,14 @@ Kinnear, et al.           Expires April 4, 2020                 [Page 7]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
+
+       parameters for encrypt_query_body are instantiated from pk.  (See
+       definition for encrypt_query_body below.)
+
+   5.  Output a ObliviousDNSMessage message Q where Q.message_type =
+       0x01, M.query_id = query_id, and M.encrypted_message = blob,
+       M.key_id carries Identifier(pk), and M.message_length equals the
+       length of the entire structure.
 
    The client then sends Q to the Oblivious Proxy according to
    Section 4.1.
@@ -433,14 +441,6 @@ Internet-Draft                Oblivious DoH                 October 2019
    4.  Resolve ObliviousDNSQueryBody.dns_message as needed, yielding
        answer Rb.
 
-   5.  Compute R_encrypted = encrypt_response_body(Q.query_id, Rb).
-       (See definition for encrypt_response_body below.)
-
-   6.  Output a ObliviousDNSMessage message R where R.message_type =
-       0x02, R.query_id = Q.query_id, and R.encrypted_message =
-       R_encrypted, R.key_id = nil, and R.message_length equals the
-       length of the entire structure.
-
 
 
 
@@ -449,6 +449,14 @@ Kinnear, et al.           Expires April 4, 2020                 [Page 8]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
+
+   5.  Compute R_encrypted = encrypt_response_body(Q.query_id, Rb).
+       (See definition for encrypt_response_body below.)
+
+   6.  Output a ObliviousDNSMessage message R where R.message_type =
+       0x02, R.query_id = Q.query_id, and R.encrypted_message =
+       R_encrypted, R.key_id = nil, and R.message_length equals the
+       length of the entire structure.
 
    def decrypt_query_body(encrypted_message):
      enc || ct = Q.encrypted_message
@@ -490,14 +498,6 @@ Internet-Draft                Oblivious DoH                 October 2019
    Interoperability considerations: This document specifies format of
    conforming messages and the interpretation thereof.
 
-   Published specification: This document.
-
-   Applications that use this media type: This media type is intended to
-   be used by clients wishing to hide their DNS queries when using DNS
-   over HTTPS.
-
-   Additional information: None
-
 
 
 
@@ -505,6 +505,14 @@ Kinnear, et al.           Expires April 4, 2020                 [Page 9]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
+
+   Published specification: This document.
+
+   Applications that use this media type: This media type is intended to
+   be used by clients wishing to hide their DNS queries when using DNS
+   over HTTPS.
+
+   Additional information: None
 
    Person and email address to contact for further information: See
    Authors' Addresses section
@@ -544,6 +552,16 @@ Internet-Draft                Oblivious DoH                 October 2019
    [ADNS]     "Adaptive DNS: Improving Privacy of Name Resolution",
               n.d..
 
+
+
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 10]
+
+Internet-Draft                Oblivious DoH                 October 2019
+
+
    [I-D.irtf-cfrg-hpke]
               Barnes, R. and K. Bhargavan, "Hybrid Public Key
               Encryption", draft-irtf-cfrg-hpke-00 (work in progress),
@@ -554,13 +572,6 @@ Internet-Draft                Oblivious DoH                 October 2019
               and parameter specification via the DNS (DNS SVCB and
               HTTPSSVC)", draft-nygren-dnsop-svcb-httpssvc-00 (work in
               progress), September 2019.
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 10]
-
-Internet-Draft                Oblivious DoH                 October 2019
-
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
@@ -593,6 +604,20 @@ Internet-Draft                Oblivious DoH                 October 2019
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
+   [RFC7230]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
+              Protocol (HTTP/1.1): Message Syntax and Routing",
+              RFC 7230, DOI 10.17487/RFC7230, June 2014,
+              <https://www.rfc-editor.org/info/rfc7230>.
+
+
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 11]
+
+Internet-Draft                Oblivious DoH                 October 2019
+
+
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
@@ -606,16 +631,6 @@ Authors' Addresses
    United States of America
 
    Email: ekinnear@apple.com
-
-
-
-
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 11]
-
-Internet-Draft                Oblivious DoH                 October 2019
 
 
    Tommy Pauly
@@ -640,21 +655,6 @@ Internet-Draft                Oblivious DoH                 October 2019
    Fastly
 
    Email: mcmanus@ducksong.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

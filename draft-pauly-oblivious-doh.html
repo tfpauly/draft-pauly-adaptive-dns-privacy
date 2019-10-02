@@ -457,8 +457,8 @@ ul.toc li {
 
 <ul>
 <li>Two DoH servers, where one can act as an Oblivious Proxy, and the other can act as an Oblivious Target.</li>
-<li>Public keys for encrypting DNS queries that are passed from a client through a proxy to a target (<a href="#publickey" class="xref">Section 6</a>).</li>
-<li>Client ability to generate one-time-use symmetric keys to encrypt DNS responses.</li>
+<li>Public keys for encrypting DNS queries that are passed from a client through a proxy to a target (<a href="#publickey" class="xref">Section 6</a>). These keys guarantee that only the intended Oblivious Target can decrypt client queries.</li>
+<li>Client ability to generate random <a href="#RFC4086" class="xref">[RFC4086]</a> one-time-use symmetric keys to encrypt DNS responses. These symmetric keys ensure that only the client will be able to decrypt the response from the Oblivious Target. They are only used once to prevent the Oblivious Target from tracking clients based on keys.</li>
 </ul>
 <p id="rfc.section.3.p.3">The mechanism for discovering and provisioning the DoH URI Templates and public keys is via parameters added to DNS resource records. The mechanism for discovering the public key is decribed in <a href="#keydiscovery" class="xref">Section 5</a>. The mechanism for discovering a DoH URI Template is described in <a href="#ADNS" class="xref">[ADNS]</a>.</p>
 <h1 id="rfc.section.4">
@@ -479,7 +479,7 @@ ul.toc li {
 <p id="rfc.section.4.1.p.2">Oblivious DoH messages have no cache value since both requests and responses are encrypted using ephemeral key material. Clients SHOULD prefer using HTTP methods and headers that will prevent unhelpful cache storage of these exchanges (i.e., preferring POST instead of GET).</p>
 <p id="rfc.section.4.1.p.3">Clients MUST set the HTTP Content-Type header to &#8220;application/oblivious-dns-message&#8221; to indicate that this request is an Oblivious DoH query intended for proxying. Clients also SHOULD set this same value for the HTTP Accept header.</p>
 <p id="rfc.section.4.1.p.4">The HTTP authority information (e.g., the HTTP/2 :authority psuedo-header or the HTTP/1 host header) MUST indicate the hostname of the Oblivious Target (not the Oblivious Proxy that initially receives the request), and the path information MUST conform to the path specified by the Oblivious Target&#8217;s DoH URI Template.</p>
-<p id="rfc.section.4.1.p.5">Upon receiving a request that contains a &#8220;application/oblivious-dns-message&#8221; Content-Type, the DoH server looks at the :authority and :path psuedo-headers. If the fields match the DoH server&#8217;s own hostname and configured path, then it is the target of the query, and can decrypt the query <a href="#encryption" class="xref">Section 7</a>.  If the fields do not match the local server, then the server is acting as an Oblivious Proxy. If it is a proxy, it is expected to send the request on to the Oblivious Target based on the authority identified in the HTTP request.</p>
+<p id="rfc.section.4.1.p.5">Upon receiving a request that contains a &#8220;application/oblivious-dns-message&#8221; Content-Type, the DoH server looks at the :authority and :path psuedo-headers. If the fields are equivalent to the DoH server&#8217;s own hostname and configured path (Section 2.7.3 of <a href="#RFC7230" class="xref">[RFC7230]</a>), then it is the target of the query, and it can decrypt the query (<a href="#encryption" class="xref">Section 7</a>). If the fields do not indicate the local server, then the server is acting as an Oblivious Proxy. If it is a proxy, it is expected to send the request on to the Oblivious Target based on the authority identified in the HTTP request.</p>
 <h1 id="rfc.section.4.2">
 <a href="#rfc.section.4.2">4.2.</a> <a href="#http-request-example" id="http-request-example">HTTP Request Example</a>
 </h1>
@@ -714,6 +714,11 @@ def encrypt_response_body(query_id, response):
 <td class="reference"><b id="RFC2119">[RFC2119]</b></td>
 <td class="top">
 <a>Bradner, S.</a>, "<a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>", BCP 14, RFC 2119, DOI 10.17487/RFC2119, March 1997.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC7230">[RFC7230]</b></td>
+<td class="top">
+<a>Fielding, R.</a> and <a>J. Reschke</a>, "<a href="https://tools.ietf.org/html/rfc7230">Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing</a>", RFC 7230, DOI 10.17487/RFC7230, June 2014.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC8174">[RFC8174]</b></td>
