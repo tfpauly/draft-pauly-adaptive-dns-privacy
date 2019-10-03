@@ -437,5 +437,5 @@ Reference:
 # Acknowledgments
 
 This work is inspired by Oblivious DNS {{?I-D.annee-dprive-oblivious-dns}}. Thanks to all of the
-authors of that document. Thanks to Frederic Jacobs, Paul Schmitt, Brian Swander, and
+authors of that document. Thanks to Frederic Jacobs, Elliot Briggs, Paul Schmitt, Brian Swander, and
 Tommy Jensen for the feedback and input.

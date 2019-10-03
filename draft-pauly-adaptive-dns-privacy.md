@@ -832,4 +832,4 @@ Reference:
 
 Thanks to Erik Nygren, Lorenzo Colitti, Tommy Jensen, Mikael Abrahamsson,
 Ben Schwartz, Ask Hansen, Leif Hedstrom, Tim McCoy, Stuart Cheshire, Miguel Vega,
-Joey Deng, and Ted Lemon for their feedback and input on this document.
+Joey Deng, Ted Lemon, and Elliot Briggs for their feedback and input on this document.
