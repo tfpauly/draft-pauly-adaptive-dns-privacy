@@ -231,7 +231,7 @@ DNSSEC-signed record that was validated by the client {{!RFC4033}}.
 
 Whenever a client resolves a name for which it does not already have a Designated DoH Server,
 it SHOULD try to determine the Designated DoH Server by sending a query for the an SVCB
-record for the name. If there is no DoH server designated for the name or zone, signalled either
+record for the name. If there is no DoH server designated for the name or zone, signaled either
 by an NXDOMAIN answer or a SVCB record that does not contain a DoH URI, the client SHOULD
 suppress queries for the SVCB record for a given name until the time-to-live of the answer expires.
 
@@ -239,7 +239,7 @@ In order to bootstrap discovery of Designated DoH Servers, client systems SHOULD
 have some saved list of at least two names that they use consistently to perform
 SVCB record queries on the Direct Resolvers configured by the local network. Since
 these queries are likely not private, they SHOULD NOT be associated with user
-action or contain user-identifying content. Rather, the expection is that all client
+action or contain user-identifying content. Rather, the expectation is that all client
 systems of the same version and configuration would issue the same bootstrapping
 queries when joining a network for the first time when the list of Designated
 DoH Servers is empty.
@@ -508,7 +508,7 @@ query for each of the entries in the "dnsZones" array in order to populate the
 mappings of domains. These MAY be performed in an oblivious fashion, but
 MAY also be queried directly on the DoH server (since the information is not user-specific,
 but in response to generic server-driven content). Servers can choose
-to pre-emptively transfer the relevant SVCB records if the PvD information retrieval is done
+to preemptively transfer the relevant SVCB records if the PvD information retrieval is done
 with an HTTP version that supports PUSH semantics. This allows the server to avoid a
 round trip in zone validation even before the client has started requested SVCB records.
 Once the client requests an SVCB record for one of the names included in the "dnsZones"
@@ -730,7 +730,7 @@ is that recursive queries made by these servers will originate from an IP addres
 is not necessarily geographically related to the client. Many DNS servers make assumptions
 about the geographic locality of clients to their recursive resolvers to optimize answers.
 To avoid this problem, the client's subnet can be forwarded to the authoritative server
-by the recursive using the EDNS0 Client Subnet feature. Oblvious DoH discourages this practice
+by the recursive using the EDNS0 Client Subnet feature. Oblivious DoH discourages this practice
 for privacy reasons. However, sharing this subnet, while detrimental to privacy, can result in
 better targeted DNS resolutions.
 
@@ -743,19 +743,19 @@ designated by the authority for the names, they can use the IP address subnet in
 to tune DNS answers.
 
 Based on these properties, clients SHOULD prefer lookups via Designated DoH Servers
-over oblivious mecahnisms whenever possible. Servers can encourgage this by setting large
+over oblivious mechanisms whenever possible. Servers can encourage this by setting large
 TTLs for SVCB records and using longer TTLs for responses returned by their Designated DoH
-Server endpoints which can be more confident they have accurate addressing informaton.
+Server endpoints which can be more confident they have accurate addressing information.
 
 # Security Considerations
 
 In order to avoid interception and modification of the information retrieved by clients
-using Adaptive DNS, all exchanges between clients and servers are performed over
-TLS connections.
+using Adaptive DNS, all exchanges between clients and servers are performed over encrypted
+connections, e.g., TLS.
 
-Clients must also be careful in determining to which DoH servers they send queries
+Clients must be careful in determining to which DoH servers they send queries
 directly without proxying. In order to avoid the possibility of a spoofed SVCB
-record defining a malicious DoH server as authoritiative, clients MUST ensure that
+record defining a malicious DoH server as authoritative, clients MUST ensure that
 such records validate using DNSSEC {{!RFC4033}}. Even servers that are officially designated
 can risk leaking or logging information about client lookups.
 Such risk can be mitigated by validating that the DoH servers can present proof
@@ -768,6 +768,17 @@ of its choosing. Clients that use these answers to open direct connections to th
 may then leak their local IP address. Thus, when Oblivious DoH answers are returned without DNSSEC,
 Privacy-Sensitive Connections concerned about this attack SHOULD conceal their IP address
 via a TLS- or HTTP-layer proxy or some other tunneling mechanism.
+
+An adversary able to see traffic on each path of an Adaptive DNS query, i.e., from client to
+proxy, proxy to target, and target to the DNS infrastructure, can link queries to specific
+clients with high probability. Failure to observe traffic on any one of these path segments
+makes this linkability increasingly more difficult. For example, if an adversary can only
+observe traffic between a client and proxy and egreess traffic from a target, then the likelihood
+of linking queries to clients depends, to some extent, on how many queries that target is resolving.
+
+Malicious adversaries may block client connections to all proxy services as a Denial-of-Service (DoS)
+measure. Clients which cannot connect to any proxy may, by local policy, fall back to unencrypted DNS
+if this occurs.
 
 # IANA Considerations {#iana}
 

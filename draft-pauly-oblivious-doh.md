@@ -247,6 +247,7 @@ struct {
 
 ObliviousDNSMessage.message_type = 0x01 for Query messages and
 ObliviousDNSMessage.message_type = 0x02 for Response messages.
+ObliviousDNSMessage.key_id contains the identifier of the corresponding ObliviousDNSKey key.
 ObliviousDNSMessage.encrypted_message contains an encrypted message for the Oblivious Target
 (for Query messages) or client (for Response messages). The following sections describe how
 these meessage bodies are constructed.
@@ -340,6 +341,27 @@ def decrypt_response_body(R_encrypted):
 ~~~
 
 # Security Considerations
+
+DISCLAIMER: this is a work in progress draft and has not yet seen significant security analysis.
+
+Oblivious DoH aims to achieve the following goals:
+
+1. Queries and answers are known only to clients and targets in possession of the corresponding
+response key and HPKE keying material.
+2. Queries from the same client are unlinkable in the absence of unique per-client keys.
+
+[[TODO: formally analyze the protocol]]
+
+## Denial of Service
+
+Malicious clients (or proxies) may send bogus Oblivious DoH queries to targets as a Denial of Service
+(DoS) attack. Target servers may throttle request processing if such an event occurs. There is currently
+no mechanism for targets to inform proxies that oblivious queries are bogus.
+
+Malicious targets or proxies may send bogus answers in response to oblivious queries. Response decryption
+failure is a signal that either the proxy or target is misbehaving. Clients may take action to avoid
+one (or both) of these entities in the event of such failure.
+
 
 # IANA Considerations
 
