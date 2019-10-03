@@ -79,14 +79,15 @@ Table of Contents
      7.1.  Oblivious Queries . . . . . . . . . . . . . . . . . . . .   7
      7.2.  Oblivious Responses . . . . . . . . . . . . . . . . . . .   8
    8.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
-     9.1.  Oblivious DoH Message Media Type  . . . . . . . . . . . .   9
-     9.2.  Oblivious DoH Public Key DNS Parameter  . . . . . . . . .  10
-   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  10
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .  10
-     11.2.  Informative References . . . . . . . . . . . . . . . . .  11
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
+     8.1.  Denial of Service . . . . . . . . . . . . . . . . . . . .  10
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+     9.1.  Oblivious DoH Message Media Type  . . . . . . . . . . . .  10
+     9.2.  Oblivious DoH Public Key DNS Parameter  . . . . . . . . .  11
+   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  11
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  11
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  12
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
 
 1.  Introduction
 
@@ -104,7 +105,6 @@ Table of Contents
    Proposals such as Oblivious DNS ([I-D.annee-dprive-oblivious-dns])
    allow increased privacy by not allowing any single DNS server to be
    aware of both the client IP address and the message contents.
-
 
 
 
@@ -346,6 +346,8 @@ Internet-Draft                Oblivious DoH                 October 2019
 
    ObliviousDNSMessage.message_type = 0x01 for Query messages and
    ObliviousDNSMessage.message_type = 0x02 for Response messages.
+   ObliviousDNSMessage.key_id contains the identifier of the
+   corresponding ObliviousDNSKey key.
    ObliviousDNSMessage.encrypted_message contains an encrypted message
    for the Oblivious Target (for Query messages) or client (for Response
    messages).  The following sections describe how these meessage bodies
@@ -361,11 +363,14 @@ Internet-Draft                Oblivious DoH                 October 2019
 
    2.  A DNS query message which the client wishes to resolve.
 
+   3.  Padding of arbitrary length which MUST contain all zeros.
+
    The key and message are encoded using the following structure:
 
    struct {
       opaque response_key<1..2^16-1>;
       opaque dns_message<1..2^16-1>;
+      opaque padding<0..2^16-1>;
    } ObliviousDNSQueryBody;
 
    Let M be a DNS message a client wishes to protect with Oblivious DoH.
@@ -376,16 +381,11 @@ Internet-Draft                Oblivious DoH                 October 2019
        that of the AEAD ciphersuite in pk.aead_id.  All randomness must
        be generated according to [RFC4086].
 
-   2.  Create an ObliviousDNSQueryBody structure, carrying response_key
-       and the message M, to produce Q_plain.
+   2.  Create an ObliviousDNSQueryBody structure, carrying response_key,
+       the message M, and padding, to produce Q_plain.
 
    3.  Unmarshal pk.public_key to produce a public key pkR of type
        pk.kem_id.
-
-   4.  Compute the encrypted message as Q_encrypted =
-       encrypt_query_body(pkR, key_id, Q_plain).  key_id is defined as
-       Identifier(pk).
-
 
 
 
@@ -393,6 +393,10 @@ Kinnear, et al.           Expires April 5, 2020                 [Page 7]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
+
+   4.  Compute the encrypted message as Q_encrypted =
+       encrypt_query_body(pkR, key_id, Q_plain).  key_id is defined as
+       Identifier(pk).
 
    5.  Output a ObliviousDNSMessage message Q where Q.message_type =
        0x01, Q.key_id carries Identifier(pk), and Q.encrypted_message =
@@ -410,8 +414,14 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 7.2.  Oblivious Responses
 
-   An Oblivious DoH Response message carries the DNS response encrypted
-   with the client's chosen response key.
+   An Oblivious DoH Response message carries the DNS response
+   (dns_message) along with padding.  This message is encrypted with the
+   client's chosen response key.
+
+   struct {
+      opaque dns_message<1..2^16-1>;
+      opaque padding<0..2^16-1>;
+   } ObliviousDNSResponseBody;
 
    Targets that receive a Query message Q decrypt and process it as
    follows:
@@ -425,15 +435,27 @@ Internet-Draft                Oblivious DoH                 October 2019
    2.  Compute Q_plain, error = decrypt_query_body(skR, Q.key_id,
        Q.encrypted_message).
 
-   3.  If no error was returned, resolve Q_plain.dns_message as needed,
-       yielding answer R_plain.
+   3.  If no error was returned, and Q_plain.padding is valid (all
+       zeros), resolve Q_plain.dns_message as needed, yielding a DNS
+       message M.
 
-   4.  Compute R_encrypted = encrypt_response_body(R_plain, Q_plain).
+   4.  Create an ObliviousDNSResponseBody structure, carrying the
+       message M and padding, to produce R_plain.
+
+
+
+
+Kinnear, et al.           Expires April 5, 2020                 [Page 8]
+
+Internet-Draft                Oblivious DoH                 October 2019
+
+
+   5.  Compute R_encrypted = encrypt_response_body(R_plain, Q_plain).
        (See definition for encrypt_response_body below.  The key_id
        field used for encryption is empty, yielding 0x0000 as part of
        the AAD.)
 
-   5.  Output a ObliviousDNSMessage message R where R.message_type =
+   6.  Output a ObliviousDNSMessage message R where R.message_type =
        0x02, R.key_id = nil, and R.encrypted_message = R_encrypted.
 
    def decrypt_query_body(skR, key_id, Q_encrypted):
@@ -442,13 +464,6 @@ Internet-Draft                Oblivious DoH                 October 2019
      aad = 0x01 || key_id
      Q_plain, error = context.Open(aad, ct)
      return Q_plain, error
-
-
-
-Kinnear, et al.           Expires April 5, 2020                 [Page 8]
-
-Internet-Draft                Oblivious DoH                 October 2019
-
 
    def encrypt_response_body(R_plain, Q_plain):
      aad = 0x02 || 0x0000
@@ -461,7 +476,9 @@ Internet-Draft                Oblivious DoH                 October 2019
    client as the HTTP response to the client's original HTTP request.
 
    Once the client receives the response, it can use its known
-   response_key to decrypt encrypted R.encrypted_message.
+   response_key to decrypt R.encrypted_message, yielding R_plain.
+   Clients MUST validate R_plain.padding (as all zeros) before using
+   R_plain.dns_message.
 
    def decrypt_response_body(R_encrypted):
      aad = 0x02 || 0x0000
@@ -469,6 +486,41 @@ Internet-Draft                Oblivious DoH                 October 2019
      return R_plain
 
 8.  Security Considerations
+
+   DISCLAIMER: this is a work in progress draft and has not yet seen
+   significant security analysis.
+
+   Oblivious DoH aims to achieve the following goals:
+
+   1.  Queries and answers are known only to clients and targets in
+       possession of the corresponding response key and HPKE keying
+       material.
+
+   2.  Queries from the same client are unlinkable in the absence of
+       unique per-client keys.
+
+
+
+Kinnear, et al.           Expires April 5, 2020                 [Page 9]
+
+Internet-Draft                Oblivious DoH                 October 2019
+
+
+   Selection of padding length for ObliviousDNSQueryBody and
+   ObliviousDNSResponseBody is outside the scope of this document.
+   Implementations SHOULD follow the guidance for choosing padding
+   length in [RFC8467].
+
+8.1.  Denial of Service
+
+   Malicious clients (or proxies) may send bogus Oblivious DoH queries
+   to targets as a Denial-of-Service (DoS) attack.  Target servers may
+   throttle processing requests if such an event occurs.
+
+   Malicious targets or proxies may send bogus answers in response to
+   Oblivious DoH queries.  Response decryption failure is a signal that
+   either the proxy or target is misbehaving.  Clients can choose to
+   stop using one or both of these servers in the event of such failure.
 
 9.  IANA Considerations
 
@@ -496,21 +548,19 @@ Internet-Draft                Oblivious DoH                 October 2019
 
    Published specification: This document.
 
-
-
-
-
-
-Kinnear, et al.           Expires April 5, 2020                 [Page 9]
-
-Internet-Draft                Oblivious DoH                 October 2019
-
-
    Applications that use this media type: This media type is intended to
    be used by clients wishing to hide their DNS queries when using DNS
    over HTTPS.
 
    Additional information: None
+
+
+
+
+Kinnear, et al.           Expires April 5, 2020                [Page 10]
+
+Internet-Draft                Oblivious DoH                 October 2019
+
 
    Person and email address to contact for further information: See
    Authors' Addresses section
@@ -555,18 +605,18 @@ Internet-Draft                Oblivious DoH                 October 2019
               Encryption", draft-irtf-cfrg-hpke-00 (work in progress),
               July 2019.
 
-
-
-Kinnear, et al.           Expires April 5, 2020                [Page 10]
-
-Internet-Draft                Oblivious DoH                 October 2019
-
-
    [I-D.nygren-dnsop-svcb-httpssvc]
               Schwartz, B., Bishop, M., and E. Nygren, "Service binding
               and parameter specification via the DNS (DNS SVCB and
               HTTPSSVC)", draft-nygren-dnsop-svcb-httpssvc-00 (work in
               progress), September 2019.
+
+
+
+Kinnear, et al.           Expires April 5, 2020                [Page 11]
+
+Internet-Draft                Oblivious DoH                 October 2019
+
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
@@ -581,6 +631,10 @@ Internet-Draft                Oblivious DoH                 October 2019
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
               <https://www.rfc-editor.org/info/rfc8446>.
+
+   [RFC8467]  Mayrhofer, A., "Padding Policies for Extension Mechanisms
+              for DNS (EDNS(0))", RFC 8467, DOI 10.17487/RFC8467,
+              October 2018, <https://www.rfc-editor.org/info/rfc8467>.
 
    [RFC8484]  Hoffman, P. and P. McManus, "DNS Queries over HTTPS
               (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
@@ -613,7 +667,9 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 11]
+
+
+Kinnear, et al.           Expires April 5, 2020                [Page 12]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -669,4 +725,4 @@ Authors' Addresses
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 12]
+Kinnear, et al.           Expires April 5, 2020                [Page 13]

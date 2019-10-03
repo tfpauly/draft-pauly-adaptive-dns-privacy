@@ -297,6 +297,7 @@ ul.toc li {
 <link href="#rfc.section.7.1" rel="Chapter" title="7.1 Oblivious Queries">
 <link href="#rfc.section.7.2" rel="Chapter" title="7.2 Oblivious Responses">
 <link href="#rfc.section.8" rel="Chapter" title="8 Security Considerations">
+<link href="#rfc.section.8.1" rel="Chapter" title="8.1 Denial of Service">
 <link href="#rfc.section.9" rel="Chapter" title="9 IANA Considerations">
 <link href="#rfc.section.9.1" rel="Chapter" title="9.1 Oblivious DoH Message Media Type">
 <link href="#rfc.section.9.2" rel="Chapter" title="9.2 Oblivious DoH Public Key DNS Parameter">
@@ -405,7 +406,9 @@ ul.toc li {
 </li>
 </ul><li>8.   <a href="#rfc.section.8">Security Considerations</a>
 </li>
-<li>9.   <a href="#rfc.section.9">IANA Considerations</a>
+<ul><li>8.1.   <a href="#rfc.section.8.1">Denial of Service</a>
+</li>
+</ul><li>9.   <a href="#rfc.section.9">IANA Considerations</a>
 </li>
 <ul><li>9.1.   <a href="#rfc.section.9.1">Oblivious DoH Message Media Type</a>
 </li>
@@ -543,7 +546,7 @@ struct {
    opaque encrypted_message&lt;1..2^16-1&gt;;
 } ObliviousDNSMessage;
 </pre>
-<p id="rfc.section.7.p.2">ObliviousDNSMessage.message_type = 0x01 for Query messages and ObliviousDNSMessage.message_type = 0x02 for Response messages.  ObliviousDNSMessage.encrypted_message contains an encrypted message for the Oblivious Target (for Query messages) or client (for Response messages). The following sections describe how these meessage bodies are constructed.</p>
+<p id="rfc.section.7.p.2">ObliviousDNSMessage.message_type = 0x01 for Query messages and ObliviousDNSMessage.message_type = 0x02 for Response messages.  ObliviousDNSMessage.key_id contains the identifier of the corresponding ObliviousDNSKey key.  ObliviousDNSMessage.encrypted_message contains an encrypted message for the Oblivious Target (for Query messages) or client (for Response messages). The following sections describe how these meessage bodies are constructed.</p>
 <h1 id="rfc.section.7.1">
 <a href="#rfc.section.7.1">7.1.</a> <a href="#oblivious-queries" id="oblivious-queries">Oblivious Queries</a>
 </h1>
@@ -553,12 +556,14 @@ struct {
 <ol>
 <li>A symmetric key under which the DNS response will be encrypted. The AEAD algorithm used for the client&#8217;s response key is the one associated with the server&#8217;s public key.</li>
 <li>A DNS query message which the client wishes to resolve.</li>
+<li>Padding of arbitrary length which MUST contain all zeros.</li>
 </ol>
 <p id="rfc.section.7.1.p.3">The key and message are encoded using the following structure:</p>
 <pre>
 struct {
    opaque response_key&lt;1..2^16-1&gt;;
    opaque dns_message&lt;1..2^16-1&gt;;
+   opaque padding&lt;0..2^16-1&gt;;
 } ObliviousDNSQueryBody;
 </pre>
 <p id="rfc.section.7.1.p.4">Let M be a DNS message a client wishes to protect with Oblivious DoH. When sending an Oblivious DoH Query for resolving M to an Oblivious Target with ObliviousDNSKey key pk, a client does the following:</p>
@@ -566,7 +571,7 @@ struct {
 
 <ol>
 <li>Generate a random symmetric response_key whose length matches that of the AEAD ciphersuite in pk.aead_id.  All randomness must be generated according to <a href="#RFC4086" class="xref">[RFC4086]</a>.</li>
-<li>Create an ObliviousDNSQueryBody structure, carrying response_key and the message M, to produce Q_plain.</li>
+<li>Create an ObliviousDNSQueryBody structure, carrying response_key, the message M, and padding, to produce Q_plain.</li>
 <li>Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.</li>
 <li>Compute the encrypted message as Q_encrypted = encrypt_query_body(pkR, key_id, Q_plain).  key_id is defined as Identifier(pk).</li>
 <li>Output a ObliviousDNSMessage message Q where Q.message_type = 0x01, Q.key_id carries Identifier(pk), and Q.encrypted_message = Q_encrypted.</li>
@@ -583,14 +588,21 @@ def encrypt_query_body(pkR, key_id, Q_plain):
 <h1 id="rfc.section.7.2">
 <a href="#rfc.section.7.2">7.2.</a> <a href="#oblivious-responses" id="oblivious-responses">Oblivious Responses</a>
 </h1>
-<p id="rfc.section.7.2.p.1">An Oblivious DoH Response message carries the DNS response encrypted with the client&#8217;s chosen response key.</p>
+<p id="rfc.section.7.2.p.1">An Oblivious DoH Response message carries the DNS response (dns_message) along with padding.  This message is encrypted with the client&#8217;s chosen response key.</p>
+<pre>
+struct {
+   opaque dns_message&lt;1..2^16-1&gt;;
+   opaque padding&lt;0..2^16-1&gt;;
+} ObliviousDNSResponseBody;
+</pre>
 <p id="rfc.section.7.2.p.2">Targets that receive a Query message Q decrypt and process it as follows:</p>
 <p></p>
 
 <ol>
 <li>Look up the ObliviousDNSKey according to Q.key_id. If no such key exists, the Target MAY discard the query. Otherwise, let skR be the private key corresponding to this public key, or one chosen for trial decryption, and pk be the corresponding ObliviousDNSKey.</li>
 <li>Compute Q_plain, error = decrypt_query_body(skR, Q.key_id, Q.encrypted_message).</li>
-<li>If no error was returned, resolve Q_plain.dns_message as needed, yielding answer R_plain.</li>
+<li>If no error was returned, and Q_plain.padding is valid (all zeros), resolve Q_plain.dns_message as needed, yielding a DNS message M.</li>
+<li>Create an ObliviousDNSResponseBody structure, carrying the message M and padding, to produce R_plain.</li>
 <li>Compute R_encrypted = encrypt_response_body(R_plain, Q_plain). (See definition for encrypt_response_body below. The key_id field used for encryption is empty, yielding 0x0000 as part of the AAD.)</li>
 <li>Output a ObliviousDNSMessage message R where R.message_type = 0x02, R.key_id = nil, and R.encrypted_message = R_encrypted.</li>
 </ol>
@@ -610,7 +622,7 @@ def encrypt_response_body(R_plain, Q_plain):
 </pre>
 <p id="rfc.section.7.2.p.4">The Target then sends R to the Proxy according to <a href="#oblivious-response" class="xref">Section 4.3</a>.</p>
 <p id="rfc.section.7.2.p.5">The Proxy forwards the message R without modification back to the client as the HTTP response to the client&#8217;s original HTTP request.</p>
-<p id="rfc.section.7.2.p.6">Once the client receives the response, it can use its known response_key to decrypt encrypted R.encrypted_message.</p>
+<p id="rfc.section.7.2.p.6">Once the client receives the response, it can use its known response_key to decrypt R.encrypted_message, yielding R_plain. Clients MUST validate R_plain.padding (as all zeros) before using R_plain.dns_message.</p>
 <pre>
 def decrypt_response_body(R_encrypted):
   aad = 0x02 || 0x0000
@@ -620,6 +632,20 @@ def decrypt_response_body(R_encrypted):
 <h1 id="rfc.section.8">
 <a href="#rfc.section.8">8.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
 </h1>
+<p id="rfc.section.8.p.1">DISCLAIMER: this is a work in progress draft and has not yet seen significant security analysis.</p>
+<p id="rfc.section.8.p.2">Oblivious DoH aims to achieve the following goals:</p>
+<p></p>
+
+<ol>
+<li>Queries and answers are known only to clients and targets in possession of the corresponding response key and HPKE keying material.</li>
+<li>Queries from the same client are unlinkable in the absence of unique per-client keys.</li>
+</ol>
+<p id="rfc.section.8.p.4">Selection of padding length for ObliviousDNSQueryBody and ObliviousDNSResponseBody is outside the scope of this document. Implementations SHOULD follow the guidance for choosing padding length in <a href="#RFC8467" class="xref">[RFC8467]</a>.</p>
+<h1 id="rfc.section.8.1">
+<a href="#rfc.section.8.1">8.1.</a> <a href="#denial-of-service" id="denial-of-service">Denial of Service</a>
+</h1>
+<p id="rfc.section.8.1.p.1">Malicious clients (or proxies) may send bogus Oblivious DoH queries to targets as a Denial-of-Service (DoS) attack. Target servers may throttle processing requests if such an event occurs.</p>
+<p id="rfc.section.8.1.p.2">Malicious targets or proxies may send bogus answers in response to Oblivious DoH queries. Response decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to stop using one or both of these servers in the event of such failure.</p>
 <h1 id="rfc.section.9">
 <a href="#rfc.section.9">9.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
 </h1>
@@ -695,6 +721,11 @@ def decrypt_response_body(R_encrypted):
 <td class="reference"><b id="RFC8446">[RFC8446]</b></td>
 <td class="top">
 <a>Rescorla, E.</a>, "<a href="https://tools.ietf.org/html/rfc8446">The Transport Layer Security (TLS) Protocol Version 1.3</a>", RFC 8446, DOI 10.17487/RFC8446, August 2018.</td>
+</tr>
+<tr>
+<td class="reference"><b id="RFC8467">[RFC8467]</b></td>
+<td class="top">
+<a>Mayrhofer, A.</a>, "<a href="https://tools.ietf.org/html/rfc8467">Padding Policies for Extension Mechanisms for DNS (EDNS(0))</a>", RFC 8467, DOI 10.17487/RFC8467, October 2018.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC8484">[RFC8484]</b></td>

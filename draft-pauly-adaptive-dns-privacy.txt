@@ -96,16 +96,16 @@ Table of Contents
        6.2.4.  Network-Based Filtering . . . . . . . . . . . . . . .  19
    7.  Performance Considerations  . . . . . . . . . . . . . . . . .  19
    8.  Security Considerations . . . . . . . . . . . . . . . . . . .  20
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  21
-     9.1.  DoH Template PvD Key  . . . . . . . . . . . . . . . . . .  21
-     9.2.  DNS Filtering PvD Keys  . . . . . . . . . . . . . . . . .  21
-     9.3.  DoH URI Template DNS Parameter  . . . . . . . . . . . . .  22
-   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  22
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  22
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .  22
-     11.2.  Informative References . . . . . . . . . . . . . . . . .  23
+   9.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .  20
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  21
+     10.1.  DoH Template PvD Key . . . . . . . . . . . . . . . . . .  21
+     10.2.  DNS Filtering PvD Keys . . . . . . . . . . . . . . . . .  21
+     10.3.  DoH URI Template DNS Parameter . . . . . . . . . . . . .  22
+   11. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  22
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  23
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  23
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  24
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  24
-
 
 
 
@@ -353,7 +353,7 @@ Internet-Draft                ADNS Privacy                  October 2019
    Whenever a client resolves a name for which it does not already have
    a Designated DoH Server, it SHOULD try to determine the Designated
    DoH Server by sending a query for the an SVCB record for the name.
-   If there is no DoH server designated for the name or zone, signalled
+   If there is no DoH server designated for the name or zone, signaled
    either by an NXDOMAIN answer or a SVCB record that does not contain a
    DoH URI, the client SHOULD suppress queries for the SVCB record for a
    given name until the time-to-live of the answer expires.
@@ -363,10 +363,10 @@ Internet-Draft                ADNS Privacy                  October 2019
    use consistently to perform SVCB record queries on the Direct
    Resolvers configured by the local network.  Since these queries are
    likely not private, they SHOULD NOT be associated with user action or
-   contain user-identifying content.  Rather, the expection is that all
-   client systems of the same version and configuration would issue the
-   same bootstrapping queries when joining a network for the first time
-   when the list of Designated DoH Servers is empty.
+   contain user-identifying content.  Rather, the expectation is that
+   all client systems of the same version and configuration would issue
+   the same bootstrapping queries when joining a network for the first
+   time when the list of Designated DoH Servers is empty.
 
 3.1.1.  Whitelisting Designated DoH Servers
 
@@ -484,7 +484,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
    If an RA provided by the router on the network defines an Explicit
    PvD that has additional information, and this additional information
-   JSON dictionary contains the key "dohTemplate" (Section 9), then the
+   JSON dictionary contains the key "dohTemplate" (Section 10), then the
    client SHOULD add this DoH server to its list of known DoH
    configurations.  The domains that the DoH server claims authority for
    are listed in the "dnsZones" key.  Clients MUST use an SVCB record
@@ -735,20 +735,20 @@ Internet-Draft                ADNS Privacy                  October 2019
    order to populate the mappings of domains.  These MAY be performed in
    an oblivious fashion, but MAY also be queried directly on the DoH
    server (since the information is not user-specific, but in response
-   to generic server-driven content).  Servers can choose to pre-
-   emptively transfer the relevant SVCB records if the PvD information
-   retrieval is done with an HTTP version that supports PUSH semantics.
-   This allows the server to avoid a round trip in zone validation even
-   before the client has started requested SVCB records.  Once the
-   client requests an SVCB record for one of the names included in the
-   "dnsZones" array, the server can also include the SVCB records for
-   the other names in the array in the Additionals section of the DNS
-   response.
+   to generic server-driven content).  Servers can choose to
+   preemptively transfer the relevant SVCB records if the PvD
+   information retrieval is done with an HTTP version that supports PUSH
+   semantics.  This allows the server to avoid a round trip in zone
+   validation even before the client has started requested SVCB records.
+   Once the client requests an SVCB record for one of the names included
+   in the "dnsZones" array, the server can also include the SVCB records
+   for the other names in the array in the Additionals section of the
+   DNS response.
 
    This document also registers one new key in the Additional
    Information PvD Keys registry, to identify the URI Template for the
-   DoH server Section 9.  When included in Web PvDs, this URI MUST match
-   the template in the SVCB DNS Record.
+   DoH server Section 10.  When included in Web PvDs, this URI MUST
+   match the template in the SVCB DNS Record.
 
    Beyond providing resolution configuration, the Web PvD configuration
    can be extended to offer information about proxies and other services
@@ -1068,7 +1068,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
    recursive resolvers to optimize answers.  To avoid this problem, the
    client's subnet can be forwarded to the authoritative server by the
-   recursive using the EDNS0 Client Subnet feature.  Oblvious DoH
+   recursive using the EDNS0 Client Subnet feature.  Oblivious DoH
    discourages this practice for privacy reasons.  However, sharing this
    subnet, while detrimental to privacy, can result in better targeted
    DNS resolutions.
@@ -1084,36 +1084,36 @@ Internet-Draft                ADNS Privacy                  October 2019
    DNS answers.
 
    Based on these properties, clients SHOULD prefer lookups via
-   Designated DoH Servers over oblivious mecahnisms whenever possible.
-   Servers can encourgage this by setting large TTLs for SVCB records
-   and using longer TTLs for responses returned by their Designated DoH
+   Designated DoH Servers over oblivious mechanisms whenever possible.
+   Servers can encourage this by setting large TTLs for SVCB records and
+   using longer TTLs for responses returned by their Designated DoH
    Server endpoints which can be more confident they have accurate
-   addressing informaton.
+   addressing information.
 
 8.  Security Considerations
 
    In order to avoid interception and modification of the information
    retrieved by clients using Adaptive DNS, all exchanges between
-   clients and servers are performed over TLS connections.
+   clients and servers are performed over encrypted connections, e.g.,
+   TLS.
 
-   Clients must also be careful in determining to which DoH servers they
-   send queries directly without proxying.  In order to avoid the
-   possibility of a spoofed SVCB record defining a malicious DoH server
-   as authoritiative, clients MUST ensure that such records validate
-   using DNSSEC [RFC4033].  Even servers that are officially designated
-   can risk leaking or logging information about client lookups.  Such
-   risk can be mitigated by validating that the DoH servers can present
-   proof of logging audits, or by a local whitelist of servers
-   maintained by a client.
+   Malicious adversaries may block client connections to all DoH or
+   Oblivious DoH services as a Denial-of-Service (DoS) measure.  Clients
+   which cannot connect to any proxy may, by local policy, fall back to
+   unencrypted DNS if this occurs.
 
-   Clients should exercise caution when using Oblivious DoH responses
-   from resolvers that do not carry DNSSEC signatures.  An adversarial
-   Target resolver that wishes to learn the IP address of clients
-   requesting resolution for sensitive domains can redirect clients to
-   addresses of its choosing.  Clients that use these answers to open
-   direct connections to the server may then leak their local IP
-   address.  Thus, when Oblivious DoH answers are returned without
-   DNSSEC, Privacy-Sensitive Connections concerned about this attack
+9.  Privacy Considerations
+
+   Clients must be careful in determining to which DoH servers they send
+   queries directly without proxying.  A malicious DoH server that can
+   direct queries to itself can track or profile client activity.  In
+   order to avoid the possibility of a spoofed SVCB record designating a
+   malicious DoH server for a name, clients MUST ensure that such
+   records validate using DNSSEC [RFC4033].
+
+   Even servers that are officially designated can risk leaking or
+   logging information about client lookups.  Such risk can be mitigated
+
 
 
 
@@ -1122,12 +1122,35 @@ Kinnear, et al.           Expires April 5, 2020                [Page 20]
 Internet-Draft                ADNS Privacy                  October 2019
 
 
-   SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or
-   some other tunneling mechanism.
+   by further restricting the list of DoH servers that are whitelisted
+   for direct use based on client policy.
 
-9.  IANA Considerations
+   Using Oblivious DoH reduces the risk that a single DoH server can
+   track or profile a client.  However, clients should exercise caution
+   when using Oblivious DoH responses from resolvers that do not carry
+   DNSSEC signatures.  An adversarial Oblivious Target resolver that
+   wishes to learn the IP address of clients requesting resolution for
+   sensitive domains can redirect clients to unique addresses of its
+   choosing.  Clients that use these answers when establishing TLS
+   connections may then leak their local IP address to chosen server.
+   Thus, when Oblivious DoH answers are returned without DNSSEC,
+   Privacy-Sensitive Connections concerned about this attack SHOULD
+   conceal their IP address via a TLS- or HTTP-layer proxy or some other
+   tunneling mechanism.
 
-9.1.  DoH Template PvD Key
+   An adversary able to see traffic on each path segment of a DoH or
+   Oblivious DoH query (e.g., from client to proxy, proxy to target, and
+   target to an authoritative DNS server) can link queries to specific
+   clients with high probability.  Failure to observe traffic on any one
+   of these path segments makes this linkability increasingly difficult.
+   For example, if an adversary can only observe traffic between a
+   client and proxy and egress traffic from a target, then it may be
+   difficult identify a specific client's query among the recursive
+   queries generated by the target.
+
+10.  IANA Considerations
+
+10.1.  DoH Template PvD Key
 
    This document adds a key to the "Additional Information PvD Keys"
    registry [I-D.ietf-intarea-provisioning-domains].
@@ -1142,10 +1165,18 @@ Internet-Draft                ADNS Privacy                  October 2019
    |          | ]        |       |                                     |
    +----------+----------+-------+-------------------------------------+
 
-9.2.  DNS Filtering PvD Keys
+10.2.  DNS Filtering PvD Keys
 
    This document adds a key to the "Additional Information PvD Keys"
    registry [I-D.ietf-intarea-provisioning-domains].
+
+
+
+
+Kinnear, et al.           Expires April 5, 2020                [Page 21]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
 
    +---------------------+-------------------------+---------+---------+
    | JSON key            | Description             | Type    | Example |
@@ -1169,19 +1200,10 @@ Internet-Draft                ADNS Privacy                  October 2019
 
    An "." in the "dnsFilteredZones" array represents a wildcard, which
    can be used to indicate that the network is requesting to filter all
-
-
-
-
-Kinnear, et al.           Expires April 5, 2020                [Page 21]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
-
    names.  Any more specific string represents a domain that requires
    filtering on the network.
 
-9.3.  DoH URI Template DNS Parameter
+10.3.  DoH URI Template DNS Parameter
 
    If present, this parameters indicates the URI template of a DoH
    server that is designated for use with the name being resolved.  This
@@ -1195,16 +1217,26 @@ Internet-Draft                ADNS Privacy                  October 2019
 
    Reference:  This document.
 
-10.  Acknowledgments
+11.  Acknowledgments
 
    Thanks to Erik Nygren, Lorenzo Colitti, Tommy Jensen, Mikael
    Abrahamsson, Ben Schwartz, Ask Hansen, Leif Hedstrom, Tim McCoy,
    Stuart Cheshire, Miguel Vega, Joey Deng, and Ted Lemon for their
    feedback and input on this document.
 
-11.  References
 
-11.1.  Normative References
+
+
+
+
+Kinnear, et al.           Expires April 5, 2020                [Page 22]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
+12.  References
+
+12.1.  Normative References
 
    [I-D.ietf-intarea-provisioning-domains]
               Pfister, P., Vyncke, E., Pauly, T., Schinazi, D., and W.
@@ -1221,18 +1253,6 @@ Internet-Draft                ADNS Privacy                  October 2019
               Barnes, R. and K. Bhargavan, "Hybrid Public Key
               Encryption", draft-irtf-cfrg-hpke-00 (work in progress),
               July 2019.
-
-
-
-
-
-
-
-
-Kinnear, et al.           Expires April 5, 2020                [Page 22]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
 
    [I-D.nygren-dnsop-svcb-httpssvc]
               Schwartz, B., Bishop, M., and E. Nygren, "Service binding
@@ -1262,7 +1282,15 @@ Internet-Draft                ADNS Privacy                  October 2019
               (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
               <https://www.rfc-editor.org/info/rfc8484>.
 
-11.2.  Informative References
+
+
+
+Kinnear, et al.           Expires April 5, 2020                [Page 23]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
+12.2.  Informative References
 
    [I-D.ietf-capport-architecture]
               Larose, K. and D. Dolson, "CAPPORT Architecture", draft-
@@ -1282,13 +1310,6 @@ Internet-Draft                ADNS Privacy                  October 2019
               "IPv6 Router Advertisement Options for DNS Configuration",
               RFC 8106, DOI 10.17487/RFC8106, March 2017,
               <https://www.rfc-editor.org/info/rfc8106>.
-
-
-
-Kinnear, et al.           Expires April 5, 2020                [Page 23]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -1312,6 +1333,17 @@ Authors' Addresses
    United States of America
 
    Email: tpauly@apple.com
+
+
+
+
+
+
+
+
+Kinnear, et al.           Expires April 5, 2020                [Page 24]
+
+Internet-Draft                ADNS Privacy                  October 2019
 
 
    Chris Wood
@@ -1341,4 +1373,28 @@ Authors' Addresses
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 24]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kinnear, et al.           Expires April 5, 2020                [Page 25]
