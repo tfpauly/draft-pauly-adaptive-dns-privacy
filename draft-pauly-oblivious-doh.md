@@ -259,6 +259,7 @@ Oblivious DoH Query messages must carry the following information:
 1. A symmetric key under which the DNS response will be encrypted. The AEAD algorithm
 used for the client's response key is the one associated with the server's public key.
 2. A DNS query message which the client wishes to resolve.
+3. Padding of arbitrary length which MUST contain all zeros.
 
 The key and message are encoded using the following structure:
 
@@ -266,6 +267,7 @@ The key and message are encoded using the following structure:
 struct {
    opaque response_key<1..2^16-1>;
    opaque dns_message<1..2^16-1>;
+   opaque padding<0..2^16-1>;
 } ObliviousDNSQueryBody;
 ~~~
 
@@ -274,7 +276,7 @@ for resolving M to an Oblivious Target with ObliviousDNSKey key pk, a client doe
 
 1. Generate a random symmetric response_key whose length matches that of the AEAD ciphersuite in pk.aead_id.
 All randomness must be generated according to {{!RFC4086}}.
-2. Create an ObliviousDNSQueryBody structure, carrying response_key and the message M, to produce Q_plain.
+2. Create an ObliviousDNSQueryBody structure, carrying response_key, the message M, and padding, to produce Q_plain.
 3. Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.
 4. Compute the encrypted message as Q_encrypted = encrypt_query_body(pkR, key_id, Q_plain).
 key_id is defined as Identifier(pk).
@@ -294,7 +296,15 @@ def encrypt_query_body(pkR, key_id, Q_plain):
 
 ## Oblivious Responses
 
-An Oblivious DoH Response message carries the DNS response encrypted with the client's chosen response key.
+An Oblivious DoH Response message carries the DNS response (dns_message) along with padding.
+This message is encrypted with the client's chosen response key.
+
+~~~
+struct {
+   opaque dns_message<1..2^16-1>;
+   opaque padding<0..2^16-1>;
+} ObliviousDNSResponseBody;
+~~~
 
 Targets that receive a Query message Q decrypt and process it as follows:
 
@@ -303,10 +313,11 @@ the Target MAY discard the query. Otherwise, let skR be the private key
 corresponding to this public key, or one chosen for trial decryption, and pk
 be the corresponding ObliviousDNSKey.
 2. Compute Q_plain, error = decrypt_query_body(skR, Q.key_id, Q.encrypted_message).
-3. If no error was returned, resolve Q_plain.dns_message as needed, yielding answer R_plain.
-4. Compute R_encrypted = encrypt_response_body(R_plain, Q_plain). (See definition
+3. If no error was returned, and Q_plain.padding is valid (all zeros), resolve Q_plain.dns_message as needed, yielding a DNS message M.
+4. Create an ObliviousDNSResponseBody structure, carrying the message M and padding, to produce R_plain.
+5. Compute R_encrypted = encrypt_response_body(R_plain, Q_plain). (See definition
 for encrypt_response_body below. The key_id field used for encryption is empty, yielding 0x0000 as part of the AAD.)
-5. Output a ObliviousDNSMessage message R where R.message_type = 0x02,
+6. Output a ObliviousDNSMessage message R where R.message_type = 0x02,
 R.key_id = nil, and R.encrypted_message = R_encrypted.
 
 ~~~
@@ -331,7 +342,8 @@ The Proxy forwards the message R without modification back to the client as
 the HTTP response to the client's original HTTP request.
 
 Once the client receives the response, it can use its known response_key
-to decrypt encrypted R.encrypted_message.
+to decrypt R.encrypted_message, yielding R_plain. Clients MUST validate
+R_plain.padding (as all zeros) before using R_plain.dns_message.
 
 ~~~
 def decrypt_response_body(R_encrypted):
@@ -350,18 +362,18 @@ Oblivious DoH aims to achieve the following goals:
 response key and HPKE keying material.
 2. Queries from the same client are unlinkable in the absence of unique per-client keys.
 
-[[TODO: formally analyze the protocol]]
+Selection of padding length for ObliviousDNSQueryBody and ObliviousDNSResponseBody is outside
+the scope of this document. Implementations SHOULD follow the guidance for choosing padding
+length in {{!RFC8467}}.
 
 ## Denial of Service
 
-Malicious clients (or proxies) may send bogus Oblivious DoH queries to targets as a Denial of Service
-(DoS) attack. Target servers may throttle request processing if such an event occurs. There is currently
-no mechanism for targets to inform proxies that oblivious queries are bogus.
+Malicious clients (or proxies) may send bogus Oblivious DoH queries to targets as a Denial-of-Service
+(DoS) attack. Target servers may throttle processing requests if such an event occurs.
 
-Malicious targets or proxies may send bogus answers in response to oblivious queries. Response decryption
-failure is a signal that either the proxy or target is misbehaving. Clients may take action to avoid
-one (or both) of these entities in the event of such failure.
-
+Malicious targets or proxies may send bogus answers in response to Oblivious DoH queries. Response
+decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to stop using
+one or both of these servers in the event of such failure.
 
 # IANA Considerations
 
