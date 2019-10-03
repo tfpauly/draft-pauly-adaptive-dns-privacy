@@ -275,6 +275,10 @@ DoH Servers that have properties that the client approves.
 Clients SHOULD NOT whitelist authority mappings for effective top-level domains (eTLDs), such
 as ".com".
 
+If a client detects at any point after whitelisting a DoH server that the server no longer
+meets the criteria for whitelisting, such as consistently failing to proxy or receive Oblivious DoH
+queries, the client SHOULD remove the DoH server from its whitelist.
+
 ### Accessing Extended Information
 
 When a Designated DoH Server is discovered, clients SHOULD also check to see
