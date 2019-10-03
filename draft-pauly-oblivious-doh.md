@@ -154,7 +154,7 @@ conform to the path specified by the Oblivious Target's DoH URI Template.
 
 Upon receiving a request that contains a "application/oblivious-dns-message" Content-Type,
 the DoH server looks at the :authority and :path psuedo-headers. If the fields are equivalent to the DoH server's
-own hostname and configured path (Section 2.7.3 of {{?RFC7230}}), then it is the target of the query,
+own hostname and configured path ({{?RFC7230}} Section 2.7.3), then it is the target of the query,
 and it can decrypt the query ({{encryption}}). If the fields do not indicate the local server, then the server
 is acting as an Oblivious Proxy. If it is a proxy, it is expected to send the request on to the Oblivious
 Target based on the authority identified in the HTTP request.
@@ -229,7 +229,7 @@ struct {
 It contains the information needed to encrypt a message under ObliviousDNSKey.public_key
 such that only the owner of the corresponding private key can decrypt the message. The
 values for ObliviousDNSKey.kem_id, ObliviousDNSKey.kdf_id, and ObliviousDNSKey.aead_id
-are described in {{!I-D.irtf-cfrg-hpke}}, Section 7. For convenience, let
+are described in {{!I-D.irtf-cfrg-hpke}} Section 7. For convenience, let
 Identifier(ObliviousDNSKey) be defined as the SHA256 value of ObliviousDNSKey serialized.
 
 # Oblivious DoH Message Format {#encryption}
