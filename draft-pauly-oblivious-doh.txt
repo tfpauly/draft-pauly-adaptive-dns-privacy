@@ -5,10 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: April 4, 2020                                        Apple Inc.
+Expires: April 5, 2020                                        Apple Inc.
                                                               P. McManus
                                                                   Fastly
-                                                        October 02, 2019
+                                                        October 03, 2019
 
 
                         Oblivious DNS Over HTTPS
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 4, 2020.
+   This Internet-Draft will expire on April 5, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kinnear, et al.           Expires April 4, 2020                 [Page 1]
+Kinnear, et al.           Expires April 5, 2020                 [Page 1]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Kinnear, et al.           Expires April 4, 2020                 [Page 2]
+Kinnear, et al.           Expires April 5, 2020                 [Page 2]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -165,7 +165,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 4, 2020                 [Page 3]
+Kinnear, et al.           Expires April 5, 2020                 [Page 3]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -221,7 +221,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 4, 2020                 [Page 4]
+Kinnear, et al.           Expires April 5, 2020                 [Page 4]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -229,12 +229,12 @@ Internet-Draft                Oblivious DoH                 October 2019
    Upon receiving a request that contains a "application/oblivious-dns-
    message" Content-Type, the DoH server looks at the :authority and
    :path psuedo-headers.  If the fields are equivalent to the DoH
-   server's own hostname and configured path (Section 2.7.3 of
-   [RFC7230]), then it is the target of the query, and it can decrypt
-   the query (Section 7).  If the fields do not indicate the local
-   server, then the server is acting as an Oblivious Proxy.  If it is a
-   proxy, it is expected to send the request on to the Oblivious Target
-   based on the authority identified in the HTTP request.
+   server's own hostname and configured path ([RFC7230] Section 2.7.3),
+   then it is the target of the query, and it can decrypt the query
+   (Section 7).  If the fields do not indicate the local server, then
+   the server is acting as an Oblivious Proxy.  If it is a proxy, it is
+   expected to send the request on to the Oblivious Target based on the
+   authority identified in the HTTP request.
 
 4.2.  HTTP Request Example
 
@@ -277,7 +277,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 4, 2020                 [Page 5]
+Kinnear, et al.           Expires April 5, 2020                 [Page 5]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -319,7 +319,7 @@ Internet-Draft                Oblivious DoH                 October 2019
    ObliviousDNSKey.public_key such that only the owner of the
    corresponding private key can decrypt the message.  The values for
    ObliviousDNSKey.kem_id, ObliviousDNSKey.kdf_id, and
-   ObliviousDNSKey.aead_id are described in [I-D.irtf-cfrg-hpke],
+   ObliviousDNSKey.aead_id are described in [I-D.irtf-cfrg-hpke]
    Section 7.  For convenience, let Identifier(ObliviousDNSKey) be
    defined as the SHA256 value of ObliviousDNSKey serialized.
 
@@ -333,7 +333,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 4, 2020                 [Page 6]
+Kinnear, et al.           Expires April 5, 2020                 [Page 6]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -389,7 +389,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 4, 2020                 [Page 7]
+Kinnear, et al.           Expires April 5, 2020                 [Page 7]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -445,7 +445,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 4, 2020                 [Page 8]
+Kinnear, et al.           Expires April 5, 2020                 [Page 8]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -501,7 +501,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 4, 2020                 [Page 9]
+Kinnear, et al.           Expires April 5, 2020                 [Page 9]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -557,7 +557,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 4, 2020                [Page 10]
+Kinnear, et al.           Expires April 5, 2020                [Page 10]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -613,7 +613,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 4, 2020                [Page 11]
+Kinnear, et al.           Expires April 5, 2020                [Page 11]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -669,4 +669,4 @@ Authors' Addresses
 
 
 
-Kinnear, et al.           Expires April 4, 2020                [Page 12]
+Kinnear, et al.           Expires April 5, 2020                [Page 12]
