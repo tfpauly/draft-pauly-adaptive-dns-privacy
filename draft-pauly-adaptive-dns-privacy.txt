@@ -74,7 +74,7 @@ Table of Contents
        3.1.1.  Whitelisting Designated DoH Servers . . . . . . . . .   7
        3.1.2.  Accessing Extended Information  . . . . . . . . . . .   8
      3.2.  Discovering Local Resolvers . . . . . . . . . . . . . . .   9
-     3.3.  Hostname Resolution Algorithm . . . . . . . . . . . . . .   9
+     3.3.  Hostname Resolution Algorithm . . . . . . . . . . . . . .  10
      3.4.  Oblivious Resolution  . . . . . . . . . . . . . . . . . .  11
    4.  Server Requirements . . . . . . . . . . . . . . . . . . . . .  11
      4.1.  Provide a DoH Server  . . . . . . . . . . . . . . . . . .  12
@@ -82,29 +82,29 @@ Table of Contents
        4.1.2.  Oblivious DoH Target  . . . . . . . . . . . . . . . .  12
        4.1.3.  Keying Material . . . . . . . . . . . . . . . . . . .  12
      4.2.  Advertise the DoH Server  . . . . . . . . . . . . . . . .  12
-     4.3.  Provide Extended Configuration as a Web PvD . . . . . . .  12
+     4.3.  Provide Extended Configuration as a Web PvD . . . . . . .  13
    5.  Server Deployment Considerations  . . . . . . . . . . . . . .  14
      5.1.  Single Content Provider . . . . . . . . . . . . . . . . .  14
-     5.2.  Multiple Content Providers  . . . . . . . . . . . . . . .  14
+     5.2.  Multiple Content Providers  . . . . . . . . . . . . . . .  15
      5.3.  Avoid Narrow Deployments  . . . . . . . . . . . . . . . .  15
-   6.  Local Resolver Deployment Considerations  . . . . . . . . . .  15
+   6.  Local Resolver Deployment Considerations  . . . . . . . . . .  16
      6.1.  Designating Local DoH Servers . . . . . . . . . . . . . .  16
      6.2.  Local Use Cases . . . . . . . . . . . . . . . . . . . . .  16
-       6.2.1.  Accessing Local-Only Resolvable Content . . . . . . .  16
-       6.2.2.  Accessing Locally Optimized Content . . . . . . . . .  17
+       6.2.1.  Accessing Local-Only Resolvable Content . . . . . . .  17
+       6.2.2.  Accessing Locally Optimized Content . . . . . . . . .  18
        6.2.3.  Walled-Garden and Captive Network Deployments . . . .  18
-       6.2.4.  Network-Based Filtering . . . . . . . . . . . . . . .  18
+       6.2.4.  Network-Based Filtering . . . . . . . . . . . . . . .  19
    7.  Performance Considerations  . . . . . . . . . . . . . . . . .  19
    8.  Security Considerations . . . . . . . . . . . . . . . . . . .  20
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  20
-     9.1.  DoH Template PvD Key  . . . . . . . . . . . . . . . . . .  20
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  21
+     9.1.  DoH Template PvD Key  . . . . . . . . . . . . . . . . . .  21
      9.2.  DNS Filtering PvD Keys  . . . . . . . . . . . . . . . . .  21
-     9.3.  DoH URI Template DNS Parameter  . . . . . . . . . . . . .  21
+     9.3.  DoH URI Template DNS Parameter  . . . . . . . . . . . . .  22
    10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  22
    11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  22
      11.1.  Normative References . . . . . . . . . . . . . . . . . .  22
      11.2.  Informative References . . . . . . . . . . . . . . . . .  23
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  23
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  24
 
 
 
@@ -413,6 +413,11 @@ Internet-Draft                ADNS Privacy                  October 2019
    Clients SHOULD NOT whitelist authority mappings for effective top-
    level domains (eTLDs), such as ".com".
 
+   If a client detects at any point after whitelisting a DoH server that
+   the server no longer meets the criteria for whitelisting, such as
+   consistently failing to proxy or receive Oblivious DoH queries, the
+   client SHOULD remove the DoH server from its whitelist.
+
 3.1.2.  Accessing Extended Information
 
    When a Designated DoH Server is discovered, clients SHOULD also check
@@ -434,13 +439,8 @@ Internet-Draft                ADNS Privacy                  October 2019
 
    The client sends:
 
-   :method = GET
-   :scheme = https
-   :authority = dnsserver.example.net
-   :path = /dns-query
-   accept = application/pvd+json
 
-   And the server replies:
+
 
 
 
@@ -449,6 +449,14 @@ Kinnear, et al.           Expires April 4, 2020                 [Page 8]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
+
+   :method = GET
+   :scheme = https
+   :authority = dnsserver.example.net
+   :path = /dns-query
+   accept = application/pvd+json
+
+   And the server replies:
 
    :status = 200
    content-type = application/pvd+json
@@ -487,6 +495,17 @@ Internet-Draft                ADNS Privacy                  October 2019
 
    See Section 6 for local deployment considerations.
 
+
+
+
+
+
+
+Kinnear, et al.           Expires April 4, 2020                 [Page 9]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
 3.3.  Hostname Resolution Algorithm
 
    When establishing a secure connection to a certain hostname, clients
@@ -498,14 +517,6 @@ Internet-Draft                ADNS Privacy                  October 2019
    either by a DNS response, such as SERVFAIL or NXDOMAIN, or by a
    connection-level failure, such as a TCP reset, TLS handshake failure,
    or an HTTP response error status.  In effect, any unsuccessful
-
-
-
-Kinnear, et al.           Expires April 4, 2020                 [Page 9]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
-
    attempt to resolve a name can cause the client to try another
    resolver if permitted by the algorithm.  This is particularly useful
    for cases in which a name may not be resolvable over public DNS but
@@ -543,17 +554,6 @@ Internet-Draft                ADNS Privacy                  October 2019
        connection that is not explicitly Privacy-Sensitive [RFC2132]
        [RFC8106].
 
-   If the system allows the user to specify a preferred encrypted
-   resolver, such as allowing the user to manually configure a DoH
-   server URI to use by default, the use of this resolver SHOULD come
-   between steps 2 and 3.  This ensures that VPN-managed and locally-
-   accessible names remain accessible while all other names are resolved
-   using the user preference.
-
-
-
-
-
 
 
 
@@ -561,6 +561,13 @@ Kinnear, et al.           Expires April 4, 2020                [Page 10]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
+
+   If the system allows the user to specify a preferred encrypted
+   resolver, such as allowing the user to manually configure a DoH
+   server URI to use by default, the use of this resolver SHOULD come
+   between steps 2 and 3.  This ensures that VPN-managed and locally-
+   accessible names remain accessible while all other names are resolved
+   using the user preference.
 
 3.4.  Oblivious Resolution
 
@@ -602,13 +609,6 @@ Internet-Draft                ADNS Privacy                  October 2019
    more domains, such as a CDN, can run a server node that allows
    clients to run Adaptive DNS.  A new server node can be added at any
    time, and can be used once it is advertised to clients and can be
-   validated and whitelisted.  The system overall is intended to scale
-   and provide improved performance as more nodes become available.
-
-   The basic requirements to participate as a server node in this
-   architecture are described below.
-
-
 
 
 
@@ -617,6 +617,12 @@ Kinnear, et al.           Expires April 4, 2020                [Page 11]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
+
+   validated and whitelisted.  The system overall is intended to scale
+   and provide improved performance as more nodes become available.
+
+   The basic requirements to participate as a server node in this
+   architecture are described below.
 
 4.1.  Provide a DoH Server
 
@@ -660,12 +666,6 @@ Internet-Draft                ADNS Privacy                  October 2019
    Servers MUST ensure that any SVCB records are signed with DNSSEC
    [RFC4033].
 
-4.3.  Provide Extended Configuration as a Web PvD
-
-   Beyond providing basic DoH server functionality, server nodes SHOULD
-   provide a mechanism that allows clients to look up properties and
-   configuration for the server deployment.  Amongst other information,
-   this configuration can optionally contain a list of some popular
 
 
 
@@ -674,6 +674,12 @@ Kinnear, et al.           Expires April 4, 2020                [Page 12]
 Internet-Draft                ADNS Privacy                  October 2019
 
 
+4.3.  Provide Extended Configuration as a Web PvD
+
+   Beyond providing basic DoH server functionality, server nodes SHOULD
+   provide a mechanism that allows clients to look up properties and
+   configuration for the server deployment.  Amongst other information,
+   this configuration can optionally contain a list of some popular
    domains for which this server is designated.  Clients can use this
    list to optimize lookups for common names.
 
@@ -715,13 +721,7 @@ Internet-Draft                ADNS Privacy                  October 2019
    removing a bootstrapping step in discovering mappings from domains to
    Designated DoH Servers.
 
-   Clients that retrieve the Web PvD JSON dictionary SHOULD perform an
-   SVCB record query for each of the entries in the "dnsZones" array in
-   order to populate the mappings of domains.  These MAY be performed in
-   an oblivious fashion, but MAY also be queried directly on the DoH
-   server (since the information is not user-specific, but in response
-   to generic server-driven content).  Servers can choose to pre-
-   emptively transfer the relevant SVCB records if the PvD information
+
 
 
 
@@ -730,6 +730,13 @@ Kinnear, et al.           Expires April 4, 2020                [Page 13]
 Internet-Draft                ADNS Privacy                  October 2019
 
 
+   Clients that retrieve the Web PvD JSON dictionary SHOULD perform an
+   SVCB record query for each of the entries in the "dnsZones" array in
+   order to populate the mappings of domains.  These MAY be performed in
+   an oblivious fashion, but MAY also be queried directly on the DoH
+   server (since the information is not user-specific, but in response
+   to generic server-driven content).  Servers can choose to pre-
+   emptively transfer the relevant SVCB records if the PvD information
    retrieval is done with an HTTP version that supports PUSH semantics.
    This allows the server to avoid a round trip in zone validation even
    before the client has started requested SVCB records.  Once the
@@ -767,6 +774,18 @@ Internet-Draft                ADNS Privacy                  October 2019
    content has an opportunity to tune the responses provided to a client
    based on the location inferred by the client IP address.
 
+
+
+
+
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 14]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
 5.2.  Multiple Content Providers
 
    Some hostnames may resolve to server IP addresses that are hosted by
@@ -778,13 +797,6 @@ Internet-Draft                ADNS Privacy                  October 2019
 
    o  multiple designated DoH servers that are advertised via SVCB DNS
       Records; or,
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 14]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
 
    o  a single designated DoH server that can be referenced by one or
       more SVCB DNS Records, operated by a party that is aware of both
@@ -821,6 +833,15 @@ Internet-Draft                ADNS Privacy                  October 2019
    connection reuse, which can improve the performance of name
    resolutions.
 
+
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 15]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
 6.  Local Resolver Deployment Considerations
 
    A key goal of Adaptive DNS is that clients will be able to use
@@ -834,13 +855,6 @@ Internet-Draft                ADNS Privacy                  October 2019
    In order to achieve this, a local network can advertise itself as
    authoritative for a domain, allowing it to be used prior to external
    servers in the client resolution algorithm Section 3.3.
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 15]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
 
 6.1.  Designating Local DoH Servers
 
@@ -877,6 +891,13 @@ Internet-Draft                ADNS Privacy                  October 2019
    The following list is not exhaustive, but provides guidance on how
    these scenarios can be achieved using the Adaptive DNS algorithm.
 
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 16]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
 6.2.1.  Accessing Local-Only Resolvable Content
 
    Some names are not resolvable using generic DNS resolvers, but
@@ -890,14 +911,6 @@ Internet-Draft                ADNS Privacy                  October 2019
    In these scenarios, the local network SHOULD designate a local DoH
    server for the domains that are locally resolvable.  For example, an
    enterprise that owns "private.example.org" would advertise
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 16]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
-
    "private.example.org" in its PvD information along with a DoH URI
    template.  Clients could then use that locally-configured resolver
    with names under "private.example.org" according to the rules in
@@ -934,6 +947,13 @@ Internet-Draft                ADNS Privacy                  October 2019
       malicious network that is masquerading as an authority for private
       names if the network cannot be validated in some other manner.
 
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 17]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
    Deployments SHOULD use the one of the first two approaches (signing
    their records) whenever possible; the case of providing unsigned
    names is only described as a possibility for handling legacy
@@ -946,14 +966,6 @@ Internet-Draft                ADNS Privacy                  October 2019
    Other names may be resolvable both publicly and on the local
    resolver, but have more optimized servers that are accessible only
    via the local network.  For example, a Wi-Fi provider may provide
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 17]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
-
    access to a cache of video content that provides lower latency than
    publicly-accessible caches.
 
@@ -990,6 +1002,14 @@ Internet-Draft                ADNS Privacy                  October 2019
    that is used for connecting to captive portals SHOULD use local
    resolvers.  In addition, clients MAY choose to fall back to using
    direct resolution without any encryption if they determine that all
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 18]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
    connectivity is blocked otherwise.  Note that this comes with a risk
    of a network blocking connections in order to induce this fallback
    behavior, so clients might want to inform users about this possible
@@ -1002,14 +1022,6 @@ Internet-Draft                ADNS Privacy                  October 2019
    order to apply content filtering rules to clients associated with the
    network.  Using encrypted DNS resolvers that are not participating in
    this filtering can bypass such enforcement.  However, simply blocking
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 18]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
-
    connections for filtering is indistinguishable from a malicious
    attack from a client's perspective.
 
@@ -1046,6 +1058,14 @@ Internet-Draft                ADNS Privacy                  October 2019
    will originate from an IP address that is not necessarily
    geographically related to the client.  Many DNS servers make
    assumptions about the geographic locality of clients to their
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 19]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
    recursive resolvers to optimize answers.  To avoid this problem, the
    client's subnet can be forwarded to the authoritative server by the
    recursive using the EDNS0 Client Subnet feature.  Oblvious DoH
@@ -1058,14 +1078,6 @@ Internet-Draft                ADNS Privacy                  October 2019
    Oblivious queries are sensitive for privacy, and can encounter
    performance degradation as a result of not using the client subnet.
    Queries to designated DoH servers, on the other hand, are sent
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 19]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
-
    directly by clients, so the client IP address is made available to
    these servers.  Since these servers are designated by the authority
    for the names, they can use the IP address subnet information to tune
@@ -1102,6 +1114,14 @@ Internet-Draft                ADNS Privacy                  October 2019
    direct connections to the server may then leak their local IP
    address.  Thus, when Oblivious DoH answers are returned without
    DNSSEC, Privacy-Sensitive Connections concerned about this attack
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 20]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
    SHOULD conceal their IP address via a TLS- or HTTP-layer proxy or
    some other tunneling mechanism.
 
@@ -1111,16 +1131,6 @@ Internet-Draft                ADNS Privacy                  October 2019
 
    This document adds a key to the "Additional Information PvD Keys"
    registry [I-D.ietf-intarea-provisioning-domains].
-
-
-
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 20]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
 
    +----------+----------+-------+-------------------------------------+
    | JSON key | Descript | Type  | Example                             |
@@ -1159,6 +1169,15 @@ Internet-Draft                ADNS Privacy                  October 2019
 
    An "." in the "dnsFilteredZones" array represents a wildcard, which
    can be used to indicate that the network is requesting to filter all
+
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 21]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
    names.  Any more specific string represents a domain that requires
    filtering on the network.
 
@@ -1169,14 +1188,6 @@ Internet-Draft                ADNS Privacy                  October 2019
    is a string encoded as UTF-8 characters.
 
    Name:  dohuri
-
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 21]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
 
    SvcParamKey:  4
 
@@ -1211,6 +1222,18 @@ Internet-Draft                ADNS Privacy                  October 2019
               Encryption", draft-irtf-cfrg-hpke-00 (work in progress),
               July 2019.
 
+
+
+
+
+
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 22]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
    [I-D.nygren-dnsop-svcb-httpssvc]
               Schwartz, B., Bishop, M., and E. Nygren, "Service binding
               and parameter specification via the DNS (DNS SVCB and
@@ -1224,15 +1247,6 @@ Internet-Draft                ADNS Privacy                  October 2019
               Rose, "DNS Security Introduction and Requirements",
               RFC 4033, DOI 10.17487/RFC4033, March 2005,
               <https://www.rfc-editor.org/info/rfc4033>.
-
-
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 22]
-
-Internet-Draft                ADNS Privacy                  October 2019
-
 
    [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
               Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
@@ -1269,6 +1283,13 @@ Internet-Draft                ADNS Privacy                  October 2019
               RFC 8106, DOI 10.17487/RFC8106, March 2017,
               <https://www.rfc-editor.org/info/rfc8106>.
 
+
+
+Kinnear, et al.           Expires April 4, 2020                [Page 23]
+
+Internet-Draft                ADNS Privacy                  October 2019
+
+
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
@@ -1282,12 +1303,6 @@ Authors' Addresses
    United States of America
 
    Email: ekinnear@apple.com
-
-
-
-Kinnear, et al.           Expires April 4, 2020                [Page 23]
-
-Internet-Draft                ADNS Privacy                  October 2019
 
 
    Tommy Pauly
@@ -1312,21 +1327,6 @@ Internet-Draft                ADNS Privacy                  October 2019
    Fastly
 
    Email: mcmanus@ducksong.com
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
