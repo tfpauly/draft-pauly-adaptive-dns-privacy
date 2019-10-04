@@ -42,25 +42,6 @@ author:
     org: Fastly
     email: mcmanus@ducksong.com
 
-normative:
-  I-D.pauly-dprive-oblivious-doh:
-    title: Oblivious DNS Over HTTPS
-    seriesinfo: draft-pauly-dprive-oblivious-doh (work in progress)
-    author:
-      -
-        ins: E. Kinnear
-        name: Eric Kinnear
-      -
-        ins: T. Pauly
-        name: Tommy Pauly
-      -
-        ins: C. Wood
-        name: Chris Wood
-      -
-        ins: P. McManus
-        name: Patrick McManus
-    date: October 2019
-
 --- abstract
 
 This document defines an architecture that allows clients to dynamically
@@ -119,7 +100,7 @@ This architecture is composed of several mechanisms:
 
 - A DNS record that indicates a designated DoH server associated with a name ({{designated-discovery}});
 
-- an extension to DoH that allows client IP addresses to be disassociated from queries via proxying ({{I-D.pauly-dprive-oblivious-doh}});
+- an extension to DoH that allows client IP addresses to be disassociated from queries via proxying ({{!I-D.pauly-dprive-oblivious-doh}});
 
 - a DoH server that responds to queries directly and supports proxying ({{server}});
 
@@ -211,7 +192,7 @@ Clients dynamically build and maintain a set of known Designated DoH Servers. Th
 that is associated with each server is:
 
 - The URI Template of the DoH server {{!RFC8484}}
-- The public HPKE {{!I-D.irtf-cfrg-hpke}} key of the DoH server used for proxied oblivious queries {{I-D.pauly-dprive-oblivious-doh}}
+- The public HPKE {{!I-D.irtf-cfrg-hpke}} key of the DoH server used for proxied oblivious queries {{!I-D.pauly-dprive-oblivious-doh}}
 - A list of domains for which the DoH server is designated
 
 This information can be retrieved from several different sources. The primary source
@@ -226,7 +207,7 @@ contain the "dohuri", which has a SvcParamKey value of 4. The value stored in th
 is a URI, which is the DoH URI template {{!RFC8484}}.
 
 The public key of the DoH server is sent as the "odohkey", which has a
-SvcParamKey value of 5 {{I-D.pauly-dprive-oblivious-doh}}.
+SvcParamKey value of 5 {{!I-D.pauly-dprive-oblivious-doh}}.
 
 The following example shows a record containing a DoH URI, as returned by a query for
 the HTTPSSVC variant of the SVCB record type on "example.com".
@@ -384,7 +365,7 @@ foo.example.com and another example.com, clients connecting to bar.foo.example.c
 should use the former. If the resolution fails, the connection will try an Oblivious DoH
 query.
 
-4. Oblivious DoH queries using multiple DoH Servers ({{I-D.pauly-dprive-oblivious-doh}}). If this resolution fails,
+4. Oblivious DoH queries using multiple DoH Servers ({{!I-D.pauly-dprive-oblivious-doh}}). If this resolution fails,
 Privacy-Sensitive Connections will fail. All other connections will use the last resort,
 the default Direct Resolvers.
 
@@ -403,7 +384,7 @@ For all privacy-sensitive connection queries for names that do not correspond
 to a Designated DoH Server, the client SHOULD use Oblivious DoH to help
 conceal its IP address from eavesdroppers and untrusted resolvers.
 
-Disassociation of client IPs from query content is achieved by using Oblivious DoH {{I-D.pauly-dprive-oblivious-doh}}.
+Disassociation of client IPs from query content is achieved by using Oblivious DoH {{!I-D.pauly-dprive-oblivious-doh}}.
 This extension to DoH allows a client to encrypt a query with a target DoH server's public
 key, and proxy the query through another server. The query is packaged with a unique
 client-defined symmetric key that is used to sign the DNS answer, which is sent
@@ -461,7 +442,7 @@ answers using client keys.
 
 In order to support acting as an Oblivious Target, a DoH server needs to provide a public
 HPKE {{!I-D.irtf-cfrg-hpke}} key that can be used to encrypt client queries. This key is advertised
-in the SVCB record {{I-D.pauly-dprive-oblivious-doh}}.
+in the SVCB record {{!I-D.pauly-dprive-oblivious-doh}}.
 
 DoH servers also SHOULD provide an ESNI {{!I-D.ietf-tls-esni}} key to encrypt the Server
 Name Indication field in TLS handshakes to the DoH server.

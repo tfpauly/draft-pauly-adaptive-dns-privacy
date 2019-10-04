@@ -42,25 +42,6 @@ author:
     org: Fastly
     email: mcmanus@ducksong.com
 
-normative:
-  I-D.pauly-dprive-adaptive-dns-privacy:
-      title: "Adaptive DNS: Improving Privacy of Name Resolution"
-    seriesinfo: draft-pauly-dprive-adaptive-dns-privacy (work in progress)
-    author:
-      -
-        ins: E. Kinnear
-        name: Eric Kinnear
-      -
-        ins: T. Pauly
-        name: Tommy Pauly
-      -
-        ins: C. Wood
-        name: Chris Wood
-        -
-        ins: P. McManus
-        name: Patrick McManus
-    date: October 2019
-
 --- abstract
 
 This document describes an extension to DNS Over HTTPS (DoH) that allows hiding
@@ -89,7 +70,7 @@ of resolution, in which DNS messages are encrypted in such a way that no DoH ser
 can independently read both the client IP address and the DNS message contents.
 
 This mechanism is intended to be used as one option for resolving privacy-sensitive content
-in the broader context of Adaptive DNS {{I-D.pauly-dprive-adaptive-dns-privacy}}.
+in the broader context of Adaptive DNS {{!I-D.pauly-dprive-adaptive-dns-privacy}}.
 
 ## Specification of Requirements
 
@@ -129,7 +110,7 @@ clients based on keys.
 The mechanism for discovering and provisioning the DoH URI Templates and public keys
 is via parameters added to DNS resource records. The mechanism for discovering the public
 key is decribed in {{keydiscovery}}. The mechanism for discovering a DoH URI Template is
-described in {{I-D.pauly-dprive-adaptive-dns-privacy}}.
+described in {{!I-D.pauly-dprive-adaptive-dns-privacy}}.
 
 # HTTP Exchange
 
