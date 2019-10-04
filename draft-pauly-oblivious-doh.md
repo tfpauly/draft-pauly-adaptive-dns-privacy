@@ -228,7 +228,7 @@ to encrypt messages to an Oblivious Target.
 
 # Oblivious DoH Public Key Format {#publickey}
 
-An Oblivious DNS public key is a structure encoded, using {{!RFC8446}}-style encoding, as follows:
+An Oblivious DNS public key is a structure encoded, using TLS-style encoding {{!RFC8446}}, as follows:
 
 ~~~
 struct {
