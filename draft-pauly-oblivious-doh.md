@@ -43,11 +43,23 @@ author:
     email: mcmanus@ducksong.com
 
 normative:
-    ADNS:
+  I-D.pauly-dprive-adaptive-dns-privacy:
       title: "Adaptive DNS: Improving Privacy of Name Resolution"
-      authors:
+    seriesinfo: draft-pauly-dprive-adaptive-dns-privacy (work in progress)
+    author:
+      -
+        ins: E. Kinnear
+        name: Eric Kinnear
+      -
+        ins: T. Pauly
+        name: Tommy Pauly
+      -
+        ins: C. Wood
+        name: Chris Wood
         -
-          T. Pauly
+        ins: P. McManus
+        name: Patrick McManus
+    date: October 2019
 
 --- abstract
 
@@ -77,7 +89,7 @@ of resolution, in which DNS messages are encrypted in such a way that no DoH ser
 can independently read both the client IP address and the DNS message contents.
 
 This mechanism is intended to be used as one option for resolving privacy-sensitive content
-in the broader context of Adaptive DNS {{ADNS}}.
+in the broader context of Adaptive DNS {{I-D.pauly-dprive-adaptive-dns-privacy}}.
 
 ## Specification of Requirements
 
@@ -92,8 +104,9 @@ they appear in all capitals, as shown here.
 This document defines the following terms:
 
 Oblivious Proxy:
-: A resolution server that proxies encrypted client DNS queries to another resolution server that
-will be able to decrypt the query (the Oblivious Target).
+: A server that proxies encrypted client DNS queries to a resolution server that
+will be able to decrypt the query (the Oblivious Target). Oblivious DoH servers
+can function as proxies, but other non-resolver proxy servers could also be used.
 
 Oblivious Target:
 : A resolution server that receives encrypted client DNS queries and
@@ -116,7 +129,7 @@ clients based on keys.
 The mechanism for discovering and provisioning the DoH URI Templates and public keys
 is via parameters added to DNS resource records. The mechanism for discovering the public
 key is decribed in {{keydiscovery}}. The mechanism for discovering a DoH URI Template is
-described in {{ADNS}}.
+described in {{I-D.pauly-dprive-adaptive-dns-privacy}}.
 
 # HTTP Exchange
 
