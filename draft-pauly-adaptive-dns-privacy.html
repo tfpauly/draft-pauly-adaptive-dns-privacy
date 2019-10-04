@@ -329,7 +329,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Kinnear, E., Pauly, T., Wood, C., and P. McManus" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-adaptive-dns-privacy-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-10-03" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-10-04" />
   <meta name="dct.abstract" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus hiding the identity of the client requesting resolution." />
   <meta name="description" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus hiding the identity of the client requesting resolution." />
 
@@ -353,7 +353,7 @@ ul.toc li {
 <td class="right">C. Wood</td>
 </tr>
 <tr>
-<td class="left">Expires: April 5, 2020</td>
+<td class="left">Expires: April 6, 2020</td>
 <td class="right">Apple Inc.</td>
 </tr>
 <tr>
@@ -366,7 +366,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">October 03, 2019</td>
+<td class="right">October 04, 2019</td>
 </tr>
 
     	
@@ -382,7 +382,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on April 5, 2020.</p>
+<p>This Internet-Draft will expire on April 6, 2020.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -496,7 +496,7 @@ ul.toc li {
 
 <ul>
 <li>A DNS record that indicates a designated DoH server associated with a name (<a href="#designated-discovery" class="xref">Section 3.1</a>);</li>
-<li>an extension to DoH that allows client IP addresses to be disassociated from queries via proxying (<a href="#OBLIVIOUS" class="xref">[OBLIVIOUS]</a>);</li>
+<li>an extension to DoH that allows client IP addresses to be disassociated from queries via proxying (<a href="#I-D.pauly-dprive-oblivious-doh" class="xref">[I-D.pauly-dprive-oblivious-doh]</a>);</li>
 <li>a DoH server that responds to queries directly and supports proxying (<a href="#server" class="xref">Section 4</a>);</li>
 <li>and client behavior rules for how to resolve names using a combination of designated DoH resolvers, proxied queries, and local resolvers (<a href="#client" class="xref">Section 3</a>).</li>
 </ul>
@@ -552,13 +552,13 @@ ul.toc li {
 <ul>
 <li>The URI Template of the DoH server <a href="#RFC8484" class="xref">[RFC8484]</a>
 </li>
-<li>The public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key of the DoH server used for proxied oblivious queries <a href="#OBLIVIOUS" class="xref">[OBLIVIOUS]</a>
+<li>The public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key of the DoH server used for proxied oblivious queries <a href="#I-D.pauly-dprive-oblivious-doh" class="xref">[I-D.pauly-dprive-oblivious-doh]</a>
 </li>
 <li>A list of domains for which the DoH server is designated</li>
 </ul>
 <p id="rfc.section.3.1.p.4">This information can be retrieved from several different sources. The primary source for discovering Designated DoH Server configurations is from properties stored in a SVCB (or a SVCB-conformant type like HTTPSSVC) DNS Record <a href="#I-D.nygren-dnsop-svcb-httpssvc" class="xref">[I-D.nygren-dnsop-svcb-httpssvc]</a>.  This record provides the URI Template and the public Oblivious DoH key of a DoH server that is designated for a specific domain. A specific domain may have more than one such record.</p>
 <p id="rfc.section.3.1.p.5">In order to designate a DoH server for a domain, a SVCB record can contain the &#8220;dohuri&#8221;, which has a SvcParamKey value of 4. The value stored in the parameter is a URI, which is the DoH URI template <a href="#RFC8484" class="xref">[RFC8484]</a>.</p>
-<p id="rfc.section.3.1.p.6">The public key of the DoH server is sent as the &#8220;odohkey&#8221;, which has a SvcParamKey value of 5 <a href="#OBLIVIOUS" class="xref">[OBLIVIOUS]</a>.</p>
+<p id="rfc.section.3.1.p.6">The public key of the DoH server is sent as the &#8220;odohkey&#8221;, which has a SvcParamKey value of 5 <a href="#I-D.pauly-dprive-oblivious-doh" class="xref">[I-D.pauly-dprive-oblivious-doh]</a>.</p>
 <p id="rfc.section.3.1.p.7">The following example shows a record containing a DoH URI, as returned by a query for the HTTPSSVC variant of the SVCB record type on &#8220;example.com&#8221;.</p>
 <pre>
    example.com.      7200  IN HTTPSSVC 0 svc.example.net.
@@ -627,7 +627,7 @@ cache-control = max-age=86400
 <li>An Exclusive Direct Resolver, such as a resolver provisioned by a VPN, with domain rules that include the hostname being resolved. If the resolution fails, the connection will fail. See <a href="#local-discovery" class="xref">Section 3.2</a> and <a href="#local-deployment" class="xref">Section 6</a>.</li>
 <li>A Direct Resolver, such as a local router, with domain rules that are known to be authoritative for the domain containing the hostname. If the resolution fails, the connection will try the next resolver configuration based on this list.</li>
 <li>The most specific Designated DoH Server that has been whitelisted (<a href="#whitelisting" class="xref">Section 3.1.1</a>) for the domain containing the hostname, i.e., the designated DoH server which is associated with the longest matching prefix of the hostname. For example, given two Designated DoH Servers, one for foo.example.com and another example.com, clients connecting to bar.foo.example.com should use the former. If the resolution fails, the connection will try an Oblivious DoH query.</li>
-<li>Oblivious DoH queries using multiple DoH Servers (<a href="#oblivious" class="xref">Section 3.4</a>). If this resolution fails, Privacy-Sensitive Connections will fail. All other connections will use the last resort, the default Direct Resolvers.</li>
+<li>Oblivious DoH queries using multiple DoH Servers (<a href="#I-D.pauly-dprive-oblivious-doh" class="xref">[I-D.pauly-dprive-oblivious-doh]</a>). If this resolution fails, Privacy-Sensitive Connections will fail. All other connections will use the last resort, the default Direct Resolvers.</li>
 <li>The default Direct Resolver, generally the resolver provisioned by the local router, is used as the last resort for any connection that is not explicitly Privacy-Sensitive <a href="#RFC2132" class="xref">[RFC2132]</a> <a href="#RFC8106" class="xref">[RFC8106]</a>.</li>
 </ol>
 <p id="rfc.section.3.3.p.5">If the system allows the user to specify a preferred encrypted resolver, such as allowing the user to manually configure a DoH server URI to use by default, the use of this resolver SHOULD come between steps 2 and 3. This ensures that VPN-managed and locally-accessible names remain accessible while all other names are resolved using the user preference.</p>
@@ -635,7 +635,7 @@ cache-control = max-age=86400
 <a href="#rfc.section.3.4">3.4.</a> <a href="#oblivious" id="oblivious">Oblivious Resolution</a>
 </h1>
 <p id="rfc.section.3.4.p.1">For all privacy-sensitive connection queries for names that do not correspond to a Designated DoH Server, the client SHOULD use Oblivious DoH to help conceal its IP address from eavesdroppers and untrusted resolvers.</p>
-<p id="rfc.section.3.4.p.2">Disassociation of client IPs from query content is achieved by using Oblivious DoH <a href="#OBLIVIOUS" class="xref">[OBLIVIOUS]</a>.  This extension to DoH allows a client to encrypt a query with a target DoH server&#8217;s public key, and proxy the query through another server. The query is packaged with a unique client-defined symmetric key that is used to sign the DNS answer, which is sent back to the client via the proxy.</p>
+<p id="rfc.section.3.4.p.2">Disassociation of client IPs from query content is achieved by using Oblivious DoH <a href="#I-D.pauly-dprive-oblivious-doh" class="xref">[I-D.pauly-dprive-oblivious-doh]</a>.  This extension to DoH allows a client to encrypt a query with a target DoH server&#8217;s public key, and proxy the query through another server. The query is packaged with a unique client-defined symmetric key that is used to sign the DNS answer, which is sent back to the client via the proxy.</p>
 <p id="rfc.section.3.4.p.3">All DoH Servers that are used as Designated DoH Servers by the client MUST support being both an Oblivious Proxy and an Oblivious Target, as described in the server requirements (<a href="#server" class="xref">Section 4</a>).</p>
 <p id="rfc.section.3.4.p.4">Since each Designated DoH Server can act as one of two roles in an proxied exchange, there are (N) * (N - 1) / 2 possible pairs of servers, where N is the number of whitelisted servers. While clients SHOULD use a variety of server pairs in rotation to decrease the ability for any given server to track client queries, it is not expected that all possible combinations will be used.  Some combinations will be able to handle more load than others, and some will have better latency properties than others. To optimize performance, clients SHOULD maintain statistics to track the performance characteristics and success rates of particular pairs.</p>
 <p id="rfc.section.3.4.p.5">Clients that are performing Oblivious DoH resolution SHOULD fall back to another pair of servers if a first query times out, with a locally-determined limit for the number of fallback attempts that will be performed.</p>
@@ -659,7 +659,7 @@ cache-control = max-age=86400
 <h1 id="rfc.section.4.1.3">
 <a href="#rfc.section.4.1.3">4.1.3.</a> <a href="#keying-material" id="keying-material">Keying Material</a>
 </h1>
-<p id="rfc.section.4.1.3.p.1">In order to support acting as an Oblivious Target, a DoH server needs to provide a public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key that can be used to encrypt client queries. This key is advertised in the SVCB record <a href="#OBLIVIOUS" class="xref">[OBLIVIOUS]</a>.</p>
+<p id="rfc.section.4.1.3.p.1">In order to support acting as an Oblivious Target, a DoH server needs to provide a public HPKE <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> key that can be used to encrypt client queries. This key is advertised in the SVCB record <a href="#I-D.pauly-dprive-oblivious-doh" class="xref">[I-D.pauly-dprive-oblivious-doh]</a>.</p>
 <p id="rfc.section.4.1.3.p.2">DoH servers also SHOULD provide an ESNI <a href="#I-D.ietf-tls-esni" class="xref">[I-D.ietf-tls-esni]</a> key to encrypt the Server Name Indication field in TLS handshakes to the DoH server.</p>
 <h1 id="rfc.section.4.2">
 <a href="#rfc.section.4.2">4.2.</a> <a href="#advertise-the-doh-server" id="advertise-the-doh-server">Advertise the DoH Server</a>
@@ -815,7 +815,7 @@ cache-control = max-age=86400
 <tr>
 <td class="left">dnsFilteredZones</td>
 <td class="left">A list of DNS domains as strings that represent domains that can be filtered by the provisioned resolver.</td>
-<td class="left">Array of String</td>
+<td class="left">Array of Strings</td>
 <td class="left">[ &#8220;.&#8221; ]</td>
 </tr>
 </tbody>
@@ -868,8 +868,9 @@ cache-control = max-age=86400
 <a>Schwartz, B.</a>, <a>Bishop, M.</a> and <a>E. Nygren</a>, "<a href="https://tools.ietf.org/html/draft-nygren-dnsop-svcb-httpssvc-00">Service binding and parameter specification via the DNS (DNS SVCB and HTTPSSVC)</a>", Internet-Draft draft-nygren-dnsop-svcb-httpssvc-00, September 2019.</td>
 </tr>
 <tr>
-<td class="reference"><b id="OBLIVIOUS">[OBLIVIOUS]</b></td>
-<td class="top">"<a>Oblivious DNS Over HTTPS</a>", n.d..</td>
+<td class="reference"><b id="I-D.pauly-dprive-oblivious-doh">[I-D.pauly-dprive-oblivious-doh]</b></td>
+<td class="top">
+<a>Kinnear, E.</a>, <a>Pauly, T.</a>, <a>Wood, C.</a> and <a>P. McManus</a>, "<a href="https://tools.ietf.org/html/draft-pauly-dprive-oblivious-doh-00">Oblivious DNS Over HTTPS</a>", Internet-Draft draft-pauly-dprive-oblivious-doh-00, October 2019.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC4033">[RFC4033]</b></td>

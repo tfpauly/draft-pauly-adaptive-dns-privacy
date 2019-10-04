@@ -5,10 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: April 5, 2020                                        Apple Inc.
+Expires: April 6, 2020                                        Apple Inc.
                                                               P. McManus
                                                                   Fastly
-                                                        October 03, 2019
+                                                        October 04, 2019
 
 
                         Oblivious DNS Over HTTPS
@@ -37,7 +37,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 5, 2020.
+   This Internet-Draft will expire on April 6, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 1]
+Kinnear, et al.           Expires April 6, 2020                 [Page 1]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 2]
+Kinnear, et al.           Expires April 6, 2020                 [Page 2]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -121,7 +121,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
    This mechanism is intended to be used as one option for resolving
    privacy-sensitive content in the broader context of Adaptive DNS
-   [ADNS].
+   [I-D.pauly-dprive-adaptive-dns-privacy].
 
 1.1.  Specification of Requirements
 
@@ -135,9 +135,10 @@ Internet-Draft                Oblivious DoH                 October 2019
 
    This document defines the following terms:
 
-   Oblivious Proxy:  A resolution server that proxies encrypted client
-      DNS queries to another resolution server that will be able to
-      decrypt the query (the Oblivious Target).
+   Oblivious Proxy:  A server that proxies encrypted client DNS queries
+      to a resolution server that will be able to decrypt the query (the
+      Oblivious Target).  Oblivious DoH servers can function as proxies,
+      but other non-resolver proxy servers could also be used.
 
    Oblivious Target:  A resolution server that receives encrypted client
       DNS queries and generates encrypted DNS responses transferred via
@@ -164,8 +165,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-
-Kinnear, et al.           Expires April 5, 2020                 [Page 3]
+Kinnear, et al.           Expires April 6, 2020                 [Page 3]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -174,7 +174,7 @@ Internet-Draft                Oblivious DoH                 October 2019
    and public keys is via parameters added to DNS resource records.  The
    mechanism for discovering the public key is decribed in Section 5.
    The mechanism for discovering a DoH URI Template is described in
-   [ADNS].
+   [I-D.pauly-dprive-adaptive-dns-privacy].
 
 4.  HTTP Exchange
 
@@ -221,7 +221,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 4]
+Kinnear, et al.           Expires April 6, 2020                 [Page 4]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -277,7 +277,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 5]
+Kinnear, et al.           Expires April 6, 2020                 [Page 5]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -305,8 +305,8 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 6.  Oblivious DoH Public Key Format
 
-   An Oblivious DNS public key is a structure encoded, using [RFC8446]-
-   style encoding, as follows:
+   An Oblivious DNS public key is a structure encoded, using TLS-style
+   encoding [RFC8446], as follows:
 
    struct {
       uint16 kem_id;
@@ -333,7 +333,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 6]
+Kinnear, et al.           Expires April 6, 2020                 [Page 6]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -389,7 +389,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 7]
+Kinnear, et al.           Expires April 6, 2020                 [Page 7]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -445,7 +445,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 8]
+Kinnear, et al.           Expires April 6, 2020                 [Page 8]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -501,7 +501,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 9]
+Kinnear, et al.           Expires April 6, 2020                 [Page 9]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -557,7 +557,7 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 10]
+Kinnear, et al.           Expires April 6, 2020                [Page 10]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
@@ -597,9 +597,6 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 11.1.  Normative References
 
-   [ADNS]     "Adaptive DNS: Improving Privacy of Name Resolution",
-              n.d..
-
    [I-D.irtf-cfrg-hpke]
               Barnes, R. and K. Bhargavan, "Hybrid Public Key
               Encryption", draft-irtf-cfrg-hpke-00 (work in progress),
@@ -613,10 +610,19 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 11]
+
+
+
+Kinnear, et al.           Expires April 6, 2020                [Page 11]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
+
+   [I-D.pauly-dprive-adaptive-dns-privacy]
+              Kinnear, E., Pauly, T., Wood, C., and P. McManus,
+              "Adaptive DNS: Improving Privacy of Name Resolution",
+              draft-pauly-dprive-adaptive-dns-privacy-00 (work in
+              progress), October 2019.
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
@@ -658,21 +664,19 @@ Internet-Draft                Oblivious DoH                 October 2019
               RFC 7230, DOI 10.17487/RFC7230, June 2014,
               <https://www.rfc-editor.org/info/rfc7230>.
 
-   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
-              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
-              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
 
 
 
 
-
-
-
-Kinnear, et al.           Expires April 5, 2020                [Page 12]
+Kinnear, et al.           Expires April 6, 2020                [Page 12]
 
 Internet-Draft                Oblivious DoH                 October 2019
 
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
 Authors' Addresses
 
@@ -721,8 +725,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-Kinnear, et al.           Expires April 5, 2020                [Page 13]
+Kinnear, et al.           Expires April 6, 2020                [Page 13]

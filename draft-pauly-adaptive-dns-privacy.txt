@@ -5,10 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: April 5, 2020                                        Apple Inc.
+Expires: April 6, 2020                                        Apple Inc.
                                                               P. McManus
                                                                   Fastly
-                                                        October 03, 2019
+                                                        October 04, 2019
 
 
            Adaptive DNS: Improving Privacy of Name Resolution
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 5, 2020.
+   This Internet-Draft will expire on April 6, 2020.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 1]
+Kinnear, et al.           Expires April 6, 2020                 [Page 1]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 2]
+Kinnear, et al.           Expires April 6, 2020                 [Page 2]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -165,7 +165,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 3]
+Kinnear, et al.           Expires April 6, 2020                 [Page 3]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -184,7 +184,8 @@ Internet-Draft                ADNS Privacy                  October 2019
       with a name (Section 3.1);
 
    o  an extension to DoH that allows client IP addresses to be
-      disassociated from queries via proxying ([OBLIVIOUS]);
+      disassociated from queries via proxying
+      ([I-D.pauly-dprive-oblivious-doh]);
 
    o  a DoH server that responds to queries directly and supports
       proxying (Section 4);
@@ -220,8 +221,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-
-Kinnear, et al.           Expires April 5, 2020                 [Page 4]
+Kinnear, et al.           Expires April 6, 2020                 [Page 4]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -277,7 +277,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 5]
+Kinnear, et al.           Expires April 6, 2020                 [Page 5]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -308,7 +308,7 @@ Internet-Draft                ADNS Privacy                  October 2019
    o  The URI Template of the DoH server [RFC8484]
 
    o  The public HPKE [I-D.irtf-cfrg-hpke] key of the DoH server used
-      for proxied oblivious queries [OBLIVIOUS]
+      for proxied oblivious queries [I-D.pauly-dprive-oblivious-doh]
 
    o  A list of domains for which the DoH server is designated
 
@@ -327,13 +327,13 @@ Internet-Draft                ADNS Privacy                  October 2019
    [RFC8484].
 
    The public key of the DoH server is sent as the "odohkey", which has
-   a SvcParamKey value of 5 [OBLIVIOUS].
+   a SvcParamKey value of 5 [I-D.pauly-dprive-oblivious-doh].
 
 
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 6]
+Kinnear, et al.           Expires April 6, 2020                 [Page 6]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -389,7 +389,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 7]
+Kinnear, et al.           Expires April 6, 2020                 [Page 7]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -445,7 +445,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 8]
+Kinnear, et al.           Expires April 6, 2020                 [Page 8]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -501,7 +501,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                 [Page 9]
+Kinnear, et al.           Expires April 6, 2020                 [Page 9]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -544,10 +544,10 @@ Internet-Draft                ADNS Privacy                  October 2019
        the former.  If the resolution fails, the connection will try an
        Oblivious DoH query.
 
-   4.  Oblivious DoH queries using multiple DoH Servers (Section 3.4).
-       If this resolution fails, Privacy-Sensitive Connections will
-       fail.  All other connections will use the last resort, the
-       default Direct Resolvers.
+   4.  Oblivious DoH queries using multiple DoH Servers
+       ([I-D.pauly-dprive-oblivious-doh]).  If this resolution fails,
+       Privacy-Sensitive Connections will fail.  All other connections
+       will use the last resort, the default Direct Resolvers.
 
    5.  The default Direct Resolver, generally the resolver provisioned
        by the local router, is used as the last resort for any
@@ -557,7 +557,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 10]
+Kinnear, et al.           Expires April 6, 2020                [Page 10]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -577,11 +577,11 @@ Internet-Draft                ADNS Privacy                  October 2019
    untrusted resolvers.
 
    Disassociation of client IPs from query content is achieved by using
-   Oblivious DoH [OBLIVIOUS].  This extension to DoH allows a client to
-   encrypt a query with a target DoH server's public key, and proxy the
-   query through another server.  The query is packaged with a unique
-   client-defined symmetric key that is used to sign the DNS answer,
-   which is sent back to the client via the proxy.
+   Oblivious DoH [I-D.pauly-dprive-oblivious-doh].  This extension to
+   DoH allows a client to encrypt a query with a target DoH server's
+   public key, and proxy the query through another server.  The query is
+   packaged with a unique client-defined symmetric key that is used to
+   sign the DNS answer, which is sent back to the client via the proxy.
 
    All DoH Servers that are used as Designated DoH Servers by the client
    MUST support being both an Oblivious Proxy and an Oblivious Target,
@@ -613,7 +613,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 11]
+Kinnear, et al.           Expires April 6, 2020                [Page 11]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -650,7 +650,7 @@ Internet-Draft                ADNS Privacy                  October 2019
    In order to support acting as an Oblivious Target, a DoH server needs
    to provide a public HPKE [I-D.irtf-cfrg-hpke] key that can be used to
    encrypt client queries.  This key is advertised in the SVCB record
-   [OBLIVIOUS].
+   [I-D.pauly-dprive-oblivious-doh].
 
    DoH servers also SHOULD provide an ESNI [I-D.ietf-tls-esni] key to
    encrypt the Server Name Indication field in TLS handshakes to the DoH
@@ -669,7 +669,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 12]
+Kinnear, et al.           Expires April 6, 2020                [Page 12]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -725,7 +725,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 13]
+Kinnear, et al.           Expires April 6, 2020                [Page 13]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -781,7 +781,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 14]
+Kinnear, et al.           Expires April 6, 2020                [Page 14]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -837,7 +837,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 15]
+Kinnear, et al.           Expires April 6, 2020                [Page 15]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -893,7 +893,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 16]
+Kinnear, et al.           Expires April 6, 2020                [Page 16]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -949,7 +949,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 17]
+Kinnear, et al.           Expires April 6, 2020                [Page 17]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -1005,7 +1005,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 18]
+Kinnear, et al.           Expires April 6, 2020                [Page 18]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -1061,7 +1061,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 19]
+Kinnear, et al.           Expires April 6, 2020                [Page 19]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -1117,7 +1117,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 20]
+Kinnear, et al.           Expires April 6, 2020                [Page 20]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -1173,7 +1173,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 21]
+Kinnear, et al.           Expires April 6, 2020                [Page 21]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -1189,7 +1189,7 @@ Internet-Draft                ADNS Privacy                  October 2019
    |                     |                         |         |         |
    | dnsFilteredZones    | A list of DNS domains   | Array   | [ "." ] |
    |                     | as strings that         | of      |         |
-   |                     | represent domains that  | String  |         |
+   |                     | represent domains that  | Strings |         |
    |                     | can be filtered by the  |         |         |
    |                     | provisioned resolver.   |         |         |
    +---------------------+-------------------------+---------+---------+
@@ -1229,7 +1229,7 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 22]
+Kinnear, et al.           Expires April 6, 2020                [Page 22]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -1260,8 +1260,10 @@ Internet-Draft                ADNS Privacy                  October 2019
               HTTPSSVC)", draft-nygren-dnsop-svcb-httpssvc-00 (work in
               progress), September 2019.
 
-   [OBLIVIOUS]
-              "Oblivious DNS Over HTTPS", n.d..
+   [I-D.pauly-dprive-oblivious-doh]
+              Kinnear, E., Pauly, T., Wood, C., and P. McManus,
+              "Oblivious DNS Over HTTPS", draft-pauly-dprive-oblivious-
+              doh-00 (work in progress), October 2019.
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
@@ -1278,17 +1280,19 @@ Internet-Draft                ADNS Privacy                  October 2019
               Layer Security (TLS)", RFC 7858, DOI 10.17487/RFC7858, May
               2016, <https://www.rfc-editor.org/info/rfc7858>.
 
-   [RFC8484]  Hoffman, P. and P. McManus, "DNS Queries over HTTPS
-              (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
-              <https://www.rfc-editor.org/info/rfc8484>.
 
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 23]
+
+Kinnear, et al.           Expires April 6, 2020                [Page 23]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
+
+   [RFC8484]  Hoffman, P. and P. McManus, "DNS Queries over HTTPS
+              (DoH)", RFC 8484, DOI 10.17487/RFC8484, October 2018,
+              <https://www.rfc-editor.org/info/rfc8484>.
 
 12.2.  Informative References
 
@@ -1337,11 +1341,7 @@ Authors' Addresses
 
 
 
-
-
-
-
-Kinnear, et al.           Expires April 5, 2020                [Page 24]
+Kinnear, et al.           Expires April 6, 2020                [Page 24]
 
 Internet-Draft                ADNS Privacy                  October 2019
 
@@ -1397,4 +1397,4 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.           Expires April 5, 2020                [Page 25]
+Kinnear, et al.           Expires April 6, 2020                [Page 25]

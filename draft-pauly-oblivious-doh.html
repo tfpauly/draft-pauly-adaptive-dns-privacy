@@ -313,7 +313,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Kinnear, E., Pauly, T., Wood, C., and P. McManus" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-oblivious-doh-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-10-03" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-10-04" />
   <meta name="dct.abstract" content="This document describes an extension to DNS Over HTTPS (DoH) that allows hiding client IP addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
   <meta name="description" content="This document describes an extension to DNS Over HTTPS (DoH) that allows hiding client IP addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
 
@@ -337,7 +337,7 @@ ul.toc li {
 <td class="right">C. Wood</td>
 </tr>
 <tr>
-<td class="left">Expires: April 5, 2020</td>
+<td class="left">Expires: April 6, 2020</td>
 <td class="right">Apple Inc.</td>
 </tr>
 <tr>
@@ -350,7 +350,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">October 03, 2019</td>
+<td class="right">October 04, 2019</td>
 </tr>
 
     	
@@ -366,7 +366,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on April 5, 2020.</p>
+<p>This Internet-Draft will expire on April 6, 2020.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -435,7 +435,7 @@ ul.toc li {
 <p id="rfc.section.1.p.2">While DoH can prevent eavesdroppers from directly reading the contents of DNS exchanges, it does not allow clients to send DNS queries and receive answers from servers without revealing their local IP address, and thus information about the identity or location of the client.</p>
 <p id="rfc.section.1.p.3">Proposals such as Oblivious DNS (<a href="#I-D.annee-dprive-oblivious-dns" class="xref">[I-D.annee-dprive-oblivious-dns]</a>) allow increased privacy by not allowing any single DNS server to be aware of both the client IP address and the message contents.</p>
 <p id="rfc.section.1.p.4">This document defines Oblivious DoH, an extension to DoH that allows for a proxied mode of resolution, in which DNS messages are encrypted in such a way that no DoH server can independently read both the client IP address and the DNS message contents.</p>
-<p id="rfc.section.1.p.5">This mechanism is intended to be used as one option for resolving privacy-sensitive content in the broader context of Adaptive DNS <a href="#ADNS" class="xref">[ADNS]</a>.</p>
+<p id="rfc.section.1.p.5">This mechanism is intended to be used as one option for resolving privacy-sensitive content in the broader context of Adaptive DNS <a href="#I-D.pauly-dprive-adaptive-dns-privacy" class="xref">[I-D.pauly-dprive-adaptive-dns-privacy]</a>.</p>
 <h1 id="rfc.section.1.1">
 <a href="#rfc.section.1.1">1.1.</a> <a href="#specification-of-requirements" id="specification-of-requirements">Specification of Requirements</a>
 </h1>
@@ -448,7 +448,7 @@ ul.toc li {
 
 <dl>
 <dt>Oblivious Proxy:</dt>
-<dd style="margin-left: 8">A resolution server that proxies encrypted client DNS queries to another resolution server that will be able to decrypt the query (the Oblivious Target).</dd>
+<dd style="margin-left: 8">A server that proxies encrypted client DNS queries to a resolution server that will be able to decrypt the query (the Oblivious Target). Oblivious DoH servers can function as proxies, but other non-resolver proxy servers could also be used.</dd>
 <dt>Oblivious Target:</dt>
 <dd style="margin-left: 8">A resolution server that receives encrypted client DNS queries and generates encrypted DNS responses transferred via an Oblivious Proxy.</dd>
 </dl>
@@ -463,7 +463,7 @@ ul.toc li {
 <li>Public keys for encrypting DNS queries that are passed from a client through a proxy to a target (<a href="#publickey" class="xref">Section 6</a>). These keys guarantee that only the intended Oblivious Target can decrypt client queries.</li>
 <li>Client ability to generate random <a href="#RFC4086" class="xref">[RFC4086]</a> one-time-use symmetric keys to encrypt DNS responses. These symmetric keys ensure that only the client will be able to decrypt the response from the Oblivious Target. They are only used once to prevent the Oblivious Target from tracking clients based on keys.</li>
 </ul>
-<p id="rfc.section.3.p.3">The mechanism for discovering and provisioning the DoH URI Templates and public keys is via parameters added to DNS resource records. The mechanism for discovering the public key is decribed in <a href="#keydiscovery" class="xref">Section 5</a>. The mechanism for discovering a DoH URI Template is described in <a href="#ADNS" class="xref">[ADNS]</a>.</p>
+<p id="rfc.section.3.p.3">The mechanism for discovering and provisioning the DoH URI Templates and public keys is via parameters added to DNS resource records. The mechanism for discovering the public key is decribed in <a href="#keydiscovery" class="xref">Section 5</a>. The mechanism for discovering a DoH URI Template is described in <a href="#I-D.pauly-dprive-adaptive-dns-privacy" class="xref">[I-D.pauly-dprive-adaptive-dns-privacy]</a>.</p>
 <h1 id="rfc.section.4">
 <a href="#rfc.section.4">4.</a> <a href="#http-exchange" id="http-exchange">HTTP Exchange</a>
 </h1>
@@ -525,7 +525,7 @@ content-length = 154
 <h1 id="rfc.section.6">
 <a href="#rfc.section.6">6.</a> <a href="#publickey" id="publickey">Oblivious DoH Public Key Format</a>
 </h1>
-<p id="rfc.section.6.p.1">An Oblivious DNS public key is a structure encoded, using <a href="#RFC8446" class="xref">[RFC8446]</a>-style encoding, as follows:</p>
+<p id="rfc.section.6.p.1">An Oblivious DNS public key is a structure encoded, using TLS-style encoding <a href="#RFC8446" class="xref">[RFC8446]</a>, as follows:</p>
 <pre>
 struct {
    uint16 kem_id;
@@ -694,10 +694,6 @@ def decrypt_response_body(R_encrypted):
 <a href="#rfc.references.1">11.1.</a> Normative References</h1>
 <table><tbody>
 <tr>
-<td class="reference"><b id="ADNS">[ADNS]</b></td>
-<td class="top">"<a>Adaptive DNS: Improving Privacy of Name Resolution</a>", n.d..</td>
-</tr>
-<tr>
 <td class="reference"><b id="I-D.irtf-cfrg-hpke">[I-D.irtf-cfrg-hpke]</b></td>
 <td class="top">
 <a>Barnes, R.</a> and <a>K. Bhargavan</a>, "<a href="https://tools.ietf.org/html/draft-irtf-cfrg-hpke-00">Hybrid Public Key Encryption</a>", Internet-Draft draft-irtf-cfrg-hpke-00, July 2019.</td>
@@ -706,6 +702,11 @@ def decrypt_response_body(R_encrypted):
 <td class="reference"><b id="I-D.nygren-dnsop-svcb-httpssvc">[I-D.nygren-dnsop-svcb-httpssvc]</b></td>
 <td class="top">
 <a>Schwartz, B.</a>, <a>Bishop, M.</a> and <a>E. Nygren</a>, "<a href="https://tools.ietf.org/html/draft-nygren-dnsop-svcb-httpssvc-00">Service binding and parameter specification via the DNS (DNS SVCB and HTTPSSVC)</a>", Internet-Draft draft-nygren-dnsop-svcb-httpssvc-00, September 2019.</td>
+</tr>
+<tr>
+<td class="reference"><b id="I-D.pauly-dprive-adaptive-dns-privacy">[I-D.pauly-dprive-adaptive-dns-privacy]</b></td>
+<td class="top">
+<a>Kinnear, E.</a>, <a>Pauly, T.</a>, <a>Wood, C.</a> and <a>P. McManus</a>, "<a href="https://tools.ietf.org/html/draft-pauly-dprive-adaptive-dns-privacy-00">Adaptive DNS: Improving Privacy of Name Resolution</a>", Internet-Draft draft-pauly-dprive-adaptive-dns-privacy-00, October 2019.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC4033">[RFC4033]</b></td>
