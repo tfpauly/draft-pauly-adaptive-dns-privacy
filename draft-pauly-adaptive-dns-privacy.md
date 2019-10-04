@@ -815,7 +815,7 @@ This document adds a key to the "Additional Information PvD Keys" registry {{!I-
 | JSON key | Description         | Type      | Example      |
 |:------------|:-----------------------|:---------------------|:------------|
 | requireDNSFiltering    | A flag to indicate that the network requires filtering all DNS traffic using the provisioned resolver. | Boolean | true |
-| dnsFilteredZones    | A list of DNS domains as strings that represent domains that can be filtered by the provisioned resolver. | Array of String | [ "." ] |
+| dnsFilteredZones    | A list of DNS domains as strings that represent domains that can be filtered by the provisioned resolver. | Array of Strings | [ "." ] |
 
 Any network that sets the "requireDNSFiltering" boolean to false but provides "dnsFilteredZones" advertises the optional
 service of filtering on the provisioned network.
