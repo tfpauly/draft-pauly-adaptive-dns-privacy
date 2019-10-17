@@ -203,11 +203,10 @@ that is designated for a specific domain. A specific domain may have more
 than one such record.
 
 In order to designate a DoH server for a domain, a SVCB record can
-contain the "dohuri", which has a SvcParamKey value of 4. The value stored in the parameter
+contain the "dohuri" ({{iana}}). The value stored in the parameter
 is a URI, which is the DoH URI template {{!RFC8484}}.
 
-The public key of the DoH server is sent as the "odohkey", which has a
-SvcParamKey value of 5 {{!I-D.pauly-dprive-oblivious-doh}}.
+The public key of the DoH server is sent as the "odohkey" {{!I-D.pauly-dprive-oblivious-doh}}.
 
 The following example shows a record containing a DoH URI, as returned by a query for
 the HTTPSSVC variant of the SVCB record type on "example.com".
@@ -813,7 +812,7 @@ Name:
 : dohuri
 
 SvcParamKey:
-: 4
+: TBD
 
 Meaning:
 : URI template for a designated DoH server

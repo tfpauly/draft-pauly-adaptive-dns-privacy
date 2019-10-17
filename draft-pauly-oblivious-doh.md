@@ -200,7 +200,7 @@ In order to use a DoH server as an Oblivious Target, the client must know a publ
 for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type
 ({{!I-D.nygren-dnsop-svcb-httpssvc}}) for a name owned by the server.
 
-The key name is "odohkey", and has an encoded SvcParamKey value of 5. If present, this key/value
+The Service Binding key name is "odohkey" ({{iana}}). If present, this key/value
 pair contains the public key to use when encrypting Oblivious DoH messages
 that will be targeted at a DoH server. The format of the key is defined in ({{publickey}}).
 
@@ -369,7 +369,7 @@ Malicious targets or proxies may send bogus answers in response to Oblivious DoH
 decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to stop using
 one or both of these servers in the event of such failure.
 
-# IANA Considerations
+# IANA Considerations {#iana}
 
 ## Oblivious DoH Message Media Type
 
@@ -420,7 +420,7 @@ Name:
 : odohkey
 
 SvcParamKey:
-: 5
+: TBD
 
 Meaning:
 : Public key used to encrypt messages in Oblivious DoH
