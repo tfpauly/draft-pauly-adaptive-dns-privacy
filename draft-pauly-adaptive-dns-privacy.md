@@ -378,6 +378,12 @@ of this resolver SHOULD come between steps 2 and 3. This ensures that VPN-manage
 and locally-accessible names remain accessible while all other names are resolved
 using the user preference.
 
+Resolution on behalf of system traffic, such as interactions required to detect and access
+a Captive Network Portal, require the use of the default Direct Resolver. System traffic
+SHOULD have an exception to this algorithm, and only use Steps 2 and 5 (those that use
+a resolver provisioned by the local network). Further deployment considerations for
+captive networks and walled-garden networks can be found in {{captive}}.
+
 ## Oblivious Resolution {#oblivious}
 
 For all privacy-sensitive connection queries for names that do not correspond
@@ -665,7 +671,7 @@ externally.
 Note that having a DNSSEC-signed designation to the local resolver provides a clear indication
 that the entity that manages a given name has an explicit relationship with the local network provider.
 
-### Walled-Garden and Captive Network Deployments
+### Walled-Garden and Captive Network Deployments {#captive}
 
 Some networks do not provide any access to the general Internet, but host local content that
 clients can access. For example, a network on an airplane can give access to flight information
