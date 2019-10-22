@@ -361,8 +361,9 @@ the connection will try the next resolver configuration based on this list.
 containing the hostname, i.e., the designated DoH server which is associated with the longest
 matching prefix of the hostname. For example, given two Designated DoH Servers, one for
 foo.example.com and another example.com, clients connecting to bar.foo.example.com
-should use the former. If the resolution fails, the connection will try an Oblivious DoH
-query.
+should use the former. If the resolution fails, the connection can either use an Oblivious DoH
+resolver (Step 4) or the default resolver (Step 5). Privacy-Sensitive Connections SHOULD NOT
+skip Step 4. Other connections MAY skip Step 4, based on system policy.
 
 4. Oblivious DoH queries using multiple DoH Servers ({{!I-D.pauly-dprive-oblivious-doh}}). If this resolution fails,
 Privacy-Sensitive Connections will fail. All other connections will use the last resort,
