@@ -124,13 +124,12 @@ via the Oblivious Proxy.
 
 ## HTTP Request {#oblivious-request}
 
-Oblivious DoH queries are created by the Client, and sent to the
-Oblivious Proxy. The proxy's address is determined from the
-authority of the proxy server's URI, while the authority information
-of the HTTP request reflects the authority of the target
-server. Likewise, when connecting to the proxy the client should use
-the proxy target's information for HTTPS certificate selection via SNI
-and when validating the resulting certificate.
+Oblivious DoH queries are created by the Client, and sent to the Oblivious Proxy.
+Requests to the Oblivious Proxy indicate which DoH server to use as an Oblivious
+Target by specifying two variables: "targethost", which indicates the host name
+of the Oblivious Target server, and "targetpath", which indicates the path on which
+the Oblivious Target's DoH server is running. See {{request-example}} for an
+example request.
 
 Oblivious DoH messages have no cache value since both requests and responses are
 encrypted using ephemeral key material. Clients SHOULD prefer using HTTP methods and
@@ -141,22 +140,34 @@ Clients MUST set the HTTP Content-Type header to "application/oblivious-dns-mess
 to indicate that this request is an Oblivious DoH query intended for proxying. Clients also SHOULD
 set this same value for the HTTP Accept header.
 
-The HTTP authority information (e.g., the HTTP/2 :authority
-psuedo-header or the HTTP/1 host header) MUST indicate the hostname of the Oblivious Target
-(not the Oblivious Proxy that initially receives the request), and the path information MUST
-conform to the path specified by the Oblivious Target's DoH URI Template.
-
 Upon receiving a request that contains a "application/oblivious-dns-message" Content-Type,
-the DoH server looks at the :authority and :path psuedo-headers. If the fields are equivalent to the DoH server's
-own hostname and configured path ({{?RFC7230}} Section 2.7.3), then it is the target of the query,
-and it can decrypt the query ({{encryption}}). If the fields do not indicate the local server, then the server
-is acting as an Oblivious Proxy. If it is a proxy, it is expected to send the request on to the Oblivious
-Target based on the authority identified in the HTTP request.
+the DoH server looks for the "targethost" and "targetpath" variables. If the variables are not
+present, then it is the target of the query, and it can decrypt the query ({{encryption}}).
+If the variables are present, then the DoH server is acting as an Oblivious Proxy.
+If it is a proxy, it is expected to send the request on to the Oblivious
+Target using the URI template constructed as "https://targethost/targetpath".
 
-## HTTP Request Example
+## HTTP Request Example {#request-example}
 
 The following example shows how a client requests that an Oblivious Proxy, "dnsproxy.example.net",
-forwards an encrypted message to "dnstarget.example.net".
+forwards an encrypted message to "dnstarget.example.net". The URI template for the Oblivious
+Proxy is "https://dnsproxy.example.net/dns-query{?targethost,targetpath}". The URI template for
+the Oblivious Target is "https://dnstarget.example.net/dns-query".
+
+~~~
+:method = POST
+:scheme = https
+:authority = dnsproxy.example.net
+:path = /dns-query?targethost=dnstarget.example.net&targetpath=/dns-query
+accept = application/oblivious-dns-message
+cache-control = no-cache, no-store
+content-type = application/oblivious-dns-message
+content-length = 106
+
+<Bytes containing the encrypted payload for an Oblivious DNS query>
+~~~
+
+The Oblivious Proxy then sends the following request on to the Oblivious Target:
 
 ~~~
 :method = POST
@@ -170,8 +181,6 @@ content-length = 106
 
 <Bytes containing the encrypted payload for an Oblivious DNS query>
 ~~~
-
-The Oblivious Proxy then sends the exact same request on to the Oblivious Target, without modification.
 
 ## HTTP Response {#oblivious-response}
 
