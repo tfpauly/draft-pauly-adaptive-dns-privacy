@@ -313,7 +313,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Kinnear, E., Pauly, T., Wood, C., and P. McManus" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-oblivious-doh-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-10-04" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-10-23" />
   <meta name="dct.abstract" content="This document describes an extension to DNS Over HTTPS (DoH) that allows hiding client IP addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
   <meta name="description" content="This document describes an extension to DNS Over HTTPS (DoH) that allows hiding client IP addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
 
@@ -337,7 +337,7 @@ ul.toc li {
 <td class="right">C. Wood</td>
 </tr>
 <tr>
-<td class="left">Expires: April 6, 2020</td>
+<td class="left">Expires: April 25, 2020</td>
 <td class="right">Apple Inc.</td>
 </tr>
 <tr>
@@ -350,7 +350,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">October 04, 2019</td>
+<td class="right">October 23, 2019</td>
 </tr>
 
     	
@@ -366,7 +366,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on April 6, 2020.</p>
+<p>This Internet-Draft will expire on April 25, 2020.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -478,15 +478,27 @@ ul.toc li {
 <h1 id="rfc.section.4.1">
 <a href="#rfc.section.4.1">4.1.</a> <a href="#oblivious-request" id="oblivious-request">HTTP Request</a>
 </h1>
-<p id="rfc.section.4.1.p.1">Oblivious DoH queries are created by the Client, and sent to the Oblivious Proxy. The proxy&#8217;s address is determined from the authority of the proxy server&#8217;s URI, while the authority information of the HTTP request reflects the authority of the target server. Likewise, when connecting to the proxy the client should use the proxy target&#8217;s information for HTTPS certificate selection via SNI and when validating the resulting certificate.</p>
+<p id="rfc.section.4.1.p.1">Oblivious DoH queries are created by the Client, and sent to the Oblivious Proxy.  Requests to the Oblivious Proxy indicate which DoH server to use as an Oblivious Target by specifying two variables: &#8220;targethost&#8221;, which indicates the host name of the Oblivious Target server, and &#8220;targetpath&#8221;, which indicates the path on which the Oblivious Target&#8217;s DoH server is running. See <a href="#request-example" class="xref">Section 4.2</a> for an example request.</p>
 <p id="rfc.section.4.1.p.2">Oblivious DoH messages have no cache value since both requests and responses are encrypted using ephemeral key material. Clients SHOULD prefer using HTTP methods and headers that will prevent unhelpful cache storage of these exchanges (i.e., preferring POST instead of GET).</p>
 <p id="rfc.section.4.1.p.3">Clients MUST set the HTTP Content-Type header to &#8220;application/oblivious-dns-message&#8221; to indicate that this request is an Oblivious DoH query intended for proxying. Clients also SHOULD set this same value for the HTTP Accept header.</p>
-<p id="rfc.section.4.1.p.4">The HTTP authority information (e.g., the HTTP/2 :authority psuedo-header or the HTTP/1 host header) MUST indicate the hostname of the Oblivious Target (not the Oblivious Proxy that initially receives the request), and the path information MUST conform to the path specified by the Oblivious Target&#8217;s DoH URI Template.</p>
-<p id="rfc.section.4.1.p.5">Upon receiving a request that contains a &#8220;application/oblivious-dns-message&#8221; Content-Type, the DoH server looks at the :authority and :path psuedo-headers. If the fields are equivalent to the DoH server&#8217;s own hostname and configured path (<a href="#RFC7230" class="xref">[RFC7230]</a> Section 2.7.3), then it is the target of the query, and it can decrypt the query (<a href="#encryption" class="xref">Section 7</a>). If the fields do not indicate the local server, then the server is acting as an Oblivious Proxy. If it is a proxy, it is expected to send the request on to the Oblivious Target based on the authority identified in the HTTP request.</p>
+<p id="rfc.section.4.1.p.4">Upon receiving a request that contains a &#8220;application/oblivious-dns-message&#8221; Content-Type, the DoH server looks for the &#8220;targethost&#8221; and &#8220;targetpath&#8221; variables. If the variables are not present, then it is the target of the query, and it can decrypt the query (<a href="#encryption" class="xref">Section 7</a>).  If the variables are present, then the DoH server is acting as an Oblivious Proxy.  If it is a proxy, it is expected to send the request on to the Oblivious Target using the URI template constructed as &#8220;https://targethost/targetpath&#8221;.</p>
 <h1 id="rfc.section.4.2">
-<a href="#rfc.section.4.2">4.2.</a> <a href="#http-request-example" id="http-request-example">HTTP Request Example</a>
+<a href="#rfc.section.4.2">4.2.</a> <a href="#request-example" id="request-example">HTTP Request Example</a>
 </h1>
-<p id="rfc.section.4.2.p.1">The following example shows how a client requests that an Oblivious Proxy, &#8220;dnsproxy.example.net&#8221;, forwards an encrypted message to &#8220;dnstarget.example.net&#8221;.</p>
+<p id="rfc.section.4.2.p.1">The following example shows how a client requests that an Oblivious Proxy, &#8220;dnsproxy.example.net&#8221;, forwards an encrypted message to &#8220;dnstarget.example.net&#8221;. The URI template for the Oblivious Proxy is &#8220;https://dnsproxy.example.net/dns-query{?targethost,targetpath}&#8221;. The URI template for the Oblivious Target is &#8220;https://dnstarget.example.net/dns-query&#8221;.</p>
+<pre>
+:method = POST
+:scheme = https
+:authority = dnsproxy.example.net
+:path = /dns-query?targethost=dnstarget.example.net&amp;targetpath=/dns-query
+accept = application/oblivious-dns-message
+cache-control = no-cache, no-store
+content-type = application/oblivious-dns-message
+content-length = 106
+
+&lt;Bytes containing the encrypted payload for an Oblivious DNS query&gt;
+</pre>
+<p id="rfc.section.4.2.p.2">The Oblivious Proxy then sends the following request on to the Oblivious Target:</p>
 <pre>
 :method = POST
 :scheme = https
@@ -499,7 +511,6 @@ content-length = 106
 
 &lt;Bytes containing the encrypted payload for an Oblivious DNS query&gt;
 </pre>
-<p id="rfc.section.4.2.p.2">The Oblivious Proxy then sends the exact same request on to the Oblivious Target, without modification.</p>
 <h1 id="rfc.section.4.3">
 <a href="#rfc.section.4.3">4.3.</a> <a href="#oblivious-response" id="oblivious-response">HTTP Response</a>
 </h1>
@@ -520,7 +531,7 @@ content-length = 154
 <a href="#rfc.section.5">5.</a> <a href="#keydiscovery" id="keydiscovery">Public Key Discovery</a>
 </h1>
 <p id="rfc.section.5.p.1">In order to use a DoH server as an Oblivious Target, the client must know a public key to use for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type (<a href="#I-D.nygren-dnsop-svcb-httpssvc" class="xref">[I-D.nygren-dnsop-svcb-httpssvc]</a>) for a name owned by the server.</p>
-<p id="rfc.section.5.p.2">The key name is &#8220;odohkey&#8221;, and has an encoded SvcParamKey value of 5. If present, this key/value pair contains the public key to use when encrypting Oblivious DoH messages that will be targeted at a DoH server. The format of the key is defined in (<a href="#publickey" class="xref">Section 6</a>).</p>
+<p id="rfc.section.5.p.2">The Service Binding key name is &#8220;odohkey&#8221; (<a href="#iana" class="xref">Section 9</a>). If present, this key/value pair contains the public key to use when encrypting Oblivious DoH messages that will be targeted at a DoH server. The format of the key is defined in (<a href="#publickey" class="xref">Section 6</a>).</p>
 <p id="rfc.section.5.p.3">Clients MUST only use keys that were retrieved from records protected by DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> to encrypt messages to an Oblivious Target.</p>
 <h1 id="rfc.section.6">
 <a href="#rfc.section.6">6.</a> <a href="#publickey" id="publickey">Oblivious DoH Public Key Format</a>
@@ -647,7 +658,7 @@ def decrypt_response_body(R_encrypted):
 <p id="rfc.section.8.1.p.1">Malicious clients (or proxies) may send bogus Oblivious DoH queries to targets as a Denial-of-Service (DoS) attack. Target servers may throttle processing requests if such an event occurs.</p>
 <p id="rfc.section.8.1.p.2">Malicious targets or proxies may send bogus answers in response to Oblivious DoH queries. Response decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to stop using one or both of these servers in the event of such failure.</p>
 <h1 id="rfc.section.9">
-<a href="#rfc.section.9">9.</a> <a href="#iana-considerations" id="iana-considerations">IANA Considerations</a>
+<a href="#rfc.section.9">9.</a> <a href="#iana" id="iana">IANA Considerations</a>
 </h1>
 <h1 id="rfc.section.9.1">
 <a href="#rfc.section.9.1">9.1.</a> <a href="#oblivious-doh-message-media-type" id="oblivious-doh-message-media-type">Oblivious DoH Message Media Type</a>
@@ -678,7 +689,7 @@ def decrypt_response_body(R_encrypted):
 <dt>Name:</dt>
 <dd style="margin-left: 8">odohkey</dd>
 <dt>SvcParamKey:</dt>
-<dd style="margin-left: 8">5</dd>
+<dd style="margin-left: 8">TBD</dd>
 <dt>Meaning:</dt>
 <dd style="margin-left: 8">Public key used to encrypt messages in Oblivious DoH</dd>
 <dt>Reference:</dt>
@@ -746,11 +757,6 @@ def decrypt_response_body(R_encrypted):
 <td class="reference"><b id="RFC2119">[RFC2119]</b></td>
 <td class="top">
 <a>Bradner, S.</a>, "<a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>", BCP 14, RFC 2119, DOI 10.17487/RFC2119, March 1997.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC7230">[RFC7230]</b></td>
-<td class="top">
-<a>Fielding, R.</a> and <a>J. Reschke</a>, "<a href="https://tools.ietf.org/html/rfc7230">Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing</a>", RFC 7230, DOI 10.17487/RFC7230, June 2014.</td>
 </tr>
 <tr>
 <td class="reference"><b id="RFC8174">[RFC8174]</b></td>
