@@ -292,6 +292,7 @@ ul.toc li {
 <link href="#rfc.section.3.2" rel="Chapter" title="3.2 Discovering Local Resolvers">
 <link href="#rfc.section.3.3" rel="Chapter" title="3.3 Hostname Resolution Algorithm">
 <link href="#rfc.section.3.4" rel="Chapter" title="3.4 Oblivious Resolution">
+<link href="#rfc.section.3.5" rel="Chapter" title="3.5 Handling Network Changes">
 <link href="#rfc.section.4" rel="Chapter" title="4 Server Requirements">
 <link href="#rfc.section.4.1" rel="Chapter" title="4.1 Provide a DoH Server">
 <link href="#rfc.section.4.1.1" rel="Chapter" title="4.1.1 Oblivious DoH Proxy">
@@ -329,7 +330,7 @@ ul.toc li {
 
   <meta name="dct.creator" content="Kinnear, E., Pauly, T., Wood, C., and P. McManus" />
   <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-adaptive-dns-privacy-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-10-23" />
+  <meta name="dct.issued" scheme="ISO8601" content="2019-10-29" />
   <meta name="dct.abstract" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus hiding the identity of the client requesting resolution." />
   <meta name="description" content="This document defines an architecture that allows clients to dynamically discover designated resolvers that offer encrypted DNS services, and use them in an adaptive way that improves privacy while co-existing with locally provisioned resolvers. These resolvers can be used directly when looking up names for which they are designated. These resolvers also provide the ability to proxy encrypted queries, thus hiding the identity of the client requesting resolution." />
 
@@ -353,7 +354,7 @@ ul.toc li {
 <td class="right">C. Wood</td>
 </tr>
 <tr>
-<td class="left">Expires: April 25, 2020</td>
+<td class="left">Expires: May 1, 2020</td>
 <td class="right">Apple Inc.</td>
 </tr>
 <tr>
@@ -366,7 +367,7 @@ ul.toc li {
 </tr>
 <tr>
 <td class="left"></td>
-<td class="right">October 23, 2019</td>
+<td class="right">October 29, 2019</td>
 </tr>
 
     	
@@ -382,7 +383,7 @@ ul.toc li {
 <p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
 <p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
 <p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on April 25, 2020.</p>
+<p>This Internet-Draft will expire on May 1, 2020.</p>
 <h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
 <p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
 <p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
@@ -411,6 +412,8 @@ ul.toc li {
 <li>3.3.   <a href="#rfc.section.3.3">Hostname Resolution Algorithm</a>
 </li>
 <li>3.4.   <a href="#rfc.section.3.4">Oblivious Resolution</a>
+</li>
+<li>3.5.   <a href="#rfc.section.3.5">Handling Network Changes</a>
 </li>
 </ul><li>4.   <a href="#rfc.section.4">Server Requirements</a>
 </li>
@@ -626,7 +629,7 @@ cache-control = max-age=86400
 <ol>
 <li>An Exclusive Direct Resolver, such as a resolver provisioned by a VPN, with domain rules that include the hostname being resolved. If the resolution fails, the connection will fail. See <a href="#local-discovery" class="xref">Section 3.2</a> and <a href="#local-deployment" class="xref">Section 6</a>.</li>
 <li>A Direct Resolver, such as a local router, with domain rules that are known to be authoritative for the domain containing the hostname. If the resolution fails, the connection will try the next resolver configuration based on this list.</li>
-<li>The most specific Designated DoH Server that has been whitelisted (<a href="#whitelisting" class="xref">Section 3.1.1</a>) for the domain containing the hostname, i.e., the designated DoH server which is associated with the longest matching prefix of the hostname. For example, given two Designated DoH Servers, one for foo.example.com and another example.com, clients connecting to bar.foo.example.com should use the former. If the resolution fails, the connection can either use an Oblivious DoH resolver (Step 4) or the default resolver (Step 5). Privacy-Sensitive Connections SHOULD NOT skip Step 4. Other connections MAY skip Step 4, based on system policy.</li>
+<li>The most specific Designated DoH Server that has been whitelisted (<a href="#whitelisting" class="xref">Section 3.1.1</a>) for the domain containing the hostname, i.e., the designated DoH server which is associated with the longest matching suffix of the hostname. For example, given two Designated DoH Servers, one for &#8220;foo.example.com&#8221; and another &#8220;example.com&#8221;, clients connecting to &#8220;bar.foo.example.com&#8221; should use the former. Note that the matching MUST be performed on entire labels. That is, if &#8220;example.com&#8221; has a designated DoH server, it can be used for &#8220;foo.example.com&#8221;, but not for &#8220;badexample.com&#8221;. If the resolution fails, the connection can either use an Oblivious DoH resolver (Step 4) or the default resolver (Step 5). Privacy-Sensitive Connections SHOULD NOT skip Step 4. Other connections MAY skip Step 4, based on system policy.</li>
 <li>Oblivious DoH queries using multiple DoH Servers (<a href="#I-D.pauly-dprive-oblivious-doh" class="xref">[I-D.pauly-dprive-oblivious-doh]</a>). If this resolution fails, Privacy-Sensitive Connections will fail. All other connections will use the last resort, the default Direct Resolvers.</li>
 <li>The default Direct Resolver, generally the resolver provisioned by the local router, is used as the last resort for any connection that is not explicitly Privacy-Sensitive <a href="#RFC2132" class="xref">[RFC2132]</a> <a href="#RFC8106" class="xref">[RFC8106]</a>.</li>
 </ol>
@@ -640,6 +643,11 @@ cache-control = max-age=86400
 <p id="rfc.section.3.4.p.3">All DoH Servers that are used as Designated DoH Servers by the client MUST support being both an Oblivious Proxy and an Oblivious Target, as described in the server requirements (<a href="#server" class="xref">Section 4</a>).</p>
 <p id="rfc.section.3.4.p.4">Since each Designated DoH Server can act as one of two roles in an proxied exchange, there are (N) * (N - 1) / 2 possible pairs of servers, where N is the number of whitelisted servers. While clients SHOULD use a variety of server pairs in rotation to decrease the ability for any given server to track client queries, it is not expected that all possible combinations will be used.  Some combinations will be able to handle more load than others, and some will have better latency properties than others. To optimize performance, clients SHOULD maintain statistics to track the performance characteristics and success rates of particular pairs.</p>
 <p id="rfc.section.3.4.p.5">Clients that are performing Oblivious DoH resolution SHOULD fall back to another pair of servers if a first query times out, with a locally-determined limit for the number of fallback attempts that will be performed.</p>
+<h1 id="rfc.section.3.5">
+<a href="#rfc.section.3.5">3.5.</a> <a href="#handling-network-changes" id="handling-network-changes">Handling Network Changes</a>
+</h1>
+<p id="rfc.section.3.5.p.1">Whenever a client joins a new network, it SHOULD wait to receive local configuration for resolvers before using any Designated DoH servers. The local network might be authoritative for some names, or might require filtering.</p>
+<p id="rfc.section.3.5.p.2">Once the local configuration of the new network has been received, the client MAY use Designated DoH configuration that it discovered when associated with another network. These configurations can still be considered valid since they came from DNSSEC-signed records. However, it is possible that different resolver IP addresses would be returned when looking up the designated server on the new network, which can provide a more optimal route through the Internet, so clients SHOULD perform new queries to refresh their mappings by making queries on connection on this new interface.</p>
 <h1 id="rfc.section.4">
 <a href="#rfc.section.4">4.</a> <a href="#server" id="server">Server Requirements</a>
 </h1>
