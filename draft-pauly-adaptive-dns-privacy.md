@@ -416,6 +416,21 @@ Clients that are performing Oblivious DoH resolution SHOULD fall back to another
 pair of servers if a first query times out, with a locally-determined limit for the
 number of fallback attempts that will be performed.
 
+## Handling Network Changes
+
+Whenever a client joins a new network, it SHOULD wait to receive local configuration
+for resolvers before using any Designated DoH servers. The local network might
+be authoritative for some names, or might require filtering.
+
+Once the local configuration of the new network has been received, the client
+MAY use Designated DoH configuration that it discovered when associated
+with another network. These configurations can still be considered valid
+since they came from DNSSEC-signed records. However, it is possible that
+different resolver IP addresses would be returned when looking up the designated
+server on the new network, which can provide a more optimal route through the
+Internet, so clients SHOULD perform new queries to refresh their mappings
+by making queries on connection on this new interface.
+
 # Server Requirements {#server}
 
 Any server deployment that provides a set of services within one or more domains,
