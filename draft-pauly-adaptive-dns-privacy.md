@@ -359,9 +359,11 @@ the connection will try the next resolver configuration based on this list.
 
 3. The most specific Designated DoH Server that has been whitelisted ({{whitelisting}}) for the domain
 containing the hostname, i.e., the designated DoH server which is associated with the longest
-matching prefix of the hostname. For example, given two Designated DoH Servers, one for
-foo.example.com and another example.com, clients connecting to bar.foo.example.com
-should use the former. If the resolution fails, the connection can either use an Oblivious DoH
+matching suffix of the hostname. For example, given two Designated DoH Servers, one for
+"foo.example.com" and another "example.com", clients connecting to "bar.foo.example.com"
+should use the former. Note that the matching MUST be performed on entire labels. That is,
+if "example.com" has a designated DoH server, it can be used for "foo.example.com", but not
+for "badexample.com". If the resolution fails, the connection can either use an Oblivious DoH
 resolver (Step 4) or the default resolver (Step 5). Privacy-Sensitive Connections SHOULD NOT
 skip Step 4. Other connections MAY skip Step 4, based on system policy.
 
