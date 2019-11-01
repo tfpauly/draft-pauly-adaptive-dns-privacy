@@ -3,12 +3,13 @@
 
 
 Network Working Group                                         E. Kinnear
-Internet-Draft                                                  T. Pauly
-Intended status: Standards Track                                 C. Wood
-Expires: May 1, 2020                                          Apple Inc.
-                                                              P. McManus
-                                                                  Fastly
-                                                        October 29, 2019
+Internet-Draft                                                Apple Inc.
+Intended status: Standards Track                              P. McManus
+Expires: May 4, 2020                                              Fastly
+                                                                T. Pauly
+                                                                 C. Wood
+                                                              Apple Inc.
+                                                       November 01, 2019
 
 
                         Oblivious DNS Over HTTPS
@@ -37,7 +38,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on May 1, 2020.
+   This Internet-Draft will expire on May 4, 2020.
 
 Copyright Notice
 
@@ -49,15 +50,15 @@ Copyright Notice
    (https://trustee.ietf.org/license-info) in effect on the date of
    publication of this document.  Please review these documents
    carefully, as they describe your rights and restrictions with respect
-   to this document.  Code Components extracted from this document must
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 1]
+Kinnear, et al.            Expires May 4, 2020                  [Page 1]
 
-Internet-Draft                Oblivious DoH                 October 2019
+Internet-Draft                Oblivious DoH                November 2019
 
 
+   to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
@@ -78,15 +79,15 @@ Table of Contents
    7.  Oblivious DoH Message Format  . . . . . . . . . . . . . . . .   7
      7.1.  Oblivious Queries . . . . . . . . . . . . . . . . . . . .   7
      7.2.  Oblivious Responses . . . . . . . . . . . . . . . . . . .   8
-   8.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .  10
      8.1.  Denial of Service . . . . . . . . . . . . . . . . . . . .  10
-   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
-     9.1.  Oblivious DoH Message Media Type  . . . . . . . . . . . .  10
-     9.2.  Oblivious DoH Public Key DNS Parameter  . . . . . . . . .  11
-   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  11
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  11
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .  11
-     11.2.  Informative References . . . . . . . . . . . . . . . . .  12
+   9.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  11
+     9.1.  Oblivious DoH Message Media Type  . . . . . . . . . . . .  11
+     9.2.  Oblivious DoH Public Key DNS Parameter  . . . . . . . . .  12
+   10. Acknowledgments . . . . . . . . . . . . . . . . . . . . . . .  12
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  12
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  12
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  13
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  13
 
 1.  Introduction
@@ -108,10 +109,9 @@ Table of Contents
 
 
 
-
-Kinnear, et al.            Expires May 1, 2020                  [Page 2]
+Kinnear, et al.            Expires May 4, 2020                  [Page 2]
 
-Internet-Draft                Oblivious DoH                 October 2019
+Internet-Draft                Oblivious DoH                November 2019
 
 
    This document defines Oblivious DoH, an extension to DoH that allows
@@ -165,9 +165,9 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 3]
+Kinnear, et al.            Expires May 4, 2020                  [Page 3]
 
-Internet-Draft                Oblivious DoH                 October 2019
+Internet-Draft                Oblivious DoH                November 2019
 
 
    The mechanism for discovering and provisioning the DoH URI Templates
@@ -221,9 +221,9 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 4]
+Kinnear, et al.            Expires May 4, 2020                  [Page 4]
 
-Internet-Draft                Oblivious DoH                 October 2019
+Internet-Draft                Oblivious DoH                November 2019
 
 
    request on to the Oblivious Target using the URI template constructed
@@ -277,9 +277,9 @@ content-length = 106
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 5]
+Kinnear, et al.            Expires May 4, 2020                  [Page 5]
 
-Internet-Draft                Oblivious DoH                 October 2019
+Internet-Draft                Oblivious DoH                November 2019
 
 
 4.4.  HTTP Response Example
@@ -333,9 +333,9 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 6]
+Kinnear, et al.            Expires May 4, 2020                  [Page 6]
 
-Internet-Draft                Oblivious DoH                 October 2019
+Internet-Draft                Oblivious DoH                November 2019
 
 
 7.  Oblivious DoH Message Format
@@ -373,8 +373,8 @@ Internet-Draft                Oblivious DoH                 October 2019
    The key and message are encoded using the following structure:
 
    struct {
-      opaque response_key<1..2^16-1>;
       opaque dns_message<1..2^16-1>;
+      opaque response_seed[32];
       opaque padding<0..2^16-1>;
    } ObliviousDNSQueryBody;
 
@@ -382,20 +382,20 @@ Internet-Draft                Oblivious DoH                 October 2019
    When sending an Oblivious DoH Query for resolving M to an Oblivious
    Target with ObliviousDNSKey key pk, a client does the following:
 
-   1.  Generate a random symmetric response_key whose length matches
-       that of the AEAD ciphersuite in pk.aead_id.  All randomness must
-       be generated according to [RFC4086].
+   1.  Generate a random response seed of length 32 octets according to
+       the guidelines in [RFC4086].
 
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 7]
+
+Kinnear, et al.            Expires May 4, 2020                  [Page 7]
 
-Internet-Draft                Oblivious DoH                 October 2019
+Internet-Draft                Oblivious DoH                November 2019
 
 
-   2.  Create an ObliviousDNSQueryBody structure, carrying response_key,
-       the message M, and padding, to produce Q_plain.
+   2.  Create an ObliviousDNSQueryBody structure, carrying the message
+       M, response_seed, and padding, to produce Q_plain.
 
    3.  Unmarshal pk.public_key to produce a public key pkR of type
        pk.kem_id.
@@ -445,9 +445,9 @@ Internet-Draft                Oblivious DoH                 October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 8]
+Kinnear, et al.            Expires May 4, 2020                  [Page 8]
 
-Internet-Draft                Oblivious DoH                 October 2019
+Internet-Draft                Oblivious DoH                November 2019
 
 
    3.  If no error was returned, and Q_plain.padding is valid (all
@@ -457,13 +457,23 @@ Internet-Draft                Oblivious DoH                 October 2019
    4.  Create an ObliviousDNSResponseBody structure, carrying the
        message M and padding, to produce R_plain.
 
-   5.  Compute R_encrypted = encrypt_response_body(R_plain, Q_plain).
-       (See definition for encrypt_response_body below.  The key_id
-       field used for encryption is empty, yielding 0x0000 as part of
-       the AAD.)
+   5.  Compute akey, anonce = derive_keys(Q_plain).  (See definition for
+       derive_keys below.  Hash, Expand, Extract, Nn, and Nk are
+       functions and parameters bound to the target's HPKE public key.)
 
-   6.  Output a ObliviousDNSMessage message R where R.message_type =
+   6.  Compute R_encrypted = encrypt_response_body(R_plain, akey,
+       anonce).  (See definition for encrypt_response_body below.  The
+       key_id field used for encryption is empty, yielding 0x0000 as
+       part of the AAD.)
+
+   7.  Output a ObliviousDNSMessage message R where R.message_type =
        0x02, R.key_id = nil, and R.encrypted_message = R_encrypted.
+
+def derive_keys(Q_plain):
+  context = Hash(Q_plain.dns_message)
+  key = Expand(Q_plain.response_seed, concat("odoh key", context), Nk)
+  nonce = Expand(Q_plain.response_seed, concat("odoh nonce", context), Nn)
+  return key, nonce
 
    def decrypt_query_body(skR, key_id, Q_encrypted):
      enc || ct = Q_encrypted
@@ -472,9 +482,9 @@ Internet-Draft                Oblivious DoH                 October 2019
      Q_plain, error = context.Open(aad, ct)
      return Q_plain, error
 
-   def encrypt_response_body(R_plain, Q_plain):
-     aad = 0x02 || 0x0000
-     R_encrypted = Seal(Q_plain.response_key, 0^Nn, aad, R_plain)
+   def encrypt_response_body(R_plain, akey, anonce):
+     aad = 0x02 || 0x0000 // 0x0000 represents a 0-length KeyId
+     R_encrypted = Seal(akey, anonce, aad, R_plain)
      return R_encrypted
 
    The Target then sends R to the Proxy according to Section 4.3.
@@ -483,9 +493,18 @@ Internet-Draft                Oblivious DoH                 October 2019
    client as the HTTP response to the client's original HTTP request.
 
    Once the client receives the response, it can use its known
-   response_key to decrypt R.encrypted_message, yielding R_plain.
-   Clients MUST validate R_plain.padding (as all zeros) before using
-   R_plain.dns_message.
+   response_seed to derive the decryption key and nonce, decrypt
+   R.encrypted_message using decrypt_response_body (defined below), and
+   produce R_plain.  Clients MUST validate R_plain.padding (as all
+   zeros) before using R_plain.dns_message.
+
+
+
+
+Kinnear, et al.            Expires May 4, 2020                  [Page 9]
+
+Internet-Draft                Oblivious DoH                November 2019
+
 
    def decrypt_response_body(R_encrypted):
      aad = 0x02 || 0x0000
@@ -497,32 +516,51 @@ Internet-Draft                Oblivious DoH                 October 2019
    DISCLAIMER: this is a work in progress draft and has not yet seen
    significant security analysis.
 
-   Oblivious DoH aims to achieve the following goals:
-
-
-
-Kinnear, et al.            Expires May 1, 2020                  [Page 9]
-
-Internet-Draft                Oblivious DoH                 October 2019
-
+   Oblivious DoH aims to keep knowledge of the true query origin and its
+   contents known to only clients.  In particular, it assumes a Dolev-
+   Yao style attacker which can observe all client queries, including
+   those forwarded by oblivious proxies, and does not collude with
+   target resolvers.  (Indeed, if a target colludes with the network
+   attacker, then said attacker can learn the true query origin and its
+   contents.)  Oblivious DoH aims to achieve the following
+   confidentiality goals in the presence of this attacker:
 
    1.  Queries and answers are known only to clients and targets in
        possession of the corresponding response key and HPKE keying
-       material.
+       material.  In particular, proxies know the origin and destination
+       of an oblivious query, yet do not know the plaintext query.
+       Likewise, targets know only the oblivious query origin, i.e., the
+       proxy, and the plaintext query.  Only the client knows both the
+       plaintext query contents and destination.
 
-   2.  Queries from the same client are unlinkable in the absence of
-       unique per-client keys.
+   2.  Target resolvers cannot link queries from the same client in the
+       absence of unique per-client keys.
 
-   Selection of padding length for ObliviousDNSQueryBody and
-   ObliviousDNSResponseBody is outside the scope of this document.
+   Traffic analysis mitigations are outside the scope of this document.
+   In particular, this document does not recommend padding lengths for
+   ObliviousDNSQueryBody and ObliviousDNSResponseBody messages.
    Implementations SHOULD follow the guidance for choosing padding
    length in [RFC8467].
+
+   Oblivious DoH security does not depend on proxy and target
+   indistinguishability.  Specifically, an on-path attacker could
+   determine whether a connection a specific endpoint is used for
+   oblivious or direct DoH queries.  However, this has no effect on
+   confidentiality goals listed above.
 
 8.1.  Denial of Service
 
    Malicious clients (or proxies) may send bogus Oblivious DoH queries
    to targets as a Denial-of-Service (DoS) attack.  Target servers may
    throttle processing requests if such an event occurs.
+
+
+
+
+Kinnear, et al.            Expires May 4, 2020                 [Page 10]
+
+Internet-Draft                Oblivious DoH                November 2019
+
 
    Malicious targets or proxies may send bogus answers in response to
    Oblivious DoH queries.  Response decryption failure is a signal that
@@ -555,13 +593,6 @@ Internet-Draft                Oblivious DoH                 October 2019
 
    Published specification: This document.
 
-
-
-Kinnear, et al.            Expires May 1, 2020                 [Page 10]
-
-Internet-Draft                Oblivious DoH                 October 2019
-
-
    Applications that use this media type: This media type is intended to
    be used by clients wishing to hide their DNS queries when using DNS
    over HTTPS.
@@ -578,6 +609,14 @@ Internet-Draft                Oblivious DoH                 October 2019
    Author: IETF
 
    Change controller: IETF
+
+
+
+
+Kinnear, et al.            Expires May 4, 2020                 [Page 11]
+
+Internet-Draft                Oblivious DoH                November 2019
+
 
 9.2.  Oblivious DoH Public Key DNS Parameter
 
@@ -608,16 +647,6 @@ Internet-Draft                Oblivious DoH                 October 2019
               Encryption", draft-irtf-cfrg-hpke-00 (work in progress),
               July 2019.
 
-
-
-
-
-
-Kinnear, et al.            Expires May 1, 2020                 [Page 11]
-
-Internet-Draft                Oblivious DoH                 October 2019
-
-
    [I-D.nygren-dnsop-svcb-httpssvc]
               Schwartz, B., Bishop, M., and E. Nygren, "Service binding
               and parameter specification via the DNS (DNS SVCB and
@@ -634,6 +663,16 @@ Internet-Draft                Oblivious DoH                 October 2019
               Rose, "DNS Security Introduction and Requirements",
               RFC 4033, DOI 10.17487/RFC4033, March 2005,
               <https://www.rfc-editor.org/info/rfc4033>.
+
+
+
+
+
+
+Kinnear, et al.            Expires May 4, 2020                 [Page 12]
+
+Internet-Draft                Oblivious DoH                November 2019
+
 
    [RFC4086]  Eastlake 3rd, D., Schiller, J., and S. Crocker,
               "Randomness Requirements for Security", BCP 106, RFC 4086,
@@ -665,15 +704,6 @@ Internet-Draft                Oblivious DoH                 October 2019
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-
-
-
-
-Kinnear, et al.            Expires May 1, 2020                 [Page 12]
-
-Internet-Draft                Oblivious DoH                 October 2019
-
-
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
@@ -687,6 +717,23 @@ Authors' Addresses
    United States of America
 
    Email: ekinnear@apple.com
+
+
+
+
+
+
+
+
+Kinnear, et al.            Expires May 4, 2020                 [Page 13]
+
+Internet-Draft                Oblivious DoH                November 2019
+
+
+   Patrick McManus
+   Fastly
+
+   Email: mcmanus@ducksong.com
 
 
    Tommy Pauly
@@ -707,10 +754,6 @@ Authors' Addresses
    Email: cawood@apple.com
 
 
-   Patrick McManus
-   Fastly
-
-   Email: mcmanus@ducksong.com
 
 
 
@@ -725,4 +768,17 @@ Authors' Addresses
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 13]
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kinnear, et al.            Expires May 4, 2020                 [Page 14]

@@ -5,10 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                                 C. Wood
-Expires: May 1, 2020                                          Apple Inc.
+Expires: May 4, 2020                                          Apple Inc.
                                                               P. McManus
                                                                   Fastly
-                                                        October 29, 2019
+                                                       November 01, 2019
 
 
            Adaptive DNS: Improving Privacy of Name Resolution
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on May 1, 2020.
+   This Internet-Draft will expire on May 4, 2020.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 1]
+Kinnear, et al.            Expires May 4, 2020                  [Page 1]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    carefully, as they describe your rights and restrictions with respect
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 2]
+Kinnear, et al.            Expires May 4, 2020                  [Page 2]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  25
@@ -165,9 +165,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 3]
+Kinnear, et al.            Expires May 4, 2020                  [Page 3]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
        learn of encrypted transport support by actively probing such
@@ -221,9 +221,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 4]
+Kinnear, et al.            Expires May 4, 2020                  [Page 4]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    Direct Resolver:  A DNS resolver using any transport that is
@@ -277,9 +277,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 5]
+Kinnear, et al.            Expires May 4, 2020                  [Page 5]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
        "example.com" to specific clients (by their IP address), since
@@ -333,9 +333,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 6]
+Kinnear, et al.            Expires May 4, 2020                  [Page 6]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    The following example shows a record containing a DoH URI, as
@@ -389,9 +389,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 7]
+Kinnear, et al.            Expires May 4, 2020                  [Page 7]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    Designated DoH Servers are expected to act both as Oblivious Proxies
@@ -445,9 +445,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 8]
+Kinnear, et al.            Expires May 4, 2020                  [Page 8]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    :method = GET
@@ -501,9 +501,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                  [Page 9]
+Kinnear, et al.            Expires May 4, 2020                  [Page 9]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
 3.3.  Hostname Resolution Algorithm
@@ -557,9 +557,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 10]
+Kinnear, et al.            Expires May 4, 2020                 [Page 10]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    5.  The default Direct Resolver, generally the resolver provisioned
@@ -613,9 +613,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 11]
+Kinnear, et al.            Expires May 4, 2020                 [Page 11]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    Clients that are performing Oblivious DoH resolution SHOULD fall back
@@ -669,9 +669,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 12]
+Kinnear, et al.            Expires May 4, 2020                 [Page 12]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
 4.1.2.  Oblivious DoH Target
@@ -725,9 +725,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 13]
+Kinnear, et al.            Expires May 4, 2020                 [Page 13]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    If present, the PvD JSON configuration MUST be made available to
@@ -781,9 +781,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 14]
+Kinnear, et al.            Expires May 4, 2020                 [Page 14]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    Beyond providing resolution configuration, the Web PvD configuration
@@ -837,9 +837,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 15]
+Kinnear, et al.            Expires May 4, 2020                 [Page 15]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
 5.3.  Avoid Narrow Deployments
@@ -893,9 +893,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 16]
+Kinnear, et al.            Expires May 4, 2020                 [Page 16]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    In order to validate that a local resolver is designated for a given
@@ -949,9 +949,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 17]
+Kinnear, et al.            Expires May 4, 2020                 [Page 17]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    o  "private.example.org" does have a DNSSEC-signed SVCB record that
@@ -1005,9 +1005,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 18]
+Kinnear, et al.            Expires May 4, 2020                 [Page 18]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    Note that having a DNSSEC-signed designation to the local resolver
@@ -1061,9 +1061,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 19]
+Kinnear, et al.            Expires May 4, 2020                 [Page 19]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    indicates the network requires filtering for all domains.  If
@@ -1117,9 +1117,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 20]
+Kinnear, et al.            Expires May 4, 2020                 [Page 20]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    Server endpoints which can be more confident they have accurate
@@ -1173,9 +1173,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 21]
+Kinnear, et al.            Expires May 4, 2020                 [Page 21]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    client and proxy and egress traffic from a target, then it may be
@@ -1229,9 +1229,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 22]
+Kinnear, et al.            Expires May 4, 2020                 [Page 22]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    names.  Any more specific string represents a domain that requires
@@ -1285,9 +1285,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 23]
+Kinnear, et al.            Expires May 4, 2020                 [Page 23]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    [I-D.nygren-dnsop-svcb-httpssvc]
@@ -1341,9 +1341,9 @@ Internet-Draft                ADNS Privacy                  October 2019
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 24]
+Kinnear, et al.            Expires May 4, 2020                 [Page 24]
 
-Internet-Draft                ADNS Privacy                  October 2019
+Internet-Draft                ADNS Privacy                 November 2019
 
 
    [RFC8106]  Jeong, J., Park, S., Beloeil, L., and S. Madanapalli,
@@ -1397,4 +1397,4 @@ Authors' Addresses
 
 
 
-Kinnear, et al.            Expires May 1, 2020                 [Page 25]
+Kinnear, et al.            Expires May 4, 2020                 [Page 25]
