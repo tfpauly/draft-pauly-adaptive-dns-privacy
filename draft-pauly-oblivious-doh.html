@@ -479,6 +479,17 @@ ul.toc li {
 <li>The Oblivious Proxy, which is a resolution server that receives encrypted queries from the client and passes them on to another resolution server.</li>
 <li>The Oblivious Target, which is a resolution server that receives proxied queries from the client via the Oblivious Proxy.</li>
 </ol>
+<div id="rfc.figure.1"></div>
+<div id="fig-doh-exchange"></div>
+<pre>
+     --- [ Request encrypted with target public key ] --&gt;
++---------+             +-----------+             +-----------+
+| Client  +-------------&gt; Oblivious +-------------&gt; Oblivious |
+|         &lt;-------------+   Proxy   &lt;-------------+  Target   |
++---------+             +-----------+             +-----------+
+   &lt;-- [ Response encrypted with client symmetric key ] ---
+</pre>
+<p class="figure">Figure 1: Obvlivious DoH Exchange</p>
 <h1 id="rfc.section.4.1">
 <a href="#rfc.section.4.1">4.1.</a> <a href="#oblivious-request" id="oblivious-request">HTTP Request</a>
 </h1>
