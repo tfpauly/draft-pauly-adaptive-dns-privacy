@@ -122,6 +122,16 @@ and passes them on to another resolution server.
 3. The Oblivious Target, which is a resolution server that receives proxied queries from the client
 via the Oblivious Proxy.
 
+~~~
+     --- [ Request encrypted with target public key ] -->
++---------+             +-----------+             +-----------+
+| Client  +-------------> Oblivious +-------------> Oblivious |
+|         <-------------+   Proxy   <-------------+  Target   |
++---------+             +-----------+             +-----------+
+   <-- [ Response encrypted with client symmetric key ] ---
+~~~
+{: #fig-doh-exchange title="Obvlivious DoH Exchange"}
+
 ## HTTP Request {#oblivious-request}
 
 Oblivious DoH queries are created by the Client, and sent to the Oblivious Proxy.
