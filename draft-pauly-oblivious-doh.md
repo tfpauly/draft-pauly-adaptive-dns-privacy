@@ -21,6 +21,11 @@ author:
     country: United States of America
     email: ekinnear@apple.com
   -
+    ins: P. McManus
+    name: Patrick McManus
+    org: Fastly
+    email: mcmanus@ducksong.com
+  -
     ins: T. Pauly
     name: Tommy Pauly
     org: Apple Inc.
@@ -36,11 +41,6 @@ author:
     city: Cupertino, California 95014
     country: United States of America
     email: cawood@apple.com
-  -
-    ins: P. McManus
-    name: Patrick McManus
-    org: Fastly
-    email: mcmanus@ducksong.com
 
 --- abstract
 
@@ -268,8 +268,8 @@ The key and message are encoded using the following structure:
 
 ~~~
 struct {
-   opaque response_key<1..2^16-1>;
    opaque dns_message<1..2^16-1>;
+   opaque response_seed[32];
    opaque padding<0..2^16-1>;
 } ObliviousDNSQueryBody;
 ~~~
@@ -277,9 +277,8 @@ struct {
 Let M be a DNS message a client wishes to protect with Oblivious DoH. When sending an Oblivious DoH Query
 for resolving M to an Oblivious Target with ObliviousDNSKey key pk, a client does the following:
 
-1. Generate a random symmetric response_key whose length matches that of the AEAD ciphersuite in pk.aead_id.
-All randomness must be generated according to {{!RFC4086}}.
-2. Create an ObliviousDNSQueryBody structure, carrying response_key, the message M, and padding, to produce Q_plain.
+1. Generate a random response seed of length 32 octets according to the guidelines in {{!RFC4086}}.
+2. Create an ObliviousDNSQueryBody structure, carrying the message M, response_seed, and padding, to produce Q_plain.
 3. Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.
 4. Compute the encrypted message as Q_encrypted = encrypt_query_body(pkR, key_id, Q_plain).
 key_id is defined as Identifier(pk).
@@ -316,12 +315,26 @@ the Target MAY discard the query. Otherwise, let skR be the private key
 corresponding to this public key, or one chosen for trial decryption, and pk
 be the corresponding ObliviousDNSKey.
 2. Compute Q_plain, error = decrypt_query_body(skR, Q.key_id, Q.encrypted_message).
-3. If no error was returned, and Q_plain.padding is valid (all zeros), resolve Q_plain.dns_message as needed, yielding a DNS message M.
-4. Create an ObliviousDNSResponseBody structure, carrying the message M and padding, to produce R_plain.
-5. Compute R_encrypted = encrypt_response_body(R_plain, Q_plain). (See definition
-for encrypt_response_body below. The key_id field used for encryption is empty, yielding 0x0000 as part of the AAD.)
-6. Output a ObliviousDNSMessage message R where R.message_type = 0x02,
+3. If no error was returned, and Q_plain.padding is valid (all zeros), resolve
+Q_plain.dns_message as needed, yielding a DNS message M.
+4. Create an ObliviousDNSResponseBody structure, carrying the message M and padding,
+to produce R_plain.
+5. Compute akey, anonce = derive_keys(Q_plain). (See definition for
+derive_keys below. Hash, Expand, Extract, Nn, and Nk are functions and parameters
+bound to the target's HPKE public key.)
+6. Compute R_encrypted = encrypt_response_body(R_plain, akey, anonce). (See definition
+for encrypt_response_body below. The key_id field used for encryption is empty,
+yielding 0x0000 as part of the AAD.)
+7. Output a ObliviousDNSMessage message R where R.message_type = 0x02,
 R.key_id = nil, and R.encrypted_message = R_encrypted.
+
+~~~
+def derive_keys(Q_plain):
+  context = Hash(Q_plain.dns_message)
+  key = Expand(Q_plain.response_seed, concat("odoh key", context), Nk)
+  nonce = Expand(Q_plain.response_seed, concat("odoh nonce", context), Nn)
+  return key, nonce
+~~~
 
 ~~~
 def decrypt_query_body(skR, key_id, Q_encrypted):
@@ -333,9 +346,9 @@ def decrypt_query_body(skR, key_id, Q_encrypted):
 ~~~
 
 ~~~
-def encrypt_response_body(R_plain, Q_plain):
-  aad = 0x02 || 0x0000
-  R_encrypted = Seal(Q_plain.response_key, 0^Nn, aad, R_plain)
+def encrypt_response_body(R_plain, akey, anonce):
+  aad = 0x02 || 0x0000 // 0x0000 represents a 0-length KeyId
+  R_encrypted = Seal(akey, anonce, aad, R_plain)
   return R_encrypted
 ~~~
 
@@ -344,9 +357,10 @@ The Target then sends R to the Proxy according to {{oblivious-response}}.
 The Proxy forwards the message R without modification back to the client as
 the HTTP response to the client's original HTTP request.
 
-Once the client receives the response, it can use its known response_key
-to decrypt R.encrypted_message, yielding R_plain. Clients MUST validate
-R_plain.padding (as all zeros) before using R_plain.dns_message.
+Once the client receives the response, it can use its known response_seed
+to derive the decryption key and nonce, decrypt R.encrypted_message using
+decrypt_response_body (defined below), and produce R_plain. Clients MUST
+validate R_plain.padding (as all zeros) before using R_plain.dns_message.
 
 ~~~
 def decrypt_response_body(R_encrypted):
@@ -359,15 +373,28 @@ def decrypt_response_body(R_encrypted):
 
 DISCLAIMER: this is a work in progress draft and has not yet seen significant security analysis.
 
-Oblivious DoH aims to achieve the following goals:
+Oblivious DoH aims to keep knowledge of the true query origin and its contents known to only
+clients. In particular, it assumes a Dolev-Yao style attacker which can observe all client queries,
+including those forwarded by oblivious proxies, and does not collude with target resolvers. (Indeed,
+if a target colludes with the network attacker, then said attacker can learn the true query origin
+and its contents.) Oblivious DoH aims to achieve the following confidentiality goals in the presence
+of this attacker:
 
 1. Queries and answers are known only to clients and targets in possession of the corresponding
-response key and HPKE keying material.
-2. Queries from the same client are unlinkable in the absence of unique per-client keys.
+response key and HPKE keying material. In particular, proxies know the origin and destination
+of an oblivious query, yet do not know the plaintext query. Likewise, targets know only the oblivious
+query origin, i.e., the proxy, and the plaintext query. Only the client knows both the plaintext
+query contents and destination.
+2. Target resolvers cannot link queries from the same client in the absence of unique per-client
+keys.
 
-Selection of padding length for ObliviousDNSQueryBody and ObliviousDNSResponseBody is outside
-the scope of this document. Implementations SHOULD follow the guidance for choosing padding
-length in {{!RFC8467}}.
+Traffic analysis mitigations are outside the scope of this document. In particular, this document
+does not recommend padding lengths for ObliviousDNSQueryBody and ObliviousDNSResponseBody messages.
+Implementations SHOULD follow the guidance for choosing padding length in {{!RFC8467}}.
+
+Oblivious DoH security does not depend on proxy and target indistinguishability. Specifically, an
+on-path attacker could determine whether a connection a specific endpoint is used for oblivious or
+direct DoH queries. However, this has no effect on confidentiality goals listed above.
 
 ## Denial of Service
 
