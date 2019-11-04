@@ -415,6 +415,21 @@ Malicious targets or proxies may send bogus answers in response to Oblivious DoH
 decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to stop using
 one or both of these servers in the event of such failure.
 
+## General Proxy Services
+
+Using DoH over anonymizing proxy services such as Tor would also achieve the desired goal of separating 
+query origins from their contents. However, there are several reasons why such systems are undesirable
+in comparison Oblivious DoH:
+
+1. Tor is also meant as a generic connection-level anonymity system, and thus seems overly complex for 
+the purpose of proxying individual DoH queries. In contrast, Oblivious DoH is a lightweight extension 
+to standard DoH that can be enabled as a default mode for users which need increased privacy.
+
+2. As a one-hop proxy, Oblivious DoH encourages connection-less proxies to mitigate client query correlation
+with few round-trips. In contrast, multi-hop systems such as Tor often run secure connections (TLS) end-to-end,
+which means that DoH servers could track queries over the same connection. Using a fresh DoH connection
+per query would incur a non-negligible penalty in connection setup time. 
+
 # IANA Considerations {#iana}
 
 ## Oblivious DoH Message Media Type
