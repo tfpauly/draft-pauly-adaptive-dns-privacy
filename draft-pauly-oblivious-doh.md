@@ -417,7 +417,7 @@ one or both of these servers in the event of such failure.
 
 ## General Proxy Services
 
-Using DoH over anonymizing proxy services such as Tor would achieve the desired goal of separating 
+Using DoH over anonymizing proxy services such as Tor would also achieve the desired goal of separating 
 query origins from their contents. However, there are several reasons why such systems are undesirable
 in comparison Oblivious DoH:
 
