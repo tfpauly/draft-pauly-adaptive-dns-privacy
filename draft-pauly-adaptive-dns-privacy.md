@@ -106,6 +106,8 @@ This architecture is composed of several mechanisms:
 
 - and client behavior rules for how to resolve names using a combination of designated DoH resolvers, proxied queries, and local resolvers ({{client}}).
 
+Recommendations for local or system policies are out of scope for this document.
+
 ## Specification of Requirements
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
