@@ -29,8 +29,8 @@ author:
     country: United States of America
     email: tpauly@apple.com
   -
-    ins: C. Wood
-    name: Chris Wood
+    ins: C. A. Wood
+    name: Christopher A. Wood
     org: Apple Inc.
     street: One Apple Park Way
     city: Cupertino, California 95014
