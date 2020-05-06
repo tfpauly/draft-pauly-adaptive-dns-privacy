@@ -1,486 +1,1125 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Oblivious DNS Over HTTPS</title>
+<meta content="Eric Kinnear" name="author">
+<meta content="Patrick McManus" name="author">
+<meta content="Tommy Pauly" name="author">
+<meta content="Christopher A. Wood" name="author">
+<meta content="
+       This document describes an extension to DNS Over HTTPS (DoH) that allows hiding
+client IP addresses via proxying encrypted DNS transactions. This improves privacy of
+DNS operations by not allowing any one server entity to be aware of both the client IP
+address and the content of DNS queries and answers. 
+    " name="description">
+<meta content="xml2rfc 2.39.0" name="generator">
+<meta content="Internet-Draft" name="keyword">
+<meta content="draft-pauly-oblivious-doh-latest" name="ietf.draft">
+<link href="draft-pauly-oblivious-doh.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@import url('https://martinthomson.github.io/i-d-template/fonts.css');
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head profile="http://www.w3.org/2006/03/hcard http://dublincore.org/documents/2008/08/04/dc-html/">
-  <meta http-equiv="Content-Type" content="text/html; charset=us-ascii" />
-
-  <title>Oblivious DNS Over HTTPS</title>
-
-  
-<style type="text/css">/*<![CDATA[*/
-
+html {
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --small-font-size: 14.5px;
+}
 body {
-  font: 16px "Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
-  color: #333;
-  font-size-adjust: 0.5;
-  line-height: 24px;
+  max-width: 600px;
   margin: 75px auto;
-  max-width: 624px;
   padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
 }
 
-.title, .filename, h1, h2, h3, h4, h5 {
-  font: 16px "Roboto Condensed","Helvetica Neue","Open Sans",Helvetica,Calibri,sans-serif;
-  font-size-adjust: 0.5;
-  font-weight: bold;
-  color: #333;
-  line-height: 100%;
-  margin: 1.2em 0 0.3em;
-}
-.title, #rfc\.title h1 { font-size: 32px; }
-h1, section h1, h2, section h2, section h3, nav h2 { font-size: 20px; }
-h3, section h4, h4, section h5 { font-size: 16px; }
-h1 a[href], h2 a[href], h3 a[href], h4 a[href] {
-  color: #333;
-}
-
-table {
-  margin-left: 0em;
-  border-collapse: collapse;
-}
-th {
-  text-align: left;
-  border-bottom: 2px solid #ddd;
-}
-td {
-  border-top: 1px solid #ddd;
-  vertical-align: top;
-}
-tr:nth-child(2n+1) > td,
-tr:nth-child(2n+1) > th {
-  background-color: #f9f9f9;
-}
-td.reference {
-  max-width: 200px;
-  border-top: none;
-  padding-right: 1em;
-}
-.right {
-  text-align: right;
-}
-
-
-table.header, table#rfc\.headerblock {
-  width: 100%;
-}
-table.header td, table#rfc\.headerblock td {
-  border: none;
-  background-color: transparent;
-  color: black;
-  padding: 0;
-}
-.filename {
-  display: block;
-  color: rgb(119, 119, 119);
-  font-size: 20px;
-  font-weight: normal;
-  line-height: 100%;
-  margin: 10px 0 32px;
-}
-#rfc\.abstract+p, #rfc\.abstract+p code, #rfc\.abstract+p samp, #rfc\.abstract+p tt {
-  font-size: 20px;
-  line-height: 28px;
-}
-
-samp, tt, code, pre, span.tt {
-  font-size: 13.5px;
-  font-family: Consolas, monospace;
-  font-size-adjust: none;
-}
-pre {
-  background-color: #eee;
-  border: 1px solid #ddd;
-  overflow-x: auto;
-  padding: 5px;
-  margin: 5px;
-}
-.figure, caption {
-  font-style: italic;
-  margin: 0 1.5em;
-  text-align: left;
-}
-
-address {
-  margin: 16px 2px;
-  line-height: 20px;
-}
-.vcard {
-  font-style: normal;
-}
-.vcardline {
-  display: block;
-}
-.vcardline .fn, address b {
-  font-weight: normal;
-}
-.vcardline .hidden {
+.ears {
   display: none;
 }
 
-dl {
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+#title {
+  padding: 1em 0 0.2em;
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 26px;
+}
+h4, h5, h6 {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p, #abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 18px;
+  line-height: 24px;
+}
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div, span {
+  position: relative;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 1em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
   margin-left: 1em;
 }
-dl.dl-horizontal: {
-  margin-left: 0;
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
 }
 dl > dt {
   float: left;
   margin-right: 1em;
 }
-dl.nohang > dt {
-  float: none;
-}
 dl > dd {
-  margin-bottom: .5em;
+  margin-bottom: .8em;
+  min-height: 1.3em;
 }
-dl.compact > dd {
+dl.compact > dd, .dlCompact > dd {
   margin-bottom: 0em;
 }
 dl > dd > dl {
   margin-top: 0.5em;
   margin-bottom: 0em;
 }
-ul.empty {
-  list-style-type: none;
-}
-ul.empty li {
-  margin-top: .5em;
-}
 
-hr {
-  border: 0;
-  border-top: 1px solid #eee;
-}
-hr.noprint {
-  display: none;
-}
-
-a {
+/* links */
+a, a[href].selfRef:hover {
   text-decoration: none;
 }
+a[href].selfRef {
+  color: var(--text-color);
+}
 a[href] {
-  color: #2a6496;
+  color: var(--link-color);
 }
 a[href]:hover {
-  background-color: #eee;
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref {
+  white-space: nowrap;
 }
 
-p, ol, ul, li {
-  padding: 0;
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px 'Oxygen Mono', monospace;
 }
-p {
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
   margin: 0.5em 0;
 }
-ol, ul {
-  margin: 0.2em 0 0.2em 2em;
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
 }
-li {
-  margin: 0.2em 0;
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
 }
-address {
-  font-style: normal;
+@media screen {
+  pre {
+    display: inline-block;
+    overflow-x: auto;
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  pre + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+  table {
+    display: inline-block;
+    overflow-x: auto;
+  }
 }
 
-ul.toc ul {
-  margin: 0 0 0 2em;
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
 }
-ul.toc li {
-  list-style: none;
+blockquote {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.5em 0.75em;
+}
+th {
+  text-align: left;
+  background-color: #eee;
+}
+tr:nth-child(2n) > td {
+  background-color: var(--background-color);
+}
+tr:nth-child(2n+1) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody tr:nth-child(2n) > td {
+  background-color: var(--highlight-color);
+}
+thead+tbody tr:nth-child(2n+1) > td {
+  background-color: var(--background-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 1em;
+  border-top: 1px solid var(--line-color);
+}
+table p {
+  /* XXX to avoid bottom margin on table row signifiers. If paragraphs should
+     be allowed within tables more generally, it would be far better to select on a class. */
   margin: 0;
 }
 
-@media screen and (min-width: 924px) {
-  body {
-    padding-right: 350px;
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  visibility: hidden;
+  user-select: none;
+}
+a.pilcrow[href] { color: #ddd; }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media screen {
+  :hover > a.pilcrow {
+    visibility: visible;
   }
-  body>ul.toc, body>#rfc\.toc {
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 8em;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  margin: 0;
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0 0 0 calc(1em + var(--identifier-width));
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 500px) {
+  .index ul {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  .index ul ul {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    display: relative;
+    padding: 32px 0 0;
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #name-authors-addresses {
+    position: absolute;
+    top: 0px;
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+/* temporary notes */
+.rfcEditorRemove::before {
+  position: absolute;
+  top: 0.2em;
+  right: 0.2em;
+  padding: 0.2em;
+  content: "The RFC Editor will remove this note";
+  color: #b76427;
+  background-color: rgba(249, 232, 105, 0.3);
+}
+.rfcEditorRemove {
+  position: relative;
+  padding-top: 1.8em;
+  background-color: rgba(249, 232, 105, 0.3);
+  border-radius: 3px;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
     position: fixed;
     bottom: 0;
     right: 0;
-    right: calc(50vw - 500px);
-    width: 300px;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
     z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
     overflow: auto;
     overscroll-behavior: contain;
+    scrollbar-width: thin;
   }
-  body>#rfc\.toc {
-    top: 55px;
+  #toc nav > ul  {
+    margin-bottom: 2em;
   }
-  body>ul.toc {
-    top: 100px;
-  }
-
-  ul.toc {
+  #toc ul {
     margin: 0 0 0 4px;
-    font-size: 12px;
-    line-height: 20px;
+    font-size: var(--small-font-size);
   }
-  ul.toc ul {
-    margin-left: 1.2em;
+  #toc ul p, #toc ul li {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
   }
 }
 
-.github-fork-ribbon-wrapper {
-  display: none;
-}
-@media screen and (min-width: 800px) {
-  /* "Fork me on GitHub" CSS ribbon based on
-   * https://github.com/simonwhitaker/github-fork-ribbon-css
-   */
-  .github-fork-ribbon {
-    position: absolute;
-    padding: 2px 0;
-    background-color: #a00;
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15));
-    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.5);
-    font: 700 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-    pointer-events: auto;
-
-    top: 38px;
-    right: -45px;
-
-    transform: rotate(45deg);
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
   }
-
-  .github-fork-ribbon a[href],
-  .github-fork-ribbon a[href]:hover {
-    color: #fff;
-    background-color: transparent;
-    text-decoration: none;
-    text-shadow: 0 -1px rgba(0, 0, 0, 0.5);
-    text-align: center;
-
-    width: 190px;
-    line-height: 18px;
-
-    display: inline-block;
-    padding: 2px 0;
-
-    border: 1.5px dotted #fff;
-    border-color: rgba(255, 255, 255, 0.6);
+  @top-center {
+    content: normal;
+    border: none;
   }
-
-  .github-fork-ribbon-wrapper {
-    display: block;
-    width: 130px;
-    height: 130px;
-    position: absolute;
-    overflow: hidden;
-    top: 0; right: 0;
-    z-index: 2;
-    pointer-events: none;
+  @top-right {
+    content: normal;
+    border: none;
   }
 }
-@media screen and (min-width: 1000px) {
-  .github-fork-ribbon-wrapper {
-    position: fixed;
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left, table .text-left {
+  text-align: left;
+}
+table .text-center, table .text-center {
+  text-align: center;
+}
+table .text-right, table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Provide table alignment support.  We can't use the alignX classes above
+   since they do unwanted things with caption and other styling. */
+table.right {
+ margin-left: auto;
+ margin-right: 0;
+}
+table.center {
+ margin-left: auto;
+ margin-right: auto;
+}
+table.left {
+ margin-left: 0;
+ margin-right: auto;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
   }
-/*]]>*/</style>
-<meta name="viewport" content="initial-scale=1.0">
 
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
 
-  <link href="#rfc.toc" rel="Contents">
-<link href="#rfc.section.1" rel="Chapter" title="1 Introduction">
-<link href="#rfc.section.1.1" rel="Chapter" title="1.1 Specification of Requirements">
-<link href="#rfc.section.2" rel="Chapter" title="2 Terminology">
-<link href="#rfc.section.3" rel="Chapter" title="3 Deployment Requirements">
-<link href="#rfc.section.4" rel="Chapter" title="4 HTTP Exchange">
-<link href="#rfc.section.4.1" rel="Chapter" title="4.1 HTTP Request">
-<link href="#rfc.section.4.2" rel="Chapter" title="4.2 HTTP Request Example">
-<link href="#rfc.section.4.3" rel="Chapter" title="4.3 HTTP Response">
-<link href="#rfc.section.4.4" rel="Chapter" title="4.4 HTTP Response Example">
-<link href="#rfc.section.5" rel="Chapter" title="5 Public Key Discovery">
-<link href="#rfc.section.6" rel="Chapter" title="6 Oblivious DoH Public Key Format">
-<link href="#rfc.section.7" rel="Chapter" title="7 Oblivious DoH Message Format">
-<link href="#rfc.section.7.1" rel="Chapter" title="7.1 Oblivious Queries">
-<link href="#rfc.section.7.2" rel="Chapter" title="7.2 Oblivious Responses">
-<link href="#rfc.section.8" rel="Chapter" title="8 Security Considerations">
-<link href="#rfc.section.8.1" rel="Chapter" title="8.1 Denial of Service">
-<link href="#rfc.section.9" rel="Chapter" title="9 IANA Considerations">
-<link href="#rfc.section.9.1" rel="Chapter" title="9.1 Oblivious DoH Message Media Type">
-<link href="#rfc.section.9.2" rel="Chapter" title="9.2 Oblivious DoH Public Key DNS Parameter">
-<link href="#rfc.section.10" rel="Chapter" title="10 Acknowledgments">
-<link href="#rfc.references" rel="Chapter" title="11 References">
-<link href="#rfc.references.1" rel="Chapter" title="11.1 Normative References">
-<link href="#rfc.references.2" rel="Chapter" title="11.2 Informative References">
-<link href="#rfc.authors" rel="Chapter">
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
+  }
+  .vcard {
+    page-break-inside: avoid;
+  }
 
-
-  <meta name="generator" content="xml2rfc version 2.8.4 - https://tools.ietf.org/tools/xml2rfc" />
-  <link rel="schema.dct" href="http://purl.org/dc/terms/" />
-
-  <meta name="dct.creator" content="Kinnear, E., McManus, P., Pauly, T., and C. Wood" />
-  <meta name="dct.identifier" content="urn:ietf:id:draft-pauly-oblivious-doh-latest" />
-  <meta name="dct.issued" scheme="ISO8601" content="2019-11-01" />
-  <meta name="dct.abstract" content="This document describes an extension to DNS Over HTTPS (DoH) that allows hiding client IP addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
-  <meta name="description" content="This document describes an extension to DNS Over HTTPS (DoH) that allows hiding client IP addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers." />
-
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+</style>
+<link href="rfc-local.css" rel="stylesheet" type="text/css">
 </head>
-
 <body>
-
-  <table class="header">
-    <tbody>
-    
-    	<tr>
-<td class="left">Network Working Group</td>
-<td class="right">E. Kinnear</td>
-</tr>
-<tr>
+<table class="ears">
+<thead><tr>
 <td class="left">Internet-Draft</td>
-<td class="right">Apple Inc.</td>
-</tr>
-<tr>
-<td class="left">Intended status: Standards Track</td>
-<td class="right">P. McManus</td>
-</tr>
-<tr>
-<td class="left">Expires: May 4, 2020</td>
-<td class="right">Fastly</td>
-</tr>
-<tr>
-<td class="left"></td>
-<td class="right">T. Pauly</td>
-</tr>
-<tr>
-<td class="left"></td>
-<td class="right">C. Wood</td>
-</tr>
-<tr>
-<td class="left"></td>
-<td class="right">Apple Inc.</td>
-</tr>
-<tr>
-<td class="left"></td>
-<td class="right">November 01, 2019</td>
-</tr>
-
-    	
-    </tbody>
-  </table>
-
-  <p class="title">Oblivious DNS Over HTTPS<br />
-  <span class="filename">draft-pauly-oblivious-doh-latest</span></p>
-  
-  <h1 id="rfc.abstract"><a href="#rfc.abstract">Abstract</a></h1>
-<p>This document describes an extension to DNS Over HTTPS (DoH) that allows hiding client IP addresses via proxying encrypted DNS transactions. This improves privacy of DNS operations by not allowing any one server entity to be aware of both the client IP address and the content of DNS queries and answers.</p>
-<h1 id="rfc.status"><a href="#rfc.status">Status of This Memo</a></h1>
-<p>This Internet-Draft is submitted in full conformance with the provisions of BCP 78 and BCP 79.</p>
-<p>Internet-Drafts are working documents of the Internet Engineering Task Force (IETF).  Note that other groups may also distribute working documents as Internet-Drafts.  The list of current Internet-Drafts is at https://datatracker.ietf.org/drafts/current/.</p>
-<p>Internet-Drafts are draft documents valid for a maximum of six months and may be updated, replaced, or obsoleted by other documents at any time.  It is inappropriate to use Internet-Drafts as reference material or to cite them other than as "work in progress."</p>
-<p>This Internet-Draft will expire on May 4, 2020.</p>
-<h1 id="rfc.copyrightnotice"><a href="#rfc.copyrightnotice">Copyright Notice</a></h1>
-<p>Copyright (c) 2019 IETF Trust and the persons identified as the document authors.  All rights reserved.</p>
-<p>This document is subject to BCP 78 and the IETF Trust's Legal Provisions Relating to IETF Documents (https://trustee.ietf.org/license-info) in effect on the date of publication of this document.  Please review these documents carefully, as they describe your rights and restrictions with respect to this document.  Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.</p>
-
-  
-  <hr class="noprint" />
-  <h1 class="np" id="rfc.toc"><a href="#rfc.toc">Table of Contents</a></h1>
-  <ul class="toc">
-
-  	<li>1.   <a href="#rfc.section.1">Introduction</a>
-</li>
-<ul><li>1.1.   <a href="#rfc.section.1.1">Specification of Requirements</a>
-</li>
-</ul><li>2.   <a href="#rfc.section.2">Terminology</a>
-</li>
-<li>3.   <a href="#rfc.section.3">Deployment Requirements</a>
-</li>
-<li>4.   <a href="#rfc.section.4">HTTP Exchange</a>
-</li>
-<ul><li>4.1.   <a href="#rfc.section.4.1">HTTP Request</a>
-</li>
-<li>4.2.   <a href="#rfc.section.4.2">HTTP Request Example</a>
-</li>
-<li>4.3.   <a href="#rfc.section.4.3">HTTP Response</a>
-</li>
-<li>4.4.   <a href="#rfc.section.4.4">HTTP Response Example</a>
-</li>
-</ul><li>5.   <a href="#rfc.section.5">Public Key Discovery</a>
-</li>
-<li>6.   <a href="#rfc.section.6">Oblivious DoH Public Key Format</a>
-</li>
-<li>7.   <a href="#rfc.section.7">Oblivious DoH Message Format</a>
-</li>
-<ul><li>7.1.   <a href="#rfc.section.7.1">Oblivious Queries</a>
-</li>
-<li>7.2.   <a href="#rfc.section.7.2">Oblivious Responses</a>
-</li>
-</ul><li>8.   <a href="#rfc.section.8">Security Considerations</a>
-</li>
-<ul><li>8.1.   <a href="#rfc.section.8.1">Denial of Service</a>
-</li>
-</ul><li>9.   <a href="#rfc.section.9">IANA Considerations</a>
-</li>
-<ul><li>9.1.   <a href="#rfc.section.9.1">Oblivious DoH Message Media Type</a>
-</li>
-<li>9.2.   <a href="#rfc.section.9.2">Oblivious DoH Public Key DNS Parameter</a>
-</li>
-</ul><li>10.   <a href="#rfc.section.10">Acknowledgments</a>
-</li>
-<li>11.   <a href="#rfc.references">References</a>
-</li>
-<ul><li>11.1.   <a href="#rfc.references.1">Normative References</a>
-</li>
-<li>11.2.   <a href="#rfc.references.2">Informative References</a>
-</li>
-</ul><li><a href="#rfc.authors">Authors' Addresses</a>
-</li>
-
-
-  </ul>
-
-  <h1 id="rfc.section.1">
-<a href="#rfc.section.1">1.</a> <a href="#introduction" id="introduction">Introduction</a>
-</h1>
-<p id="rfc.section.1.p.1">DNS Over HTTPS (DoH) <a href="#RFC8484" class="xref">[RFC8484]</a> defines a mechanism to allow DNS messages to be transmitted in encrypted HTTP messages. This provides improved confidentiality and authentication for DNS interactions in various circumstances.</p>
-<p id="rfc.section.1.p.2">While DoH can prevent eavesdroppers from directly reading the contents of DNS exchanges, it does not allow clients to send DNS queries and receive answers from servers without revealing their local IP address, and thus information about the identity or location of the client.</p>
-<p id="rfc.section.1.p.3">Proposals such as Oblivious DNS (<a href="#I-D.annee-dprive-oblivious-dns" class="xref">[I-D.annee-dprive-oblivious-dns]</a>) allow increased privacy by not allowing any single DNS server to be aware of both the client IP address and the message contents.</p>
-<p id="rfc.section.1.p.4">This document defines Oblivious DoH, an extension to DoH that allows for a proxied mode of resolution, in which DNS messages are encrypted in such a way that no DoH server can independently read both the client IP address and the DNS message contents.</p>
-<p id="rfc.section.1.p.5">This mechanism is intended to be used as one option for resolving privacy-sensitive content in the broader context of Adaptive DNS <a href="#I-D.pauly-dprive-adaptive-dns-privacy" class="xref">[I-D.pauly-dprive-adaptive-dns-privacy]</a>.</p>
-<h1 id="rfc.section.1.1">
-<a href="#rfc.section.1.1">1.1.</a> <a href="#specification-of-requirements" id="specification-of-requirements">Specification of Requirements</a>
-</h1>
-<p id="rfc.section.1.1.p.1">The key words &#8220;MUST&#8221;, &#8220;MUST NOT&#8221;, &#8220;REQUIRED&#8221;, &#8220;SHALL&#8221;, &#8220;SHALL NOT&#8221;, &#8220;SHOULD&#8221;, &#8220;SHOULD NOT&#8221;, &#8220;RECOMMENDED&#8221;, &#8220;NOT RECOMMENDED&#8221;, &#8220;MAY&#8221;, and &#8220;OPTIONAL&#8221; in this document are to be interpreted as described in BCP 14 <a href="#RFC2119" class="xref">[RFC2119]</a> <a href="#RFC8174" class="xref">[RFC8174]</a> when, and only when, they appear in all capitals, as shown here.</p>
-<h1 id="rfc.section.2">
-<a href="#rfc.section.2">2.</a> <a href="#terminology" id="terminology">Terminology</a>
-</h1>
-<p id="rfc.section.2.p.1">This document defines the following terms:</p>
-<p></p>
-
-<dl>
-<dt>Oblivious Proxy:</dt>
-<dd style="margin-left: 8">A server that proxies encrypted client DNS queries to a resolution server that will be able to decrypt the query (the Oblivious Target). Oblivious DoH servers can function as proxies, but other non-resolver proxy servers could also be used.</dd>
-<dt>Oblivious Target:</dt>
-<dd style="margin-left: 8">A resolution server that receives encrypted client DNS queries and generates encrypted DNS responses transferred via an Oblivious Proxy.</dd>
+<td class="center">Oblivious DoH</td>
+<td class="right">May 2020</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Kinnear, et al.</td>
+<td class="center">Expires 6 November 2020</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Network Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-pauly-oblivious-doh-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2020-05-05" class="published">5 May 2020</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Standards Track</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2020-11-06">6 November 2020</time></dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">E. Kinnear</div>
+<div class="org">Apple Inc.</div>
+</div>
+<div class="author">
+      <div class="author-name">P. McManus</div>
+<div class="org">Fastly</div>
+</div>
+<div class="author">
+      <div class="author-name">T. Pauly</div>
+<div class="org">Apple Inc.</div>
+</div>
+<div class="author">
+      <div class="author-name">C.A. Wood</div>
+<div class="org">Apple Inc.</div>
+</div>
+</dd>
 </dl>
-<h1 id="rfc.section.3">
-<a href="#rfc.section.3">3.</a> <a href="#deployment-requirements" id="deployment-requirements">Deployment Requirements</a>
-</h1>
-<p id="rfc.section.3.p.1">Oblivious DoH requires, at a minimum:</p>
-<p></p>
-
-<ul>
-<li>Two DoH servers, where one can act as an Oblivious Proxy, and the other can act as an Oblivious Target.</li>
-<li>Public keys for encrypting DNS queries that are passed from a client through a proxy to a target (<a href="#publickey" class="xref">Section 6</a>). These keys guarantee that only the intended Oblivious Target can decrypt client queries.</li>
-<li>Client ability to generate random <a href="#RFC4086" class="xref">[RFC4086]</a> one-time-use symmetric keys to encrypt DNS responses. These symmetric keys ensure that only the client will be able to decrypt the response from the Oblivious Target. They are only used once to prevent the Oblivious Target from tracking clients based on keys.</li>
+</div>
+<h1 id="title">Oblivious DNS Over HTTPS</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document describes an extension to DNS Over HTTPS (DoH) that allows hiding
+client IP addresses via proxying encrypted DNS transactions. This improves privacy of
+DNS operations by not allowing any one server entity to be aware of both the client IP
+address and the content of DNS queries and answers.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 6 November 2020.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2020 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Simplified BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Simplified BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="toc ulEmpty">
+<li class="toc ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a><a href="#section-toc.1-1.1.1" class="pilcrow">¶</a></p>
+<ul class="toc ulEmpty">
+<li class="toc ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-specification-of-requiremen" class="xref">Specification of Requirements</a><a href="#section-toc.1-1.1.2.1.1" class="pilcrow">¶</a></p>
+</li>
 </ul>
-<p id="rfc.section.3.p.3">The mechanism for discovering and provisioning the DoH URI Templates and public keys is via parameters added to DNS resource records. The mechanism for discovering the public key is decribed in <a href="#keydiscovery" class="xref">Section 5</a>. The mechanism for discovering a DoH URI Template is described in <a href="#I-D.pauly-dprive-adaptive-dns-privacy" class="xref">[I-D.pauly-dprive-adaptive-dns-privacy]</a>.</p>
-<h1 id="rfc.section.4">
-<a href="#rfc.section.4">4.</a> <a href="#http-exchange" id="http-exchange">HTTP Exchange</a>
-</h1>
-<p id="rfc.section.4.p.1">Unlike direct resolution, oblivious hostname resolution over DoH involves three parties:</p>
-<p></p>
-
-<ol>
-<li>The Client, which generates queries.</li>
-<li>The Oblivious Proxy, which is a resolution server that receives encrypted queries from the client and passes them on to another resolution server.</li>
-<li>The Oblivious Target, which is a resolution server that receives proxied queries from the client via the Oblivious Proxy.</li>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-terminology" class="xref">Terminology</a><a href="#section-toc.1-1.2.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-deployment-requirements" class="xref">Deployment Requirements</a><a href="#section-toc.1-1.3.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-http-exchange" class="xref">HTTP Exchange</a><a href="#section-toc.1-1.4.1" class="pilcrow">¶</a></p>
+<ul class="toc ulEmpty">
+<li class="toc ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-http-request" class="xref">HTTP Request</a><a href="#section-toc.1-1.4.2.1.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-http-request-example" class="xref">HTTP Request Example</a><a href="#section-toc.1-1.4.2.2.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="xref">4.3</a>.  <a href="#name-http-response" class="xref">HTTP Response</a><a href="#section-toc.1-1.4.2.3.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="xref">4.4</a>.  <a href="#name-http-response-example" class="xref">HTTP Response Example</a><a href="#section-toc.1-1.4.2.4.1" class="pilcrow">¶</a></p>
+</li>
+</ul>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-public-key-discovery" class="xref">Public Key Discovery</a><a href="#section-toc.1-1.5.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-oblivious-doh-public-key-fo" class="xref">Oblivious DoH Public Key Format</a><a href="#section-toc.1-1.6.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-oblivious-doh-message-forma" class="xref">Oblivious DoH Message Format</a><a href="#section-toc.1-1.7.1" class="pilcrow">¶</a></p>
+<ul class="toc ulEmpty">
+<li class="toc ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-oblivious-queries" class="xref">Oblivious Queries</a><a href="#section-toc.1-1.7.2.1.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-oblivious-responses" class="xref">Oblivious Responses</a><a href="#section-toc.1-1.7.2.2.1" class="pilcrow">¶</a></p>
+</li>
+</ul>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a><a href="#section-toc.1-1.8.1" class="pilcrow">¶</a></p>
+<ul class="toc ulEmpty">
+<li class="toc ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="xref">8.1</a>.  <a href="#name-denial-of-service" class="xref">Denial of Service</a><a href="#section-toc.1-1.8.2.1.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="xref">8.2</a>.  <a href="#name-general-proxy-services" class="xref">General Proxy Services</a><a href="#section-toc.1-1.8.2.2.1" class="pilcrow">¶</a></p>
+</li>
+</ul>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a><a href="#section-toc.1-1.9.1" class="pilcrow">¶</a></p>
+<ul class="toc ulEmpty">
+<li class="toc ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="xref">9.1</a>.  <a href="#name-oblivious-doh-message-media" class="xref">Oblivious DoH Message Media Type</a><a href="#section-toc.1-1.9.2.1.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="xref">9.2</a>.  <a href="#name-oblivious-doh-public-key-dn" class="xref">Oblivious DoH Public Key DNS Parameter</a><a href="#section-toc.1-1.9.2.2.1" class="pilcrow">¶</a></p>
+</li>
+</ul>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-acknowledgments" class="xref">Acknowledgments</a><a href="#section-toc.1-1.10.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="xref">11</a>. <a href="#name-references" class="xref">References</a><a href="#section-toc.1-1.11.1" class="pilcrow">¶</a></p>
+<ul class="toc ulEmpty">
+<li class="toc ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="xref">11.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a><a href="#section-toc.1-1.11.2.1.1" class="pilcrow">¶</a></p>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="xref">11.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a><a href="#section-toc.1-1.11.2.2.1" class="pilcrow">¶</a></p>
+</li>
+</ul>
+</li>
+<li class="toc ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-appendix.a" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a><a href="#section-toc.1-1.12.1" class="pilcrow">¶</a></p>
+</li>
+</ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">DNS Over HTTPS (DoH) <span>[<a href="#RFC8484" class="xref">RFC8484</a>]</span> defines a mechanism to allow DNS messages to be
+transmitted in encrypted HTTP messages. This provides improved confidentiality and authentication
+for DNS interactions in various circumstances.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">While DoH can prevent eavesdroppers from directly reading the contents of DNS exchanges, it does
+not allow clients to send DNS queries and receive answers from servers without revealing
+their local IP address, and thus information about the identity or location of the client.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Proposals such as Oblivious DNS (<span>[<a href="#I-D.annee-dprive-oblivious-dns" class="xref">I-D.annee-dprive-oblivious-dns</a>]</span>) allow increased privacy
+by not allowing any single DNS server to be aware of both the client IP address and the
+message contents.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">This document defines Oblivious DoH, an extension to DoH that allows for a proxied mode
+of resolution, in which DNS messages are encrypted in such a way that no DoH server
+can independently read both the client IP address and the DNS message contents.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">This mechanism is intended to be used as one option for resolving privacy-sensitive content
+in the broader context of Adaptive DNS <span>[<a href="#I-D.pauly-dprive-adaptive-dns-privacy" class="xref">I-D.pauly-dprive-adaptive-dns-privacy</a>]</span>.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<div id="specification-of-requirements">
+<section id="section-1.1">
+        <h3 id="name-specification-of-requiremen">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-specification-of-requiremen" class="section-name selfRef">Specification of Requirements</a>
+        </h3>
+<p id="section-1.1-1">The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in BCP 14
+<span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> when, and only when,
+they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="terminology">
+<section id="section-2">
+      <h2 id="name-terminology">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
+      </h2>
+<p id="section-2-1">This document defines the following terms:<a href="#section-2-1" class="pilcrow">¶</a></p>
+<dl class="dlParallel" id="section-2-2">
+        <dt id="section-2-2.1">Oblivious Proxy:</dt>
+<dd id="section-2-2.2">
+  A server that proxies encrypted client DNS queries to a resolution server that
+will be able to decrypt the query (the Oblivious Target). Oblivious DoH servers
+can function as proxies, but other non-resolver proxy servers could also be used.<a href="#section-2-2.2" class="pilcrow">¶</a>
+</dd>
+<dt id="section-2-2.3">Oblivious Target:</dt>
+<dd id="section-2-2.4">
+  A resolution server that receives encrypted client DNS queries and
+generates encrypted DNS responses transferred via an Oblivious Proxy.<a href="#section-2-2.4" class="pilcrow">¶</a>
+</dd>
+</dl>
+</section>
+</div>
+<div id="deployment-requirements">
+<section id="section-3">
+      <h2 id="name-deployment-requirements">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-deployment-requirements" class="section-name selfRef">Deployment Requirements</a>
+      </h2>
+<p id="section-3-1">Oblivious DoH requires, at a minimum:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<ul>
+<li id="section-3-2.1">Two DoH servers, where one can act as an Oblivious Proxy, and the other can act as an
+Oblivious Target.<a href="#section-3-2.1" class="pilcrow">¶</a>
+</li>
+<li id="section-3-2.2">Public keys for encrypting DNS queries that are passed from a client through a proxy
+to a target (<a href="#publickey" class="xref">Section 6</a>). These keys guarantee that only the intended Oblivious Target
+can decrypt client queries.<a href="#section-3-2.2" class="pilcrow">¶</a>
+</li>
+<li id="section-3-2.3">Client ability to generate random <span>[<a href="#RFC4086" class="xref">RFC4086</a>]</span> one-time-use symmetric keys to encrypt DNS responses. These
+symmetric keys ensure that only the client will be able to decrypt the response from the
+Oblivious Target. They are only used once to prevent the Oblivious Target from tracking
+clients based on keys.<a href="#section-3-2.3" class="pilcrow">¶</a>
+</li>
+</ul>
+<p id="section-3-3">The mechanism for discovering and provisioning the DoH URI Templates and public keys
+is via parameters added to DNS resource records. The mechanism for discovering the public
+key is decribed in <a href="#keydiscovery" class="xref">Section 5</a>. The mechanism for discovering a DoH URI Template is
+described in <span>[<a href="#I-D.pauly-dprive-adaptive-dns-privacy" class="xref">I-D.pauly-dprive-adaptive-dns-privacy</a>]</span>.<a href="#section-3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="http-exchange">
+<section id="section-4">
+      <h2 id="name-http-exchange">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-http-exchange" class="section-name selfRef">HTTP Exchange</a>
+      </h2>
+<p id="section-4-1">Unlike direct resolution, oblivious hostname resolution over DoH involves three parties:<a href="#section-4-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal" id="section-4-2">
+        <li id="section-4-2.1">The Client, which generates queries.<a href="#section-4-2.1" class="pilcrow">¶</a>
+</li>
+<li id="section-4-2.2">The Oblivious Proxy, which is a resolution server that receives encrypted queries from the client
+and passes them on to another resolution server.<a href="#section-4-2.2" class="pilcrow">¶</a>
+</li>
+<li id="section-4-2.3">The Oblivious Target, which is a resolution server that receives proxied queries from the client
+via the Oblivious Proxy.<a href="#section-4-2.3" class="pilcrow">¶</a>
+</li>
 </ol>
-<div id="rfc.figure.1"></div>
-<div id="fig-doh-exchange"></div>
+<span id="name-obvlivious-doh-exchange"></span><div id="fig-doh-exchange">
+<figure id="figure-1">
+        <div class="artwork art-text alignLeft" id="section-4-3.1">
 <pre>
      --- [ Request encrypted with target public key ] --&gt;
 +---------+             +-----------+             +-----------+
@@ -489,18 +1128,47 @@ ul.toc li {
 +---------+             +-----------+             +-----------+
    &lt;-- [ Response encrypted with client symmetric key ] ---
 </pre>
-<p class="figure">Figure 1: Obvlivious DoH Exchange</p>
-<h1 id="rfc.section.4.1">
-<a href="#rfc.section.4.1">4.1.</a> <a href="#oblivious-request" id="oblivious-request">HTTP Request</a>
-</h1>
-<p id="rfc.section.4.1.p.1">Oblivious DoH queries are created by the Client, and sent to the Oblivious Proxy.  Requests to the Oblivious Proxy indicate which DoH server to use as an Oblivious Target by specifying two variables: &#8220;targethost&#8221;, which indicates the host name of the Oblivious Target server, and &#8220;targetpath&#8221;, which indicates the path on which the Oblivious Target&#8217;s DoH server is running. See <a href="#request-example" class="xref">Section 4.2</a> for an example request.</p>
-<p id="rfc.section.4.1.p.2">Oblivious DoH messages have no cache value since both requests and responses are encrypted using ephemeral key material. Clients SHOULD prefer using HTTP methods and headers that will prevent unhelpful cache storage of these exchanges (i.e., preferring POST instead of GET).</p>
-<p id="rfc.section.4.1.p.3">Clients MUST set the HTTP Content-Type header to &#8220;application/oblivious-dns-message&#8221; to indicate that this request is an Oblivious DoH query intended for proxying. Clients also SHOULD set this same value for the HTTP Accept header.</p>
-<p id="rfc.section.4.1.p.4">Upon receiving a request that contains a &#8220;application/oblivious-dns-message&#8221; Content-Type, the DoH server looks for the &#8220;targethost&#8221; and &#8220;targetpath&#8221; variables. If the variables are not present, then it is the target of the query, and it can decrypt the query (<a href="#encryption" class="xref">Section 7</a>).  If the variables are present, then the DoH server is acting as an Oblivious Proxy.  If it is a proxy, it is expected to send the request on to the Oblivious Target using the URI template constructed as &#8220;https://targethost/targetpath&#8221;.</p>
-<h1 id="rfc.section.4.2">
-<a href="#rfc.section.4.2">4.2.</a> <a href="#request-example" id="request-example">HTTP Request Example</a>
-</h1>
-<p id="rfc.section.4.2.p.1">The following example shows how a client requests that an Oblivious Proxy, &#8220;dnsproxy.example.net&#8221;, forwards an encrypted message to &#8220;dnstarget.example.net&#8221;. The URI template for the Oblivious Proxy is &#8220;https://dnsproxy.example.net/dns-query{?targethost,targetpath}&#8221;. The URI template for the Oblivious Target is &#8220;https://dnstarget.example.net/dns-query&#8221;.</p>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-obvlivious-doh-exchange" class="selfRef">Obvlivious DoH Exchange</a>
+        </figcaption></figure>
+</div>
+<div id="oblivious-request">
+<section id="section-4.1">
+        <h3 id="name-http-request">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-http-request" class="section-name selfRef">HTTP Request</a>
+        </h3>
+<p id="section-4.1-1">Oblivious DoH queries are created by the Client, and sent to the Oblivious Proxy.
+Requests to the Oblivious Proxy indicate which DoH server to use as an Oblivious
+Target by specifying two variables: "targethost", which indicates the host name
+of the Oblivious Target server, and "targetpath", which indicates the path on which
+the Oblivious Target's DoH server is running. See <a href="#request-example" class="xref">Section 4.2</a> for an
+example request.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">Oblivious DoH messages have no cache value since both requests and responses are
+encrypted using ephemeral key material. Clients SHOULD prefer using HTTP methods and
+headers that will prevent unhelpful cache storage of these exchanges (i.e., preferring POST
+instead of GET).<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-3">Clients MUST set the HTTP Content-Type header to "application/oblivious-dns-message"
+to indicate that this request is an Oblivious DoH query intended for proxying. Clients also SHOULD
+set this same value for the HTTP Accept header.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">Upon receiving a request that contains a "application/oblivious-dns-message" Content-Type,
+the DoH server looks for the "targethost" and "targetpath" variables. If the variables are not
+present, then it is the target of the query, and it can decrypt the query (<a href="#encryption" class="xref">Section 7</a>).
+If the variables are present, then the DoH server is acting as an Oblivious Proxy.
+If it is a proxy, it is expected to send the request on to the Oblivious
+Target using the URI template constructed as "https://targethost/targetpath".<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="request-example">
+<section id="section-4.2">
+        <h3 id="name-http-request-example">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-http-request-example" class="section-name selfRef">HTTP Request Example</a>
+        </h3>
+<p id="section-4.2-1">The following example shows how a client requests that an Oblivious Proxy, "dnsproxy.example.net",
+forwards an encrypted message to "dnstarget.example.net". The URI template for the Oblivious
+Proxy is "https://dnsproxy.example.net/dns-query{?targethost,targetpath}". The URI template for
+the Oblivious Target is "https://dnstarget.example.net/dns-query".<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-4.2-2">
 <pre>
 :method = POST
 :scheme = https
@@ -512,8 +1180,10 @@ content-type = application/oblivious-dns-message
 content-length = 106
 
 &lt;Bytes containing the encrypted payload for an Oblivious DNS query&gt;
-</pre>
-<p id="rfc.section.4.2.p.2">The Oblivious Proxy then sends the following request on to the Oblivious Target:</p>
+</pre><a href="#section-4.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4.2-3">The Oblivious Proxy then sends the following request on to the Oblivious Target:<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-4.2-4">
 <pre>
 :method = POST
 :scheme = https
@@ -525,33 +1195,63 @@ content-type = application/oblivious-dns-message
 content-length = 106
 
 &lt;Bytes containing the encrypted payload for an Oblivious DNS query&gt;
-</pre>
-<h1 id="rfc.section.4.3">
-<a href="#rfc.section.4.3">4.3.</a> <a href="#oblivious-response" id="oblivious-response">HTTP Response</a>
-</h1>
-<p id="rfc.section.4.3.p.1">The response to an Oblivious DoH query is generated by the Oblivious Target. It MUST set the Content-Type HTTP header to &#8220;application/oblivious-dns-message&#8221; for all successful responses.  The body of the response contains a DNS message that is encrypted with the client&#8217;s symmetric key (<a href="#encryption" class="xref">Section 7</a>).</p>
-<p id="rfc.section.4.3.p.2">All other aspects of the HTTP response and error handling are inherited from standard DoH.</p>
-<h1 id="rfc.section.4.4">
-<a href="#rfc.section.4.4">4.4.</a> <a href="#http-response-example" id="http-response-example">HTTP Response Example</a>
-</h1>
-<p id="rfc.section.4.4.p.1">The following example shows a response that can be sent from an Oblivious Target to a client via an Oblivious Proxy.</p>
+</pre><a href="#section-4.2-4" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="oblivious-response">
+<section id="section-4.3">
+        <h3 id="name-http-response">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-http-response" class="section-name selfRef">HTTP Response</a>
+        </h3>
+<p id="section-4.3-1">The response to an Oblivious DoH query is generated by the Oblivious Target. It MUST set the
+Content-Type HTTP header to "application/oblivious-dns-message" for all successful responses.
+The body of the response contains a DNS message that is encrypted with the client's symmetric key (<a href="#encryption" class="xref">Section 7</a>).<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">All other aspects of the HTTP response and error handling are inherited from standard DoH.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="http-response-example">
+<section id="section-4.4">
+        <h3 id="name-http-response-example">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-http-response-example" class="section-name selfRef">HTTP Response Example</a>
+        </h3>
+<p id="section-4.4-1">The following example shows a response that can be sent from an Oblivious Target
+to a client via an Oblivious Proxy.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-4.4-2">
 <pre>
 :status = 200
 content-type = application/oblivious-dns-message
 content-length = 154
 
 &lt;Bytes containing the encrypted payload for an Oblivious DNS response&gt;
-</pre>
-<h1 id="rfc.section.5">
-<a href="#rfc.section.5">5.</a> <a href="#keydiscovery" id="keydiscovery">Public Key Discovery</a>
-</h1>
-<p id="rfc.section.5.p.1">In order to use a DoH server as an Oblivious Target, the client must know a public key to use for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type (<a href="#I-D.nygren-dnsop-svcb-httpssvc" class="xref">[I-D.nygren-dnsop-svcb-httpssvc]</a>) for a name owned by the server.</p>
-<p id="rfc.section.5.p.2">The Service Binding key name is &#8220;odohkey&#8221; (<a href="#iana" class="xref">Section 9</a>). If present, this key/value pair contains the public key to use when encrypting Oblivious DoH messages that will be targeted at a DoH server. The format of the key is defined in (<a href="#publickey" class="xref">Section 6</a>).</p>
-<p id="rfc.section.5.p.3">Clients MUST only use keys that were retrieved from records protected by DNSSEC <a href="#RFC4033" class="xref">[RFC4033]</a> to encrypt messages to an Oblivious Target.</p>
-<h1 id="rfc.section.6">
-<a href="#rfc.section.6">6.</a> <a href="#publickey" id="publickey">Oblivious DoH Public Key Format</a>
-</h1>
-<p id="rfc.section.6.p.1">An Oblivious DNS public key is a structure encoded, using TLS-style encoding <a href="#RFC8446" class="xref">[RFC8446]</a>, as follows:</p>
+</pre><a href="#section-4.4-2" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="keydiscovery">
+<section id="section-5">
+      <h2 id="name-public-key-discovery">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-public-key-discovery" class="section-name selfRef">Public Key Discovery</a>
+      </h2>
+<p id="section-5-1">In order to use a DoH server as an Oblivious Target, the client must know a public key to use
+for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type
+(<span>[<a href="#I-D.nygren-dnsop-svcb-httpssvc" class="xref">I-D.nygren-dnsop-svcb-httpssvc</a>]</span>) for a name owned by the server.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">The Service Binding key name is "odohkey" (<a href="#iana" class="xref">Section 9</a>). If present, this key/value
+pair contains the public key to use when encrypting Oblivious DoH messages
+that will be targeted at a DoH server. The format of the key is defined in (<a href="#publickey" class="xref">Section 6</a>).<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">Clients MUST only use keys that were retrieved from records protected by DNSSEC <span>[<a href="#RFC4033" class="xref">RFC4033</a>]</span>
+to encrypt messages to an Oblivious Target.<a href="#section-5-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="publickey">
+<section id="section-6">
+      <h2 id="name-oblivious-doh-public-key-fo">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-oblivious-doh-public-key-fo" class="section-name selfRef">Oblivious DoH Public Key Format</a>
+      </h2>
+<p id="section-6-1">An Oblivious DNS public key is a structure encoded, using TLS-style encoding <span>[<a href="#RFC8446" class="xref">RFC8446</a>]</span>, as follows:<a href="#section-6-1" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-6-2">
 <pre>
 struct {
    uint16 kem_id;
@@ -559,50 +1259,80 @@ struct {
    uint16 aead_id;
    opaque public_key&lt;1..2^16-1&gt;;
 } ObliviousDNSKey;
-</pre>
-<p id="rfc.section.6.p.2">It contains the information needed to encrypt a message under ObliviousDNSKey.public_key such that only the owner of the corresponding private key can decrypt the message. The values for ObliviousDNSKey.kem_id, ObliviousDNSKey.kdf_id, and ObliviousDNSKey.aead_id are described in <a href="#I-D.irtf-cfrg-hpke" class="xref">[I-D.irtf-cfrg-hpke]</a> Section 7. For convenience, let Identifier(ObliviousDNSKey) be defined as the SHA256 value of ObliviousDNSKey serialized.</p>
-<h1 id="rfc.section.7">
-<a href="#rfc.section.7">7.</a> <a href="#encryption" id="encryption">Oblivious DoH Message Format</a>
-</h1>
-<p id="rfc.section.7.p.1">There are two types of Oblivious DoH messages: Queries (0x01) and Responses (0x02). Both are encoded as follows:</p>
+</pre><a href="#section-6-2" class="pilcrow">¶</a>
+</div>
+<p id="section-6-3">It contains the information needed to encrypt a message under ObliviousDNSKey.public_key
+such that only the owner of the corresponding private key can decrypt the message. The
+values for ObliviousDNSKey.kem_id, ObliviousDNSKey.kdf_id, and ObliviousDNSKey.aead_id
+are described in <span>[<a href="#I-D.irtf-cfrg-hpke" class="xref">I-D.irtf-cfrg-hpke</a>]</span> Section 7. For convenience, let
+Identifier(ObliviousDNSKey) be defined as the SHA256 value of ObliviousDNSKey serialized.<a href="#section-6-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="encryption">
+<section id="section-7">
+      <h2 id="name-oblivious-doh-message-forma">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-oblivious-doh-message-forma" class="section-name selfRef">Oblivious DoH Message Format</a>
+      </h2>
+<p id="section-7-1">There are two types of Oblivious DoH messages: Queries (0x01) and Responses (0x02). Both
+are encoded as follows:<a href="#section-7-1" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-7-2">
 <pre>
 struct {
    uint8  message_type;
    opaque key_id&lt;0..2^16-1&gt;;
    opaque encrypted_message&lt;1..2^16-1&gt;;
 } ObliviousDNSMessage;
-</pre>
-<p id="rfc.section.7.p.2">ObliviousDNSMessage.message_type = 0x01 for Query messages and ObliviousDNSMessage.message_type = 0x02 for Response messages.  ObliviousDNSMessage.key_id contains the identifier of the corresponding ObliviousDNSKey key.  ObliviousDNSMessage.encrypted_message contains an encrypted message for the Oblivious Target (for Query messages) or client (for Response messages). The following sections describe how these meessage bodies are constructed.</p>
-<h1 id="rfc.section.7.1">
-<a href="#rfc.section.7.1">7.1.</a> <a href="#oblivious-queries" id="oblivious-queries">Oblivious Queries</a>
-</h1>
-<p id="rfc.section.7.1.p.1">Oblivious DoH Query messages must carry the following information:</p>
-<p></p>
-
-<ol>
-<li>A symmetric key under which the DNS response will be encrypted. The AEAD algorithm used for the client&#8217;s response key is the one associated with the server&#8217;s public key.</li>
-<li>A DNS query message which the client wishes to resolve.</li>
-<li>Padding of arbitrary length which MUST contain all zeros.</li>
+</pre><a href="#section-7-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7-3">ObliviousDNSMessage.message_type = 0x01 for Query messages and
+ObliviousDNSMessage.message_type = 0x02 for Response messages.
+ObliviousDNSMessage.key_id contains the identifier of the corresponding ObliviousDNSKey key.
+ObliviousDNSMessage.encrypted_message contains an encrypted message for the Oblivious Target
+(for Query messages) or client (for Response messages). The following sections describe how
+these meessage bodies are constructed.<a href="#section-7-3" class="pilcrow">¶</a></p>
+<div id="oblivious-queries">
+<section id="section-7.1">
+        <h3 id="name-oblivious-queries">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-oblivious-queries" class="section-name selfRef">Oblivious Queries</a>
+        </h3>
+<p id="section-7.1-1">Oblivious DoH Query messages must carry the following information:<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal" id="section-7.1-2">
+          <li id="section-7.1-2.1">A symmetric key under which the DNS response will be encrypted. The AEAD algorithm
+used for the client's response key is the one associated with the server's public key.<a href="#section-7.1-2.1" class="pilcrow">¶</a>
+</li>
+<li id="section-7.1-2.2">A DNS query message which the client wishes to resolve.<a href="#section-7.1-2.2" class="pilcrow">¶</a>
+</li>
+<li id="section-7.1-2.3">Padding of arbitrary length which MUST contain all zeros.<a href="#section-7.1-2.3" class="pilcrow">¶</a>
+</li>
 </ol>
-<p id="rfc.section.7.1.p.3">The key and message are encoded using the following structure:</p>
+<p id="section-7.1-3">The key and message are encoded using the following structure:<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-7.1-4">
 <pre>
 struct {
    opaque dns_message&lt;1..2^16-1&gt;;
    opaque response_seed[32];
    opaque padding&lt;0..2^16-1&gt;;
 } ObliviousDNSQueryBody;
-</pre>
-<p id="rfc.section.7.1.p.4">Let M be a DNS message a client wishes to protect with Oblivious DoH. When sending an Oblivious DoH Query for resolving M to an Oblivious Target with ObliviousDNSKey key pk, a client does the following:</p>
-<p></p>
-
-<ol>
-<li>Generate a random response seed of length 32 octets according to the guidelines in <a href="#RFC4086" class="xref">[RFC4086]</a>.</li>
-<li>Create an ObliviousDNSQueryBody structure, carrying the message M, response_seed, and padding, to produce Q_plain.</li>
-<li>Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.</li>
-<li>Compute the encrypted message as Q_encrypted = encrypt_query_body(pkR, key_id, Q_plain).  key_id is defined as Identifier(pk).</li>
-<li>Output a ObliviousDNSMessage message Q where Q.message_type = 0x01, Q.key_id carries Identifier(pk), and Q.encrypted_message = Q_encrypted.</li>
+</pre><a href="#section-7.1-4" class="pilcrow">¶</a>
+</div>
+<p id="section-7.1-5">Let M be a DNS message a client wishes to protect with Oblivious DoH. When sending an Oblivious DoH Query
+for resolving M to an Oblivious Target with ObliviousDNSKey key pk, a client does the following:<a href="#section-7.1-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal" id="section-7.1-6">
+          <li id="section-7.1-6.1">Generate a random response seed of length 32 octets according to the guidelines in <span>[<a href="#RFC4086" class="xref">RFC4086</a>]</span>.<a href="#section-7.1-6.1" class="pilcrow">¶</a>
+</li>
+<li id="section-7.1-6.2">Create an ObliviousDNSQueryBody structure, carrying the message M, response_seed, and padding, to produce Q_plain.<a href="#section-7.1-6.2" class="pilcrow">¶</a>
+</li>
+<li id="section-7.1-6.3">Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.<a href="#section-7.1-6.3" class="pilcrow">¶</a>
+</li>
+<li id="section-7.1-6.4">Compute the encrypted message as Q_encrypted = encrypt_query_body(pkR, key_id, Q_plain).
+key_id is defined as Identifier(pk).<a href="#section-7.1-6.4" class="pilcrow">¶</a>
+</li>
+<li id="section-7.1-6.5">Output a ObliviousDNSMessage message Q where Q.message_type = 0x01,
+Q.key_id carries Identifier(pk), and Q.encrypted_message = Q_encrypted.<a href="#section-7.1-6.5" class="pilcrow">¶</a>
+</li>
 </ol>
-<p id="rfc.section.7.1.p.6">The client then sends Q to the Oblivious Proxy according to <a href="#oblivious-request" class="xref">Section 4.1</a>.</p>
+<p id="section-7.1-7">The client then sends Q to the Oblivious Proxy according to <a href="#oblivious-request" class="xref">Section 4.1</a>.<a href="#section-7.1-7" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-7.1-8">
 <pre>
 def encrypt_query_body(pkR, key_id, Q_plain):
   enc, context = SetupBaseI(pkR, "odns-query")
@@ -610,36 +1340,62 @@ def encrypt_query_body(pkR, key_id, Q_plain):
   ct = context.Seal(aad, Q_plain)
   Q_encrypted = enc || ct
   return Q_encrypted
-</pre>
-<h1 id="rfc.section.7.2">
-<a href="#rfc.section.7.2">7.2.</a> <a href="#oblivious-responses" id="oblivious-responses">Oblivious Responses</a>
-</h1>
-<p id="rfc.section.7.2.p.1">An Oblivious DoH Response message carries the DNS response (dns_message) along with padding.  This message is encrypted with the client&#8217;s chosen response key.</p>
+</pre><a href="#section-7.1-8" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="oblivious-responses">
+<section id="section-7.2">
+        <h3 id="name-oblivious-responses">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-oblivious-responses" class="section-name selfRef">Oblivious Responses</a>
+        </h3>
+<p id="section-7.2-1">An Oblivious DoH Response message carries the DNS response (dns_message) along with padding.
+This message is encrypted with the client's chosen response key.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-7.2-2">
 <pre>
 struct {
    opaque dns_message&lt;1..2^16-1&gt;;
    opaque padding&lt;0..2^16-1&gt;;
 } ObliviousDNSResponseBody;
-</pre>
-<p id="rfc.section.7.2.p.2">Targets that receive a Query message Q decrypt and process it as follows:</p>
-<p></p>
-
-<ol>
-<li>Look up the ObliviousDNSKey according to Q.key_id. If no such key exists, the Target MAY discard the query. Otherwise, let skR be the private key corresponding to this public key, or one chosen for trial decryption, and pk be the corresponding ObliviousDNSKey.</li>
-<li>Compute Q_plain, error = decrypt_query_body(skR, Q.key_id, Q.encrypted_message).</li>
-<li>If no error was returned, and Q_plain.padding is valid (all zeros), resolve Q_plain.dns_message as needed, yielding a DNS message M.</li>
-<li>Create an ObliviousDNSResponseBody structure, carrying the message M and padding, to produce R_plain.</li>
-<li>Compute akey, anonce = derive_keys(Q_plain). (See definition for derive_keys below. Hash, Expand, Extract, Nn, and Nk are functions and parameters bound to the target&#8217;s HPKE public key.)</li>
-<li>Compute R_encrypted = encrypt_response_body(R_plain, akey, anonce). (See definition for encrypt_response_body below. The key_id field used for encryption is empty, yielding 0x0000 as part of the AAD.)</li>
-<li>Output a ObliviousDNSMessage message R where R.message_type = 0x02, R.key_id = nil, and R.encrypted_message = R_encrypted.</li>
+</pre><a href="#section-7.2-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2-3">Targets that receive a Query message Q decrypt and process it as follows:<a href="#section-7.2-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal" id="section-7.2-4">
+          <li id="section-7.2-4.1">Look up the ObliviousDNSKey according to Q.key_id. If no such key exists,
+the Target MAY discard the query. Otherwise, let skR be the private key
+corresponding to this public key, or one chosen for trial decryption, and pk
+be the corresponding ObliviousDNSKey.<a href="#section-7.2-4.1" class="pilcrow">¶</a>
+</li>
+<li id="section-7.2-4.2">Compute Q_plain, error = decrypt_query_body(skR, Q.key_id, Q.encrypted_message).<a href="#section-7.2-4.2" class="pilcrow">¶</a>
+</li>
+<li id="section-7.2-4.3">If no error was returned, and Q_plain.padding is valid (all zeros), resolve
+Q_plain.dns_message as needed, yielding a DNS message M.<a href="#section-7.2-4.3" class="pilcrow">¶</a>
+</li>
+<li id="section-7.2-4.4">Create an ObliviousDNSResponseBody structure, carrying the message M and padding,
+to produce R_plain.<a href="#section-7.2-4.4" class="pilcrow">¶</a>
+</li>
+<li id="section-7.2-4.5">Compute akey, anonce = derive_keys(Q_plain). (See definition for
+derive_keys below. Hash, Expand, Extract, Nn, and Nk are functions and parameters
+bound to the target's HPKE public key.)<a href="#section-7.2-4.5" class="pilcrow">¶</a>
+</li>
+<li id="section-7.2-4.6">Compute R_encrypted = encrypt_response_body(R_plain, akey, anonce). (See definition
+for encrypt_response_body below. The key_id field used for encryption is empty,
+yielding 0x0000 as part of the AAD.)<a href="#section-7.2-4.6" class="pilcrow">¶</a>
+</li>
+<li id="section-7.2-4.7">Output a ObliviousDNSMessage message R where R.message_type = 0x02,
+R.key_id = nil, and R.encrypted_message = R_encrypted.<a href="#section-7.2-4.7" class="pilcrow">¶</a>
+</li>
 </ol>
+<div class="artwork art-text alignLeft" id="section-7.2-5">
 <pre>
 def derive_keys(Q_plain):
   context = Hash(Q_plain.dns_message)
   key = Expand(Q_plain.response_seed, concat("odoh key", context), Nk)
   nonce = Expand(Q_plain.response_seed, concat("odoh nonce", context), Nn)
   return key, nonce
-</pre>
+</pre><a href="#section-7.2-5" class="pilcrow">¶</a>
+</div>
+<div class="artwork art-text alignLeft" id="section-7.2-6">
 <pre>
 def decrypt_query_body(skR, key_id, Q_encrypted):
   enc || ct = Q_encrypted
@@ -647,237 +1403,314 @@ def decrypt_query_body(skR, key_id, Q_encrypted):
   aad = 0x01 || key_id
   Q_plain, error = context.Open(aad, ct)
   return Q_plain, error
-</pre>
+</pre><a href="#section-7.2-6" class="pilcrow">¶</a>
+</div>
+<div class="artwork art-text alignLeft" id="section-7.2-7">
 <pre>
 def encrypt_response_body(R_plain, akey, anonce):
   aad = 0x02 || 0x0000 // 0x0000 represents a 0-length KeyId
   R_encrypted = Seal(akey, anonce, aad, R_plain)
   return R_encrypted
-</pre>
-<p id="rfc.section.7.2.p.4">The Target then sends R to the Proxy according to <a href="#oblivious-response" class="xref">Section 4.3</a>.</p>
-<p id="rfc.section.7.2.p.5">The Proxy forwards the message R without modification back to the client as the HTTP response to the client&#8217;s original HTTP request.</p>
-<p id="rfc.section.7.2.p.6">Once the client receives the response, it can use its known response_seed to derive the decryption key and nonce, decrypt R.encrypted_message using decrypt_response_body (defined below), and produce R_plain. Clients MUST validate R_plain.padding (as all zeros) before using R_plain.dns_message.</p>
+</pre><a href="#section-7.2-7" class="pilcrow">¶</a>
+</div>
+<p id="section-7.2-8">The Target then sends R to the Proxy according to <a href="#oblivious-response" class="xref">Section 4.3</a>.<a href="#section-7.2-8" class="pilcrow">¶</a></p>
+<p id="section-7.2-9">The Proxy forwards the message R without modification back to the client as
+the HTTP response to the client's original HTTP request.<a href="#section-7.2-9" class="pilcrow">¶</a></p>
+<p id="section-7.2-10">Once the client receives the response, it can use its known response_seed
+to derive the decryption key and nonce, decrypt R.encrypted_message using
+decrypt_response_body (defined below), and produce R_plain. Clients MUST
+validate R_plain.padding (as all zeros) before using R_plain.dns_message.<a href="#section-7.2-10" class="pilcrow">¶</a></p>
+<div class="artwork art-text alignLeft" id="section-7.2-11">
 <pre>
 def decrypt_response_body(R_encrypted):
   aad = 0x02 || 0x0000
   R_plain = Open(response_key, 0^Nn, aad, R_encrypted)
   return R_plain
-</pre>
-<h1 id="rfc.section.8">
-<a href="#rfc.section.8">8.</a> <a href="#security-considerations" id="security-considerations">Security Considerations</a>
-</h1>
-<p id="rfc.section.8.p.1">DISCLAIMER: this is a work in progress draft and has not yet seen significant security analysis.</p>
-<p id="rfc.section.8.p.2">Oblivious DoH aims to keep knowledge of the true query origin and its contents known to only clients. In particular, it assumes a Dolev-Yao style attacker which can observe all client queries, including those forwarded by oblivious proxies, and does not collude with target resolvers. (Indeed, if a target colludes with the network attacker, then said attacker can learn the true query origin and its contents.) Oblivious DoH aims to achieve the following confidentiality goals in the presence of this attacker:</p>
-<p></p>
-
-<ol>
-<li>Queries and answers are known only to clients and targets in possession of the corresponding response key and HPKE keying material. In particular, proxies know the origin and destination of an oblivious query, yet do not know the plaintext query. Likewise, targets know only the oblivious query origin, i.e., the proxy, and the plaintext query. Only the client knows both the plaintext query contents and destination.</li>
-<li>Target resolvers cannot link queries from the same client in the absence of unique per-client keys.</li>
-</ol>
-<p id="rfc.section.8.p.4">Traffic analysis mitigations are outside the scope of this document. In particular, this document does not recommend padding lengths for ObliviousDNSQueryBody and ObliviousDNSResponseBody messages.  Implementations SHOULD follow the guidance for choosing padding length in <a href="#RFC8467" class="xref">[RFC8467]</a>.</p>
-<p id="rfc.section.8.p.5">Oblivious DoH security does not depend on proxy and target indistinguishability. Specifically, an on-path attacker could determine whether a connection a specific endpoint is used for oblivious or direct DoH queries. However, this has no effect on confidentiality goals listed above.</p>
-<h1 id="rfc.section.8.1">
-<a href="#rfc.section.8.1">8.1.</a> <a href="#denial-of-service" id="denial-of-service">Denial of Service</a>
-</h1>
-<p id="rfc.section.8.1.p.1">Malicious clients (or proxies) may send bogus Oblivious DoH queries to targets as a Denial-of-Service (DoS) attack. Target servers may throttle processing requests if such an event occurs.</p>
-<p id="rfc.section.8.1.p.2">Malicious targets or proxies may send bogus answers in response to Oblivious DoH queries. Response decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to stop using one or both of these servers in the event of such failure.</p>
-<h1 id="rfc.section.9">
-<a href="#rfc.section.9">9.</a> <a href="#iana" id="iana">IANA Considerations</a>
-</h1>
-<h1 id="rfc.section.9.1">
-<a href="#rfc.section.9.1">9.1.</a> <a href="#oblivious-doh-message-media-type" id="oblivious-doh-message-media-type">Oblivious DoH Message Media Type</a>
-</h1>
-<p id="rfc.section.9.1.p.1">This document registers a new media type, &#8220;application/oblivious-dns-message&#8221;.</p>
-<p id="rfc.section.9.1.p.2">Type name: application</p>
-<p id="rfc.section.9.1.p.3">Subtype name: oblivious-dns-message</p>
-<p id="rfc.section.9.1.p.4">Required parameters: N/A</p>
-<p id="rfc.section.9.1.p.5">Optional parameters: N/A</p>
-<p id="rfc.section.9.1.p.6">Encoding considerations: This is a binary format, containing encrypted DNS requests and responses, as defined in this document.</p>
-<p id="rfc.section.9.1.p.7">Security considerations: See this document. The content is an encrypted DNS message, and not executable code.</p>
-<p id="rfc.section.9.1.p.8">Interoperability considerations: This document specifies format of conforming messages and the interpretation thereof.</p>
-<p id="rfc.section.9.1.p.9">Published specification: This document.</p>
-<p id="rfc.section.9.1.p.10">Applications that use this media type: This media type is intended to be used by clients wishing to hide their DNS queries when using DNS over HTTPS.</p>
-<p id="rfc.section.9.1.p.11">Additional information: None</p>
-<p id="rfc.section.9.1.p.12">Person and email address to contact for further information: See Authors&#8217; Addresses section</p>
-<p id="rfc.section.9.1.p.13">Intended usage: COMMON</p>
-<p id="rfc.section.9.1.p.14">Restrictions on usage: None</p>
-<p id="rfc.section.9.1.p.15">Author: IETF</p>
-<p id="rfc.section.9.1.p.16">Change controller: IETF</p>
-<h1 id="rfc.section.9.2">
-<a href="#rfc.section.9.2">9.2.</a> <a href="#oblivious-doh-public-key-dns-parameter" id="oblivious-doh-public-key-dns-parameter">Oblivious DoH Public Key DNS Parameter</a>
-</h1>
-<p id="rfc.section.9.2.p.1">This document defines one new key to be added to the Service Binding (SVCB) Parameter Registry <a href="#I-D.nygren-dnsop-svcb-httpssvc" class="xref">[I-D.nygren-dnsop-svcb-httpssvc]</a>.</p>
-<p></p>
-
-<dl>
-<dt>Name:</dt>
-<dd style="margin-left: 8">odohkey</dd>
-<dt>SvcParamKey:</dt>
-<dd style="margin-left: 8">TBD</dd>
-<dt>Meaning:</dt>
-<dd style="margin-left: 8">Public key used to encrypt messages in Oblivious DoH</dd>
-<dt>Reference:</dt>
-<dd style="margin-left: 8">This document.</dd>
-</dl>
-<h1 id="rfc.section.10">
-<a href="#rfc.section.10">10.</a> <a href="#acknowledgments" id="acknowledgments">Acknowledgments</a>
-</h1>
-<p id="rfc.section.10.p.1">This work is inspired by Oblivious DNS <a href="#I-D.annee-dprive-oblivious-dns" class="xref">[I-D.annee-dprive-oblivious-dns]</a>. Thanks to all of the authors of that document. Thanks to Frederic Jacobs, Elliot Briggs, Paul Schmitt, Brian Swander, and Tommy Jensen for the feedback and input.</p>
-<h1 id="rfc.references">
-<a href="#rfc.references">11.</a> References</h1>
-<h1 id="rfc.references.1">
-<a href="#rfc.references.1">11.1.</a> Normative References</h1>
-<table><tbody>
-<tr>
-<td class="reference"><b id="I-D.irtf-cfrg-hpke">[I-D.irtf-cfrg-hpke]</b></td>
-<td class="top">
-<a>Barnes, R.</a> and <a>K. Bhargavan</a>, "<a href="https://tools.ietf.org/html/draft-irtf-cfrg-hpke-00">Hybrid Public Key Encryption</a>", Internet-Draft draft-irtf-cfrg-hpke-00, July 2019.</td>
-</tr>
-<tr>
-<td class="reference"><b id="I-D.nygren-dnsop-svcb-httpssvc">[I-D.nygren-dnsop-svcb-httpssvc]</b></td>
-<td class="top">
-<a>Schwartz, B.</a>, <a>Bishop, M.</a> and <a>E. Nygren</a>, "<a href="https://tools.ietf.org/html/draft-nygren-dnsop-svcb-httpssvc-00">Service binding and parameter specification via the DNS (DNS SVCB and HTTPSSVC)</a>", Internet-Draft draft-nygren-dnsop-svcb-httpssvc-00, September 2019.</td>
-</tr>
-<tr>
-<td class="reference"><b id="I-D.pauly-dprive-adaptive-dns-privacy">[I-D.pauly-dprive-adaptive-dns-privacy]</b></td>
-<td class="top">
-<a>Kinnear, E.</a>, <a>Pauly, T.</a>, <a>Wood, C.</a> and <a>P. McManus</a>, "<a href="https://tools.ietf.org/html/draft-pauly-dprive-adaptive-dns-privacy-00">Adaptive DNS: Improving Privacy of Name Resolution</a>", Internet-Draft draft-pauly-dprive-adaptive-dns-privacy-00, October 2019.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC4033">[RFC4033]</b></td>
-<td class="top">
-<a>Arends, R.</a>, <a>Austein, R.</a>, <a>Larson, M.</a>, <a>Massey, D.</a> and <a>S. Rose</a>, "<a href="https://tools.ietf.org/html/rfc4033">DNS Security Introduction and Requirements</a>", RFC 4033, DOI 10.17487/RFC4033, March 2005.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC4086">[RFC4086]</b></td>
-<td class="top">
-<a>Eastlake 3rd, D.</a>, <a>Schiller, J.</a> and <a>S. Crocker</a>, "<a href="https://tools.ietf.org/html/rfc4086">Randomness Requirements for Security</a>", BCP 106, RFC 4086, DOI 10.17487/RFC4086, June 2005.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC8446">[RFC8446]</b></td>
-<td class="top">
-<a>Rescorla, E.</a>, "<a href="https://tools.ietf.org/html/rfc8446">The Transport Layer Security (TLS) Protocol Version 1.3</a>", RFC 8446, DOI 10.17487/RFC8446, August 2018.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC8467">[RFC8467]</b></td>
-<td class="top">
-<a>Mayrhofer, A.</a>, "<a href="https://tools.ietf.org/html/rfc8467">Padding Policies for Extension Mechanisms for DNS (EDNS(0))</a>", RFC 8467, DOI 10.17487/RFC8467, October 2018.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC8484">[RFC8484]</b></td>
-<td class="top">
-<a>Hoffman, P.</a> and <a>P. McManus</a>, "<a href="https://tools.ietf.org/html/rfc8484">DNS Queries over HTTPS (DoH)</a>", RFC 8484, DOI 10.17487/RFC8484, October 2018.</td>
-</tr>
-</tbody></table>
-<h1 id="rfc.references.2">
-<a href="#rfc.references.2">11.2.</a> Informative References</h1>
-<table><tbody>
-<tr>
-<td class="reference"><b id="I-D.annee-dprive-oblivious-dns">[I-D.annee-dprive-oblivious-dns]</b></td>
-<td class="top">
-<a>Edmundson, A.</a>, <a>Schmitt, P.</a>, <a>Feamster, N.</a> and <a>A. Mankin</a>, "<a href="https://tools.ietf.org/html/draft-annee-dprive-oblivious-dns-00">Oblivious DNS - Strong Privacy for DNS Queries</a>", Internet-Draft draft-annee-dprive-oblivious-dns-00, July 2018.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC2119">[RFC2119]</b></td>
-<td class="top">
-<a>Bradner, S.</a>, "<a href="https://tools.ietf.org/html/rfc2119">Key words for use in RFCs to Indicate Requirement Levels</a>", BCP 14, RFC 2119, DOI 10.17487/RFC2119, March 1997.</td>
-</tr>
-<tr>
-<td class="reference"><b id="RFC8174">[RFC8174]</b></td>
-<td class="top">
-<a>Leiba, B.</a>, "<a href="https://tools.ietf.org/html/rfc8174">Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</a>", BCP 14, RFC 8174, DOI 10.17487/RFC8174, May 2017.</td>
-</tr>
-</tbody></table>
-<h1 id="rfc.authors"><a href="#rfc.authors">Authors' Addresses</a></h1>
-<div class="avoidbreak">
-  <address class="vcard">
-	<span class="vcardline">
-	  <span class="fn">Eric Kinnear</span> 
-	  <span class="n hidden">
-		<span class="family-name">Kinnear</span>
-	  </span>
-	</span>
-	<span class="org vcardline">Apple Inc.</span>
-	<span class="adr">
-	  <span class="vcardline">One Apple Park Way</span>
-
-	  <span class="vcardline">
-		<span class="locality">Cupertino, California 95014</span>,  
-		<span class="region"></span>
-		<span class="code"></span>
-	  </span>
-	  <span class="country-name vcardline">United States of America</span>
-	</span>
-	<span class="vcardline">EMail: <a href="mailto:ekinnear@apple.com">ekinnear@apple.com</a></span>
-
-  </address>
-</div><div class="avoidbreak">
-  <address class="vcard">
-	<span class="vcardline">
-	  <span class="fn">Patrick McManus</span> 
-	  <span class="n hidden">
-		<span class="family-name">McManus</span>
-	  </span>
-	</span>
-	<span class="org vcardline">Fastly</span>
-	<span class="adr">
-	  
-	  <span class="vcardline">
-		<span class="locality"></span> 
-		<span class="region"></span>
-		<span class="code"></span>
-	  </span>
-	  <span class="country-name vcardline"></span>
-	</span>
-	<span class="vcardline">EMail: <a href="mailto:mcmanus@ducksong.com">mcmanus@ducksong.com</a></span>
-
-  </address>
-</div><div class="avoidbreak">
-  <address class="vcard">
-	<span class="vcardline">
-	  <span class="fn">Tommy Pauly</span> 
-	  <span class="n hidden">
-		<span class="family-name">Pauly</span>
-	  </span>
-	</span>
-	<span class="org vcardline">Apple Inc.</span>
-	<span class="adr">
-	  <span class="vcardline">One Apple Park Way</span>
-
-	  <span class="vcardline">
-		<span class="locality">Cupertino, California 95014</span>,  
-		<span class="region"></span>
-		<span class="code"></span>
-	  </span>
-	  <span class="country-name vcardline">United States of America</span>
-	</span>
-	<span class="vcardline">EMail: <a href="mailto:tpauly@apple.com">tpauly@apple.com</a></span>
-
-  </address>
-</div><div class="avoidbreak">
-  <address class="vcard">
-	<span class="vcardline">
-	  <span class="fn">Chris Wood</span> 
-	  <span class="n hidden">
-		<span class="family-name">Wood</span>
-	  </span>
-	</span>
-	<span class="org vcardline">Apple Inc.</span>
-	<span class="adr">
-	  <span class="vcardline">One Apple Park Way</span>
-
-	  <span class="vcardline">
-		<span class="locality">Cupertino, California 95014</span>,  
-		<span class="region"></span>
-		<span class="code"></span>
-	  </span>
-	  <span class="country-name vcardline">United States of America</span>
-	</span>
-	<span class="vcardline">EMail: <a href="mailto:cawood@apple.com">cawood@apple.com</a></span>
-
-  </address>
+</pre><a href="#section-7.2-11" class="pilcrow">¶</a>
 </div>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-8">
+      <h2 id="name-security-considerations">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-8-1">DISCLAIMER: this is a work in progress draft and has not yet seen significant security analysis.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">Oblivious DoH aims to keep knowledge of the true query origin and its contents known to only
+clients. In particular, it assumes a Dolev-Yao style attacker which can observe all client queries,
+including those forwarded by oblivious proxies, and does not collude with target resolvers. (Indeed,
+if a target colludes with the network attacker, then said attacker can learn the true query origin
+and its contents.) Oblivious DoH aims to achieve the following confidentiality goals in the presence
+of this attacker:<a href="#section-8-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal" id="section-8-3">
+        <li id="section-8-3.1">Queries and answers are known only to clients and targets in possession of the corresponding
+response key and HPKE keying material. In particular, proxies know the origin and destination
+of an oblivious query, yet do not know the plaintext query. Likewise, targets know only the oblivious
+query origin, i.e., the proxy, and the plaintext query. Only the client knows both the plaintext
+query contents and destination.<a href="#section-8-3.1" class="pilcrow">¶</a>
+</li>
+<li id="section-8-3.2">Target resolvers cannot link queries from the same client in the absence of unique per-client
+keys.<a href="#section-8-3.2" class="pilcrow">¶</a>
+</li>
+</ol>
+<p id="section-8-4">Traffic analysis mitigations are outside the scope of this document. In particular, this document
+does not recommend padding lengths for ObliviousDNSQueryBody and ObliviousDNSResponseBody messages.
+Implementations SHOULD follow the guidance for choosing padding length in <span>[<a href="#RFC8467" class="xref">RFC8467</a>]</span>.<a href="#section-8-4" class="pilcrow">¶</a></p>
+<p id="section-8-5">Oblivious DoH security does not depend on proxy and target indistinguishability. Specifically, an
+on-path attacker could determine whether a connection a specific endpoint is used for oblivious or
+direct DoH queries. However, this has no effect on confidentiality goals listed above.<a href="#section-8-5" class="pilcrow">¶</a></p>
+<div id="denial-of-service">
+<section id="section-8.1">
+        <h3 id="name-denial-of-service">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-denial-of-service" class="section-name selfRef">Denial of Service</a>
+        </h3>
+<p id="section-8.1-1">Malicious clients (or proxies) may send bogus Oblivious DoH queries to targets as a Denial-of-Service
+(DoS) attack. Target servers may throttle processing requests if such an event occurs.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">Malicious targets or proxies may send bogus answers in response to Oblivious DoH queries. Response
+decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to stop using
+one or both of these servers in the event of such failure.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="general-proxy-services">
+<section id="section-8.2">
+        <h3 id="name-general-proxy-services">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-general-proxy-services" class="section-name selfRef">General Proxy Services</a>
+        </h3>
+<p id="section-8.2-1">Using DoH over anonymizing proxy services such as Tor would also achieve the desired goal of separating 
+query origins from their contents. However, there are several reasons why such systems are undesirable
+in comparison Oblivious DoH:<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal" id="section-8.2-2">
+          <li id="section-8.2-2.1">Tor is also meant as a generic connection-level anonymity system, and thus seems overly complex for 
+the purpose of proxying individual DoH queries. In contrast, Oblivious DoH is a lightweight extension 
+to standard DoH that can be enabled as a default mode for users which need increased privacy.<a href="#section-8.2-2.1" class="pilcrow">¶</a>
+</li>
+<li id="section-8.2-2.2">As a one-hop proxy, Oblivious DoH encourages connection-less proxies to mitigate client query correlation
+with few round-trips. In contrast, multi-hop systems such as Tor often run secure connections (TLS) end-to-end,
+which means that DoH servers could track queries over the same connection. Using a fresh DoH connection
+per query would incur a non-negligible penalty in connection setup time.<a href="#section-8.2-2.2" class="pilcrow">¶</a>
+</li>
+</ol>
+</section>
+</div>
+</section>
+</div>
+<div id="iana">
+<section id="section-9">
+      <h2 id="name-iana-considerations">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<div id="oblivious-doh-message-media-type">
+<section id="section-9.1">
+        <h3 id="name-oblivious-doh-message-media">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-oblivious-doh-message-media" class="section-name selfRef">Oblivious DoH Message Media Type</a>
+        </h3>
+<p id="section-9.1-1">This document registers a new media type, "application/oblivious-dns-message".<a href="#section-9.1-1" class="pilcrow">¶</a></p>
+<p id="section-9.1-2">Type name: application<a href="#section-9.1-2" class="pilcrow">¶</a></p>
+<p id="section-9.1-3">Subtype name: oblivious-dns-message<a href="#section-9.1-3" class="pilcrow">¶</a></p>
+<p id="section-9.1-4">Required parameters: N/A<a href="#section-9.1-4" class="pilcrow">¶</a></p>
+<p id="section-9.1-5">Optional parameters: N/A<a href="#section-9.1-5" class="pilcrow">¶</a></p>
+<p id="section-9.1-6">Encoding considerations: This is a binary format, containing encrypted DNS
+requests and responses, as defined in this document.<a href="#section-9.1-6" class="pilcrow">¶</a></p>
+<p id="section-9.1-7">Security considerations: See this document. The content is an encrypted DNS
+message, and not executable code.<a href="#section-9.1-7" class="pilcrow">¶</a></p>
+<p id="section-9.1-8">Interoperability considerations: This document specifies format of
+conforming messages and the interpretation thereof.<a href="#section-9.1-8" class="pilcrow">¶</a></p>
+<p id="section-9.1-9">Published specification: This document.<a href="#section-9.1-9" class="pilcrow">¶</a></p>
+<p id="section-9.1-10">Applications that use this media type: This media type is intended
+to be used by clients wishing to hide their DNS queries when
+using DNS over HTTPS.<a href="#section-9.1-10" class="pilcrow">¶</a></p>
+<p id="section-9.1-11">Additional information: None<a href="#section-9.1-11" class="pilcrow">¶</a></p>
+<p id="section-9.1-12">Person and email address to contact for further information: See
+Authors' Addresses section<a href="#section-9.1-12" class="pilcrow">¶</a></p>
+<p id="section-9.1-13">Intended usage: COMMON<a href="#section-9.1-13" class="pilcrow">¶</a></p>
+<p id="section-9.1-14">Restrictions on usage: None<a href="#section-9.1-14" class="pilcrow">¶</a></p>
+<p id="section-9.1-15">Author: IETF<a href="#section-9.1-15" class="pilcrow">¶</a></p>
+<p id="section-9.1-16">Change controller: IETF<a href="#section-9.1-16" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="oblivious-doh-public-key-dns-parameter">
+<section id="section-9.2">
+        <h3 id="name-oblivious-doh-public-key-dn">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-oblivious-doh-public-key-dn" class="section-name selfRef">Oblivious DoH Public Key DNS Parameter</a>
+        </h3>
+<p id="section-9.2-1">This document defines one new key to be added to the Service Binding (SVCB) Parameter Registry
+<span>[<a href="#I-D.nygren-dnsop-svcb-httpssvc" class="xref">I-D.nygren-dnsop-svcb-httpssvc</a>]</span>.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
+<dl class="dlParallel" id="section-9.2-2">
+          <dt id="section-9.2-2.1">Name:</dt>
+<dd id="section-9.2-2.2">
+  odohkey<a href="#section-9.2-2.2" class="pilcrow">¶</a>
+</dd>
+<dt id="section-9.2-2.3">SvcParamKey:</dt>
+<dd id="section-9.2-2.4">
+  TBD<a href="#section-9.2-2.4" class="pilcrow">¶</a>
+</dd>
+<dt id="section-9.2-2.5">Meaning:</dt>
+<dd id="section-9.2-2.6">
+  Public key used to encrypt messages in Oblivious DoH<a href="#section-9.2-2.6" class="pilcrow">¶</a>
+</dd>
+<dt id="section-9.2-2.7">Reference:</dt>
+<dd id="section-9.2-2.8">
+  This document.<a href="#section-9.2-2.8" class="pilcrow">¶</a>
+</dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="section-10">
+      <h2 id="name-acknowledgments">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="section-10-1">This work is inspired by Oblivious DNS <span>[<a href="#I-D.annee-dprive-oblivious-dns" class="xref">I-D.annee-dprive-oblivious-dns</a>]</span>. Thanks to all of the
+authors of that document. Thanks to Frederic Jacobs, Elliot Briggs, Paul Schmitt, Brian Swander, and
+Tommy Jensen for the feedback and input.<a href="#section-10-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-11">
+      <h2 id="name-references">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-11.1">
+        <h3 id="name-normative-references">
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.irtf-cfrg-hpke">[I-D.irtf-cfrg-hpke]</dt>
+<dd>
+<span class="refAuthor">Barnes, R.</span><span class="refAuthor"> and K. Bhargavan</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-hpke-02</span>, <time datetime="2019-11-04">4 November 2019</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-irtf-cfrg-hpke-02.txt">http://www.ietf.org/internet-drafts/draft-irtf-cfrg-hpke-02.txt</a>&gt;</span>. </dd>
+<dt id="I-D.nygren-dnsop-svcb-httpssvc">[I-D.nygren-dnsop-svcb-httpssvc]</dt>
+<dd>
+<span class="refAuthor">Schwartz, B.</span><span class="refAuthor">, Bishop, M.</span><span class="refAuthor">, and E. Nygren</span>, <span class="refTitle">"Service binding and parameter specification via the DNS (DNS SVCB and HTTPSSVC)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-nygren-dnsop-svcb-httpssvc-00</span>, <time datetime="2019-09-23">23 September 2019</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-nygren-dnsop-svcb-httpssvc-00.txt">http://www.ietf.org/internet-drafts/draft-nygren-dnsop-svcb-httpssvc-00.txt</a>&gt;</span>. </dd>
+<dt id="I-D.pauly-dprive-adaptive-dns-privacy">[I-D.pauly-dprive-adaptive-dns-privacy]</dt>
+<dd>
+<span class="refAuthor">Kinnear, E.</span><span class="refAuthor">, Pauly, T.</span><span class="refAuthor">, Wood, C.</span><span class="refAuthor">, and P. McManus</span>, <span class="refTitle">"Adaptive DNS: Improving Privacy of Name Resolution"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-pauly-dprive-adaptive-dns-privacy-01</span>, <time datetime="2019-11-01">1 November 2019</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-pauly-dprive-adaptive-dns-privacy-01.txt">http://www.ietf.org/internet-drafts/draft-pauly-dprive-adaptive-dns-privacy-01.txt</a>&gt;</span>. </dd>
+<dt id="RFC4033">[RFC4033]</dt>
+<dd>
+<span class="refAuthor">Arends, R.</span><span class="refAuthor">, Austein, R.</span><span class="refAuthor">, Larson, M.</span><span class="refAuthor">, Massey, D.</span><span class="refAuthor">, and S. Rose</span>, <span class="refTitle">"DNS Security Introduction and Requirements"</span>, <span class="seriesInfo">RFC 4033</span>, <span class="seriesInfo">DOI 10.17487/RFC4033</span>, <time datetime="2005-03">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4033">https://www.rfc-editor.org/info/rfc4033</a>&gt;</span>. </dd>
+<dt id="RFC4086">[RFC4086]</dt>
+<dd>
+<span class="refAuthor">Eastlake 3rd, D.</span><span class="refAuthor">, Schiller, J.</span><span class="refAuthor">, and S. Crocker</span>, <span class="refTitle">"Randomness Requirements for Security"</span>, <span class="seriesInfo">BCP 106</span>, <span class="seriesInfo">RFC 4086</span>, <span class="seriesInfo">DOI 10.17487/RFC4086</span>, <time datetime="2005-06">June 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4086">https://www.rfc-editor.org/info/rfc4086</a>&gt;</span>. </dd>
+<dt id="RFC8446">[RFC8446]</dt>
+<dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8446">https://www.rfc-editor.org/info/rfc8446</a>&gt;</span>. </dd>
+<dt id="RFC8467">[RFC8467]</dt>
+<dd>
+<span class="refAuthor">Mayrhofer, A.</span>, <span class="refTitle">"Padding Policies for Extension Mechanisms for DNS (EDNS(0))"</span>, <span class="seriesInfo">RFC 8467</span>, <span class="seriesInfo">DOI 10.17487/RFC8467</span>, <time datetime="2018-10">October 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8467">https://www.rfc-editor.org/info/rfc8467</a>&gt;</span>. </dd>
+<dt id="RFC8484">[RFC8484]</dt>
+<dd>
+<span class="refAuthor">Hoffman, P.</span><span class="refAuthor"> and P. McManus</span>, <span class="refTitle">"DNS Queries over HTTPS (DoH)"</span>, <span class="seriesInfo">RFC 8484</span>, <span class="seriesInfo">DOI 10.17487/RFC8484</span>, <time datetime="2018-10">October 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8484">https://www.rfc-editor.org/info/rfc8484</a>&gt;</span>. </dd>
+</dl>
+</section>
+<section id="section-11.2">
+        <h3 id="name-informative-references">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.annee-dprive-oblivious-dns">[I-D.annee-dprive-oblivious-dns]</dt>
+<dd>
+<span class="refAuthor">Edmundson, A.</span><span class="refAuthor">, Schmitt, P.</span><span class="refAuthor">, Feamster, N.</span><span class="refAuthor">, and A. Mankin</span>, <span class="refTitle">"Oblivious DNS - Strong Privacy for DNS Queries"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-annee-dprive-oblivious-dns-00</span>, <time datetime="2018-07-02">2 July 2018</time>, <span>&lt;<a href="http://www.ietf.org/internet-drafts/draft-annee-dprive-oblivious-dns-00.txt">http://www.ietf.org/internet-drafts/draft-annee-dprive-oblivious-dns-00.txt</a>&gt;</span>. </dd>
+<dt id="RFC2119">[RFC2119]</dt>
+<dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dt id="RFC8174">[RFC8174]</dt>
+<dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+</dl>
+</section>
+</section>
+<div id="authors-addresses">
+<section id="section-appendix.a">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Eric Kinnear</span></div>
+<div dir="auto" class="left"><span class="org">Apple Inc.</span></div>
+<div dir="auto" class="left"><span class="street-address">One Apple Park Way</span></div>
+<div dir="auto" class="left">
+<span class="locality">Cupertino, California 95014</span>,  </div>
+<div dir="auto" class="left"><span class="country-name">United States of America</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:ekinnear@apple.com" class="email">ekinnear@apple.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Patrick McManus</span></div>
+<div dir="auto" class="left"><span class="org">Fastly</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:mcmanus@ducksong.com" class="email">mcmanus@ducksong.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Tommy Pauly</span></div>
+<div dir="auto" class="left"><span class="org">Apple Inc.</span></div>
+<div dir="auto" class="left"><span class="street-address">One Apple Park Way</span></div>
+<div dir="auto" class="left">
+<span class="locality">Cupertino, California 95014</span>,  </div>
+<div dir="auto" class="left"><span class="country-name">United States of America</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:tpauly@apple.com" class="email">tpauly@apple.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Christopher A. Wood</span></div>
+<div dir="auto" class="left"><span class="org">Apple Inc.</span></div>
+<div dir="auto" class="left"><span class="street-address">One Apple Park Way</span></div>
+<div dir="auto" class="left">
+<span class="locality">Cupertino, California 95014</span>,  </div>
+<div dir="auto" class="left"><span class="country-name">United States of America</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:cawood@apple.com" class="email">cawood@apple.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>var toc = document.getElementById("toc");
+var tocToggle = toc.querySelector("h2");
+var tocNav = toc.querySelector("nav");
 
+// mobile menu toggle
+tocToggle.onclick = function(event) {
+    if (window.innerWidth < 1024) {
+ var tocNavDisplay = tocNav.currentStyle ? tocNav.currentStyle.display : getComputedStyle(tocNav, null).display;
+ if (tocNavDisplay == "none") {
+     tocNav.style.display = "block";
+ } else {
+     tocNav.style.display = "none";
+ }
+    }
+}
+
+// toc anchor scroll to anchor
+tocNav.addEventListener("click", function (event) {
+    event.preventDefault();
+    if (event.target.nodeName == 'A') {
+ if (window.innerWidth < 1024) {
+     tocNav.style.display = "none";
+ }
+ var href = event.target.getAttribute("href");
+ var anchorId = href.substr(1);
+ var anchor =  document.getElementById(anchorId);
+ anchor.scrollIntoView(true);
+ window.history.pushState("","",href);
+    }
+});
+
+// switch toc mode when window resized
+window.onresize = function () {
+    if (window.innerWidth < 1024) {
+ tocNav.style.display = "none";
+    } else {
+ tocNav.style.display = "block";
+    }
+}
+</script>
 </body>
 </html>
-
