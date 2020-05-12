@@ -151,7 +151,7 @@ See {{local-deployment}} for local deployment considerations.
 # Discovery of DoH Capabilities for Direct Resolvers
 
 Direct Resolvers can advertise a Companion DoH server that offers equivalent services and is controlled 
-by the same entity. To do this, a DNS server MUST return an HTTPSSVC record for the "resolver.arpa"
+by the same entity. To do this, a DNS server returns an HTTPSSVC record for the "resolver.arpa"
 domain with "dohip" set to a valid IP address and the "dohuri" key set to a valid DoH URI 
 template as with the Designated DoH Server HTTPSSVC record. The TLS certificate used with the
 DoH URI MUST have the IP addresses for each of its DNS endpoints, classic or DoH, within the 
@@ -445,6 +445,13 @@ Meaning:
 
 Reference:
 : This document.
+
+## Special Use Domain Name "resolver.arpa"
+
+This document calls for the creation of the "resolver.arpa" SUDN. This will allow resolvers to respond to 
+queries directed at themselves rather than a specific domain name. While this document uses "resolver.arpa"
+to return HTTPSSVC records indicating DoH capability, the name is generic enough to allow future reuse for
+other purposes where the resolver wishes to provide information about itself to the client. 
 
 # Acknowledgments
 
