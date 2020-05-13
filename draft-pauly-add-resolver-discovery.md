@@ -41,6 +41,11 @@ author:
     name: Patrick McManus
     org: Fastly
     email: mcmanus@ducksong.com
+  -
+    ins: T. Jensen
+    name: Tommy Jensen
+    org: Microsoft
+    email: tojens@microsoft.com
 
 --- abstract
 
@@ -157,10 +162,12 @@ template as with the Designated DoH Server HTTPSSVC record. The TLS certificate 
 DoH URI MUST have the IP addresses for each of its DNS endpoints, classic or DoH, within the 
 SubjectAlternativeName field to allow the client to verify ownership.
 
-If the client is configured to query a Direct Resolver, it MUST query that resolver for an SVCB record for the 
-"resolver.arpa" domain. This SHOULD occur before making other queries to avoid leaking queries that could go over
-DoH once the Companion DoH Server is discovered. If an SVCB record is returned, its "dohip" field designates an 
-IP address the client can send DoH queries to in lieu of sending classic DNS queries to the Direct Resolver. The "dohuri" and "odohkey" fields contains the DoH URI similarly to the HTTPSSVC record for a Designated DoH Server. 
+Once a client is configured to query a Direct Resolver, it SHOULD query the resolver for HTTPSSVC records 
+for the "resolver.arpa" domain before making other queries. This will help the client avoid leaking queries that 
+could go over DoH once the Companion DoH Server is discovered. If an SVCB record is returned, its "dohip" field 
+designates an IP address the client can send DoH queries to in lieu of sending classic DNS queries to the Direct 
+Resolver. The "dohuri" and "odohkey" fields contains the DoH URI similarly to the HTTPSSVC record for a Designated 
+DoH Server. 
 
 To validate the Companion DoH Server and the resolver that advertised it are related, the client MUST 
 check the SubjectAlternativeName field of the Companion DoH Server's TLS certificate for the original 
@@ -455,6 +462,6 @@ other purposes where the resolver wishes to provide information about itself to 
 
 # Acknowledgments
 
-Thanks to Erik Nygren, Lorenzo Colitti, Tommy Jensen, Mikael Abrahamsson,
+Thanks to Erik Nygren, Lorenzo Colitti, Mikael Abrahamsson,
 Ben Schwartz, Ask Hansen, Leif Hedstrom, Tim McCoy, Stuart Cheshire, Miguel Vega,
 Joey Deng, Ted Lemon, and Elliot Briggs for their feedback and input on this document.
