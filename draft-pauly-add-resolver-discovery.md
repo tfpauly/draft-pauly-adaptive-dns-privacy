@@ -41,6 +41,11 @@ author:
     name: Patrick McManus
     org: Fastly
     email: mcmanus@ducksong.com
+  -
+    ins: T. Jensen
+    name: Tommy Jensen
+    org: Microsoft
+    email: tojens@microsoft.com
 
 --- abstract
 
@@ -83,6 +88,10 @@ they appear in all capitals, as shown here.
 # Terminology
 
 This document defines the following terms:
+
+Companion DoH Server:
+: A DNS resolver that provides connectivity over HTTPS (DoH) that is designated as 
+equivalent to querying a given Direct Resolver.
 
 Designated Resolver:
 : A DNS resolver that is designated as a responsible resolver for a given domain or zone.
@@ -146,7 +155,40 @@ See {{local-deployment}} for local deployment considerations.
 
 # Discovery of DoH Capabilities for Direct Resolvers
 
-- Companion DoH server
+Direct Resolvers can advertise a Companion DoH server that offers equivalent services and is controlled 
+by the same entity. To do this, a DNS server returns an HTTPSSVC record for the "resolver.arpa"
+domain with "dohip" set to a valid IP address and the "dohuri" key set to a valid DoH URI 
+template as with the Designated DoH Server HTTPSSVC record. The TLS certificate used with the
+DoH URI MUST have the IP addresses for each of its DNS endpoints, classic or DoH, within the 
+SubjectAlternativeName field to allow the client to verify ownership.
+
+Once a client is configured to query a Direct Resolver, it SHOULD query the resolver for HTTPSSVC records 
+for the "resolver.arpa" domain before making other queries. This will help the client avoid leaking queries that 
+could go over DoH once the Companion DoH Server is discovered. If an SVCB record is returned, its "dohip" field 
+designates an IP address the client can send DoH queries to in lieu of sending classic DNS queries to the Direct 
+Resolver. The "dohuri" and "odohkey" fields contains the DoH URI similarly to the HTTPSSVC record for a Designated 
+DoH Server. 
+
+To validate the Companion DoH Server and the resolver that advertised it are related, the client MUST 
+check the SubjectAlternativeName field of the Companion DoH Server's TLS certificate for the original 
+resolver's IP address and the advertised IP address for the Companion DoH server. If both are present, the
+discovered Companion DoH Server MUST be used whenever the original Direct Resolver would be used. Otherwise, 
+the client SHOULD suppress queries for Companion DoH Servers against this resolver for the TTL of the negative 
+or invalid response and continue to use the original Direct Resolver.
+
+The following example shows a record containing a Companion DoH URI, as returned by a query for
+the HTTPSSVC variant of the SVCB record type on the "resolver.arpa" domain.
+
+~~~
+   resolver.arpa  7200  IN HTTPSSVC 2 resolver.arpa (
+                        dohip=x.y.z.w
+                        dohuri=https://doh.example.net/dns-query )
+~~~
+
+A DNS resolver MAY return more than one HTTPSSVC record of this form to advertise multiple Companion 
+DoH Servers that are valid as a replacement for itself. Any or all of these servers may have the same IP 
+address as the DNS resolver itself. In this case, clients will only have one IP address to check for when 
+verifying ownership of the Companion DoH server.
 
 # Server Deployment Considerations
 
@@ -411,8 +453,15 @@ Meaning:
 Reference:
 : This document.
 
+## Special Use Domain Name "resolver.arpa"
+
+This document calls for the creation of the "resolver.arpa" SUDN. This will allow resolvers to respond to 
+queries directed at themselves rather than a specific domain name. While this document uses "resolver.arpa"
+to return HTTPSSVC records indicating DoH capability, the name is generic enough to allow future reuse for
+other purposes where the resolver wishes to provide information about itself to the client. 
+
 # Acknowledgments
 
-Thanks to Erik Nygren, Lorenzo Colitti, Tommy Jensen, Mikael Abrahamsson,
+Thanks to Erik Nygren, Lorenzo Colitti, Mikael Abrahamsson,
 Ben Schwartz, Ask Hansen, Leif Hedstrom, Tim McCoy, Stuart Cheshire, Miguel Vega,
 Joey Deng, Ted Lemon, and Elliot Briggs for their feedback and input on this document.
