@@ -68,8 +68,8 @@ However, privacy-sensitive clients might prefer to use an encrypted DNS service 
 than the one locally provisioned in order to prevent interception,
 profiling, or modification by entities other than the operator of the
 name service for the name being resolved. Protocols that can improve the transport security
-of a client when using DNS or creating TLS connections include DNS-over-TLS {{!RFC7858}},
-DNS-over-HTTPS {{!RFC8484}}, and encrypted Server Name Indication (ESNI) {{!I-D.ietf-tls-esni}}.
+of a client when using DNS or creating TLS connections include DNS-over-TLS (DoT) {{!RFC7858}},
+DNS-over-HTTPS (DoH) {{!RFC8484}}, and Encrypted TLS Client Hellos {{!I-D.ietf-tls-esni}}.
 
 This document defines a method for dynamically discovering resolvers that support
 encrypted transports, and introduces the concept of a designating a resolver
@@ -89,33 +89,38 @@ they appear in all capitals, as shown here.
 
 This document defines the following terms:
 
-Companion DoH Server:
-: A DNS resolver that provides connectivity over HTTPS (DoH) that is designated as 
-equivalent to querying a given Direct Resolver.
+Direct Resolver:
+: A DNS resolver using any transport, encrypted or unencrypted, that is provisioned directly by a local router or a VPN.
 
 Designated Resolver:
-: A DNS resolver that is designated as a responsible resolver for a given domain or zone.
+: A DNS resolver that is designated as a responsible resolver for a given domain or zone. Designated resolvers use encrypted transports.
 
-Direct Resolver:
-: A DNS resolver using any transport that is provisioned directly by a local router or a VPN.
+Companion DoH Server:
+: A DNS resolver that provides connectivity over HTTPS (DoH) that is designated as 
+equivalent to querying a particular Direct Resolver.
 
 # Designated Resolvers
 
-- Based on DNSSEC-signed SVCB record
-- Based on confirmation of a trusted domain, listed in additional information
-- Use IP hints for addresses
+An encrypted DNS resolver, such as a DoH or DoT server, can be designated for use in resolving names within one or more zones. This means that clients can learn about an explicit mapping from a given domain or zone to one or more Designated Resolvers, and use that mapping to select the best resolver for a given query.
 
-# Discovering Designated DoH Resolvers
+Designating a resolver MUST rely on mutual agreement between the entity managing a zone (the Domain Owner) and the entity operating the resolver. These entities can be one and the same, or a Domain Owner can choose to designate a third-party resolver to handle its traffic. By presenting proof of this mutual agreement, the two entities assert to clients that interacting with the designated resolver will not expose information about names being resolved to an entity that would otherwise not be able to learn such information.
 
-Clients dynamically build and maintain a set of known Designated DoH Servers. The information
-that is associated with each server is:
+As an example with only one entity, a company that runs many sites within "enterprise.example.com" can provide its own DoH resolver, "doh.enterprise.example.com", and designate only that resolver for all names that fall within "enterprise.example.com". This means that no other resolver would be designated for those names, and clients would only be resolving names with the same entity that would receive TLS connections.
 
-- The URI Template of the DoH server {{!RFC8484}}
-- A list of domains for which the DoH server is designated
+As an example with several entities, the organization that runs sites within "example.org" may work with two different Content Delivery Networks (CDNs) to serve its sites. It might designate names under "example.com" to two different entities, "doh.cdn-a.net" and "doh.cdn-b.net". These are CDNs that have an existing relationship with the organization that runs "example.org", and have agreements with that organization about how data about names and users is handled.
 
-This information can be retrieved from several different sources. The primary source
-for discovering Designated DoH Server configurations is from properties stored in a
-SVCB (or a SVCB-conformant type like HTTPSSVC) DNS Record {{!I-D.nygren-dnsop-svcb-httpssvc}}.
+There are several methods that can be used to designate a resolver:
+
+- Based on SVCB DNS records issued to another resolver ({{svcb}})
+- Based on information from Designated DoH Resolver that is confirmed via SVCB DNS records ({{pvd}})
+- Based on mutual confirmation of domains over HTTPS ({{pvd-mutual}})
+
+Note that clients SHOULD NOT accept designations for effective top-level domains (eTLDs), such as ".com".
+
+## Designating with Service Binding DNS Records {#svcb}
+
+The primary source for discovering Designated DoH Server configurations is from properties stored in a
+SVCB (or a SVCB-conformant type like HTTPSSVC) DNS Record {{!I-D.ietf-dnsop-svcb-httpssvc}}.
 This record provides the URI Template of a DoH server that is designated for a specific domain.
 A specific domain may have more than one such record.
 
@@ -124,26 +129,65 @@ contain the "dohuri" ({{iana}}). The value stored in the parameter
 is a URI, which is the DoH URI template {{!RFC8484}}.
 
 The following example shows a record containing a DoH URI, as returned by a query for
-the HTTPSSVC variant of the SVCB record type on "example.com".
+the HTTPSSVC variant of the SVCB record type on "foo.example.com", where the response indicates a DoH Resolver that is designated for names under "example.com".
 
 ~~~
-   example.com.      7200  IN HTTPSSVC 0 svc.example.net.
-   svc.example.net.  7200  IN HTTPSSVC 2 svc1.example.net. (
-									   dohuri=https://doh.example.net/dns-query
-									   odohkey="..." )
+   foo.example.com.  7200  IN HTTPSSVC 1 example.com. (
+                           dohuri=https://doh.example.net/dns-query )
 ~~~
 
-Clients SHOULD NOT accept designations for effective top-level domains (eTLDs), such
-as ".com".
+If this record is DNSSEC-signed, clients can immediately create a mapping that indicates the server as a Designated Resolver for the name in the SVCB record.
+
+If this record is not DNSSEC-signed, clients MUST perform other validation to determine that the zone designation is permitted, as described in {{pvd-mutual}}.
+
+## Additional Designation with PvD JSON {#pvd}
+
+A provisioning domain (PvD) defines a coherent set of information that can be used to access a network and resolve names. {{!I-D.ietf-intarea-provisioning-domains}} defines a JSON dictionary format that can be fetched over HTTPS at the well-known URI "/.well-known/pvd".
+
+Designated Resolvers that are DoH servers SHOULD provide a PvD JSON dictionary available at the well-known PvD URI with the path of the DoH server's URI template appended.
+
+For example, the PvD JSON for the DoH server "https://doh.example.net/dns-query" would be available at "https://doh.example.net/.well-known/pvd/dns-query".
+
+Names that are listed in the "dnsZones" key in the JSON dictionary indicate other names that designate the resolver. For each of those domains, clients SHOULD issue an SVCB query to the DoH resolver. If this record confirms the designation and is DNSSEC-signed, clients can create a mapping to designate the resolver. In order to optimize the validation of these domains, servers MAY use HTTP Server Push to deliver the records prior to the request being made.
+
+The key "dohTemplate" is also defined within the JSON dictionary ({{iana}}) to point back to the DoH URI Template itself. This is used for confirming the DoH server when the PvD is discovered locally or during mutual confirmation ({{pvd-mutual}}).
+
+## Mutual Confirmation with PvD JSON {#pvd-mutual}
+
+Designated DoH Resolvers that provide the PvD JSON described in {{pvd}} can also provide information to allow validation of zone designations without DNSSEC.
+
+The JSON dictionary MAY contains a key "trustedNames" that is an array of strings containing domains that can be used for mutual confirmation of resolver designation.
+
+For example, the JSON dictionary retrieved at "https://doh.example.net/.well-known/pvd/dns-query" can contain the following contents:
+
+~~~
+   {
+     "identifier": "doh.example.net.",
+     "dohTemplate": "https://doh.example.net/dns-query",
+     "dnsZones": ["example.com"],
+     "trustedNames": ["example.com"]
+   }
+~~~
+
+This indicates that "example.com" should be treated as a designated domain, but that it can be validated by checking with the "example.com" server rather than using DNSSEC.
+
+The client then MUST issue a GET request for "https://example.com/.well-known/pvd" before trusting the designation. In order to trust the designation, this request must return valid JSON with the "dohTemplate" key indicating the original DoH resolver. For example, this dictionary could contain the following contents:
+
+~~~
+   {
+     "identifier": "example.com.",
+     "dohTemplate": "https://doh.example.net/dns-query",
+   }
+~~~
 
 # Explicit Discovery of Local Resolvers {#local-discovery}
 
 If the local network provides configuration with an Explicit Provisioning Domain (PvD), as
 defined by {{!I-D.ietf-intarea-provisioning-domains}}, clients can learn about domains
-for which the local network's resolver is authoritative.
+for which the local network's resolver is authoritative. The keys for DoH resolvers described in {{pvd}} also allow this local PvD to be used for resolver discovery.
 
 If an RA provided by the router on the network defines an Explicit PvD that has additional
-information, and this additional information JSON dictionary contains the key "dohTemplate" ({{iana}}),
+information, and this additional information JSON dictionary contains the key "dohTemplate",
 then the client SHOULD add this DoH server to its list of known DoH configurations. The
 domains that the DoH server claims authority for are listed in the "dnsZones" key. Clients
 MUST use an SVCB record from the locally-provisioned DoH server and validate
@@ -156,17 +200,17 @@ See {{local-deployment}} for local deployment considerations.
 # Discovery of DoH Capabilities for Direct Resolvers
 
 Direct Resolvers can advertise a Companion DoH server that offers equivalent services and is controlled 
-by the same entity. To do this, a DNS server returns an HTTPSSVC record for the "resolver.arpa"
-domain with "dohip" set to a valid IP address and the "dohuri" key set to a valid DoH URI 
-template as with the Designated DoH Server HTTPSSVC record. The TLS certificate used with the
+by the same entity. To do this, a DNS server returns an SVCB record for the "resolver.arpa"
+domain with "ipv4hint" and/or "ipv6hint" set to a valid IP address and the "dohuri" key set to a valid DoH URI 
+template as with the Designated DoH Server SVCB record. The TLS certificate used with the
 DoH URI MUST have the IP addresses for each of its DNS endpoints, classic or DoH, within the 
 SubjectAlternativeName field to allow the client to verify ownership.
 
-Once a client is configured to query a Direct Resolver, it SHOULD query the resolver for HTTPSSVC records 
+Once a client is configured to query a Direct Resolver, it SHOULD query the resolver for SVCB records 
 for the "resolver.arpa" domain before making other queries. This will help the client avoid leaking queries that 
 could go over DoH once the Companion DoH Server is discovered. If an SVCB record is returned, its "dohip" field 
 designates an IP address the client can send DoH queries to in lieu of sending classic DNS queries to the Direct 
-Resolver. The "dohuri" and "odohkey" fields contains the DoH URI similarly to the HTTPSSVC record for a Designated 
+Resolver. The "dohuri" field contains the DoH URI similarly to the SVCB record for a Designated 
 DoH Server. 
 
 To validate the Companion DoH Server and the resolver that advertised it are related, the client MUST 
@@ -180,12 +224,12 @@ The following example shows a record containing a Companion DoH URI, as returned
 the HTTPSSVC variant of the SVCB record type on the "resolver.arpa" domain.
 
 ~~~
-   resolver.arpa  7200  IN HTTPSSVC 2 resolver.arpa (
-                        dohip=x.y.z.w
+   resolver.arpa  7200  IN HTTPSSVC 1 doh.example.net (
+                        ipv4hint=x.y.z.w
                         dohuri=https://doh.example.net/dns-query )
 ~~~
 
-A DNS resolver MAY return more than one HTTPSSVC record of this form to advertise multiple Companion 
+A DNS resolver MAY return more than one SVCB record of this form to advertise multiple Companion 
 DoH Servers that are valid as a replacement for itself. Any or all of these servers may have the same IP 
 address as the DNS resolver itself. In this case, clients will only have one IP address to check for when 
 verifying ownership of the Companion DoH server.
@@ -304,8 +348,7 @@ for "example.org", thus steering all resolution under "example.org" to the local
 
 - No DNSSEC-signed SVCB record designates the local server. In this case, clients have a hint that
 the local network can serve names under "private.example.org", but do not have a way to validate
-the designation. Clients can in this case try to resolve names using external servers (such
-as via Oblivious DoH), and then MAY fall back to using locally-provisioned resolvers if the names do not
+the designation. Clients can in this case try to resolve names using external servers, and then MAY fall back to using locally-provisioned resolvers if the names do not
 resolve externally. This approach has the risk of exposing private names to public resolvers,
 which can be undesirable for certain enterprise deployments. Alternatively, if the client trusts
 the local network based on specific policy configured on the client, it can choose to resolve these names
@@ -421,6 +464,14 @@ This document adds a key to the "Additional Information PvD Keys" registry {{!I-
 |:------------|:-----------------------|:---------------------|:------------|
 | dohTemplate     | DoH URI Template {{!RFC8484}} | String | "https://dnsserver.example.net/dns-query{?dns}" |
 
+## Trusted Names PvD Key
+
+This document adds a key to the "Additional Information PvD Keys" registry {{!I-D.ietf-intarea-provisioning-domains}}.
+
+| JSON key | Description         | Type      | Example      |
+|:------------|:-----------------------|:---------------------|:------------|
+| trustedNames     | Names of servers that can validate resolver designation.  | Array of Strings | [ "example.com" ] |
+
 ## DNS Filtering PvD Keys
 
 This document adds a key to the "Additional Information PvD Keys" registry {{!I-D.ietf-intarea-provisioning-domains}}.
@@ -457,7 +508,7 @@ Reference:
 
 This document calls for the creation of the "resolver.arpa" SUDN. This will allow resolvers to respond to 
 queries directed at themselves rather than a specific domain name. While this document uses "resolver.arpa"
-to return HTTPSSVC records indicating DoH capability, the name is generic enough to allow future reuse for
+to return SVCB records indicating DoH capability, the name is generic enough to allow future reuse for
 other purposes where the resolver wishes to provide information about itself to the client. 
 
 # Acknowledgments
