@@ -211,7 +211,7 @@ then the client SHOULD add this DoH server to its list of known DoH configuratio
 domains that the DoH server claims authority for are listed in the "dnsZones" key. Clients
 MUST use one of the methods for validating a designation described in {{svcb}} or {{pvd-mutual}}.
 
-Local deployements that want to designate a resolver for a private name that is not easily
+Local deployments that want to designate a resolver for a private name that is not easily
 signed with DNSSEC MUST provide an alternate method of validating a designation, particularly
 the one described in {{pvd-mutual}}.
 
@@ -310,7 +310,7 @@ can improve the performance of name resolutions.
 
 # Security Considerations
 
-In order to avoid interception and modification of the information sent between by clients
+In order to avoid interception and modification of the information sent between clients
 and Designated Resolvers, all exchanges between clients and servers are performed over encrypted
 connections, e.g., TLS.
 
