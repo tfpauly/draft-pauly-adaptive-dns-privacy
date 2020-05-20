@@ -103,7 +103,7 @@ equivalent to querying a particular Direct Resolver.
 
 An encrypted DNS resolver, such as a DoH or DoT server, can be designated for use in resolving names within one or more zones. This means that clients can learn about an explicit mapping from a given domain or zone to one or more Designated Resolvers, and use that mapping to select the best resolver for a given query.
 
-Designating a resolver MUST rely on mutual agreement between the entity managing a zone (the Domain Owner) and the entity operating the resolver. These entities can be one and the same, or a Domain Owner can choose to designate a third-party resolver to handle its traffic. By presenting proof of this mutual agreement, the two entities assert to clients that interacting with the designated resolver will not expose information about names being resolved to an entity that would otherwise not be able to learn such information.
+Designating a resolver MUST rely on mutual agreement between the entity managing a zone (the Domain Owner) and the entity operating the resolver. These entities can be one and the same, or a Domain Owner can choose to designate a third-party resolver to handle its traffic. Proof of this mutual agreement asserts to clients that sending any query to the designated resolver exposes no more information than sending that query to the entity managing the corresponding zone.
 
 As an example with only one entity, a company that runs many sites within "enterprise.example.com" can provide its own DoH resolver, "doh.enterprise.example.com", and designate only that resolver for all names that fall within "enterprise.example.com". This means that no other resolver would be designated for those names, and clients would only resolve names with the same entity that would service TLS connections.
 
@@ -115,7 +115,7 @@ There are several methods that can be used to designate a resolver:
 - Based on information from Designated DoH Resolver that is confirmed via SVCB DNS records ({{pvd}})
 - Based on mutual agreement through confirmation of domains over HTTPS ({{pvd-mutual}})
 
-Note that clients SHOULD NOT accept designations for effective top-level domains (eTLDs), such as ".com".
+Note that clients MUST NOT accept designations for effective top-level domains (eTLDs), such as ".com".
 
 ## Designating with Service Binding DNS Records {#svcb}
 
@@ -171,12 +171,31 @@ For example, the JSON dictionary retrieved at "https://doh.example.net/.well-kno
 
 This indicates that "example.com" should be treated as a designated domain, and that it can be validated by checking with the "example.com" server rather than using DNSSEC.
 
-The client then MUST issue a GET request for "https://example.com/.well-known/pvd" before trusting the designation. In order to trust the designation, this request must return valid JSON with the "dohTemplate" key indicating the original DoH resolver. For example, this dictionary could contain the following contents:
+Clients MUST validate the resolver designation by checking a resource hosted by the name indicated in "trustedNames". The client first issues an HTTP GET request by appending "/.well-known/pvd" to the trusted name, using the "https" scheme. In this example, the resulting URI is "https://example.com/.well-known/pvd". In order to trust the designation, this request must return valid JSON with the "dohTemplate" key matching the original DoH resolver. For example, this dictionary could contain the following contents:
 
 ~~~
    {
      "identifier": "example.com.",
      "dohTemplate": "https://doh.example.net/dns-query",
+   }
+~~~
+
+A client MUST NOT trust a designation if the JSON content is not present, does not contain a "dohTemplate" key, or the value in the "dohTemplate" key does not match. The following result would not be acceptable for the example above:
+
+~~~
+   {
+     "identifier": "example.com.",
+     "dohTemplate": "https://not-the-doh-youre-looking-for.example.net/dns-query",
+   }
+~~~
+
+Note that the domains listed in "trustedNames" may be broader than the zones that designate the resolver. In the following example, names under "foo.example.com" and "bar.example.com" designate the DoH server "https://doh.example.net/dns-query", and use the PvD JSON from "example.com" to validate the designation. However, the client would not designate the DoH server for all names under "example.com".
+~~~
+   {
+     "identifier": "doh.example.net.",
+     "dohTemplate": "https://doh.example.net/dns-query",
+     "dnsZones": ["foo.example.com", "bar.example.com"],
+     "trustedNames": ["example.com"]
    }
 ~~~
 
