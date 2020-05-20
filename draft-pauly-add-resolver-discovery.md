@@ -105,15 +105,15 @@ An encrypted DNS resolver, such as a DoH or DoT server, can be designated for us
 
 Designating a resolver MUST rely on mutual agreement between the entity managing a zone (the Domain Owner) and the entity operating the resolver. These entities can be one and the same, or a Domain Owner can choose to designate a third-party resolver to handle its traffic. By presenting proof of this mutual agreement, the two entities assert to clients that interacting with the designated resolver will not expose information about names being resolved to an entity that would otherwise not be able to learn such information.
 
-As an example with only one entity, a company that runs many sites within "enterprise.example.com" can provide its own DoH resolver, "doh.enterprise.example.com", and designate only that resolver for all names that fall within "enterprise.example.com". This means that no other resolver would be designated for those names, and clients would only be resolving names with the same entity that would receive TLS connections.
+As an example with only one entity, a company that runs many sites within "enterprise.example.com" can provide its own DoH resolver, "doh.enterprise.example.com", and designate only that resolver for all names that fall within "enterprise.example.com". This means that no other resolver would be designated for those names, and clients would only resolve names with the same entity that would service TLS connections.
 
-As an example with several entities, the organization that runs sites within "example.org" may work with two different Content Delivery Networks (CDNs) to serve its sites. It might designate names under "example.com" to two different entities, "doh.cdn-a.net" and "doh.cdn-b.net". These are CDNs that have an existing relationship with the organization that runs "example.org", and have agreements with that organization about how data about names and users is handled.
+As an example with several entities, the organization that operates sites within "example.org" may work with two different Content Delivery Networks (CDNs) to serve its sites. It might designate names under "example.com" to two different entities, "doh.cdn-a.net" and "doh.cdn-b.net". These are CDNs that have an existing relationship with the organization that runs "example.org", and have agreements with that organization about how data with information on names and users is handled.
 
 There are several methods that can be used to designate a resolver:
 
 - Based on SVCB DNS records issued to another resolver ({{svcb}})
 - Based on information from Designated DoH Resolver that is confirmed via SVCB DNS records ({{pvd}})
-- Based on mutual confirmation of domains over HTTPS ({{pvd-mutual}})
+- Based on mutual agreement through confirmation of domains over HTTPS ({{pvd-mutual}})
 
 Note that clients SHOULD NOT accept designations for effective top-level domains (eTLDs), such as ".com".
 
@@ -136,7 +136,7 @@ the HTTPSSVC variant of the SVCB record type on "foo.example.com", where the res
                            dohuri=https://doh.example.net/dns-query )
 ~~~
 
-If this record is DNSSEC-signed, clients can immediately create a mapping that indicates the server as a Designated Resolver for the name in the SVCB record.
+If this record is DNSSEC-signed, clients can immediately create a mapping that indicates the server (doh.example.net) as a Designated Resolver for the name in the SVCB record (foo.example.com).
 
 If this record is not DNSSEC-signed, clients MUST perform other validation to determine that the zone designation is permitted, as described in {{pvd-mutual}}.
 
@@ -144,7 +144,7 @@ If this record is not DNSSEC-signed, clients MUST perform other validation to de
 
 A provisioning domain (PvD) defines a coherent set of information that can be used to access a network and resolve names. {{!I-D.ietf-intarea-provisioning-domains}} defines a JSON dictionary format that can be fetched over HTTPS at the well-known URI "/.well-known/pvd".
 
-Designated Resolvers that are DoH servers SHOULD provide a PvD JSON dictionary available at the well-known PvD URI with the path of the DoH server's URI template appended.
+Designated Resolvers that support DoH SHOULD provide a PvD JSON dictionary available at the well-known PvD URI with the path of the DoH server's URI template appended.
 
 For example, the PvD JSON for the DoH server "https://doh.example.net/dns-query" would be available at "https://doh.example.net/.well-known/pvd/dns-query".
 
@@ -156,7 +156,7 @@ The key "dohTemplate" is also defined within the JSON dictionary ({{iana}}) to p
 
 Designated DoH Resolvers that provide the PvD JSON described in {{pvd}} can also provide information to allow validation of zone designations without DNSSEC.
 
-The JSON dictionary MAY contains a key "trustedNames" that is an array of strings containing domains that can be used for mutual confirmation of resolver designation.
+The JSON dictionary MAY contain a key "trustedNames" that is an array of strings containing domains that can be used for mutual confirmation of resolver designation.
 
 For example, the JSON dictionary retrieved at "https://doh.example.net/.well-known/pvd/dns-query" can contain the following contents:
 
@@ -169,7 +169,7 @@ For example, the JSON dictionary retrieved at "https://doh.example.net/.well-kno
    }
 ~~~
 
-This indicates that "example.com" should be treated as a designated domain, but that it can be validated by checking with the "example.com" server rather than using DNSSEC.
+This indicates that "example.com" should be treated as a designated domain, and that it can be validated by checking with the "example.com" server rather than using DNSSEC.
 
 The client then MUST issue a GET request for "https://example.com/.well-known/pvd" before trusting the designation. In order to trust the designation, this request must return valid JSON with the "dohTemplate" key indicating the original DoH resolver. For example, this dictionary could contain the following contents:
 
