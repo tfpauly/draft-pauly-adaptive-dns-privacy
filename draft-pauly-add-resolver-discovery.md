@@ -190,6 +190,7 @@ A client MUST NOT trust a designation if the JSON content is not present, does n
 ~~~
 
 Note that the domains listed in "trustedNames" may be broader than the zones that designate the resolver. In the following example, names under "foo.example.com" and "bar.example.com" designate the DoH server "https://doh.example.net/dns-query", and use the PvD JSON from "example.com" to validate the designation. However, the client would not designate the DoH server for all names under "example.com".
+
 ~~~
    {
      "identifier": "doh.example.net.",
