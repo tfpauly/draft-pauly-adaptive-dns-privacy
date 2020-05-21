@@ -50,7 +50,7 @@ author:
 --- abstract
 
 This document defines a method for dynamically discovering resolvers that support
-encrypted transports, and introduces the concept of a designating a resolver
+encrypted transports, and introduces the concept of designating a resolver
 to be used for a subset of client queries based on domain. This method is intended
 to work both for locally-hosted resolvers and resolvers accessible over the broader
 Internet.
@@ -72,7 +72,7 @@ of a client when using DNS or creating TLS connections include DNS-over-TLS (DoT
 DNS-over-HTTPS (DoH) {{!RFC8484}}, and Encrypted TLS Client Hellos {{!I-D.ietf-tls-esni}}.
 
 This document defines a method for dynamically discovering resolvers that support
-encrypted transports, and introduces the concept of a designating a resolver
+encrypted transports, and introduces the concept of designating a resolver
 to be used for a subset of client queries based on domain. This method is intended
 to work both for locally-hosted resolvers and resolvers accessible over the broader
 Internet.
