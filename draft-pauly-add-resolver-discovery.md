@@ -112,7 +112,7 @@ As an example with several entities, the organization that operates sites within
 There are several methods that can be used to designate a resolver:
 
 - Based on SVCB DNS records issued to another resolver ({{svcb}})
-- Based on information from Designated DoH Resolver that is confirmed via SVCB DNS records ({{pvd}})
+- Based on information in a provisioning domain (PvD) from the Designated DoH Resolver that is confirmed via SVCB DNS records ({{pvd}})
 - Based on mutual agreement through confirmation of domains over HTTPS ({{pvd-mutual}})
 
 Note that clients MUST NOT accept designations for effective top-level domains (eTLDs), such as ".com".
