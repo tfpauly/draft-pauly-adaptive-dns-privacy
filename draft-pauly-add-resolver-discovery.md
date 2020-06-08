@@ -302,7 +302,7 @@ However, if a deployment designates a given DoH server for only one name, or a
 very small set of names, then it becomes easier for an attacker to infer that a specific
 name is being accessed by a client. For this reason, deployments are encouraged
 to avoid deploying a DoH server that is only designated by a small number of names.
-Clients can also choose to only whitelist DoH servers that are associated with
+Clients can also choose to only allow DoH servers that are associated with
 many names.
 
 Beyond the benefits to privacy, having a larger number of names designate
@@ -329,7 +329,7 @@ such records validate using DNSSEC ({{svcb}}) or using mutual confirmation ({{pv
 
 Even servers that are validly designated can risk leaking or logging information
 about client lookups. Such risk can be mitigated by further restricting the list of
-resolvers that are whitelisted for direct use based on client policy.
+resolvers that are allowed for direct use based on client policy.
 
 An adversary able to see traffic on each path segment of a DoH query (e.g., from client to
 a Designated Resolver, and the Designated Resolver to an authoritative DNS server) can link queries to specific
