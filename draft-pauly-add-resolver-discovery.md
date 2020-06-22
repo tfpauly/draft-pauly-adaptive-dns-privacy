@@ -120,7 +120,7 @@ Note that clients MUST NOT accept designations for effective top-level domains (
 ## Designating with Service Binding DNS Records {#svcb}
 
 The primary source for discovering Designated DoH Server configurations is from properties stored in a
-SVCB (or a SVCB-conformant type like HTTPSSVC) DNS Record {{!I-D.ietf-dnsop-svcb-httpssvc}}.
+SVCB DNS resource record, or a SVCB-conformant resource record type, like HTTPS {{!I-D.ietf-dnsop-svcb-https}}.
 This record provides the URI Template of a DoH server that is designated for a specific domain.
 A specific domain may have more than one such record.
 
@@ -129,10 +129,10 @@ contain the "dohuri" ({{iana}}). The value stored in the parameter
 is a URI, which is the DoH URI template {{!RFC8484}}.
 
 The following example shows a record containing a DoH URI, as returned by a query for
-the HTTPSSVC variant of the SVCB record type on "foo.example.com", where the response indicates a DoH Resolver that is designated for names under "example.com".
+the HTTPS variant of the SVCB record type on "foo.example.com".
 
 ~~~
-   foo.example.com.  7200  IN HTTPSSVC 1 example.com. (
+   foo.example.com.  7200  IN HTTPS 1 . (
                            dohuri=https://doh.example.net/dns-query )
 ~~~
 
@@ -240,10 +240,10 @@ the client SHOULD suppress queries for Companion DoH Servers against this resolv
 or invalid response and continue to use the original Direct Resolver.
 
 The following example shows a record containing a Companion DoH URI, as returned by a query for
-the HTTPSSVC variant of the SVCB record type on the "resolver.arpa" domain.
+the HTTPS variant of the SVCB record type on the "resolver.arpa" domain.
 
 ~~~
-   resolver.arpa  7200  IN HTTPSSVC 1 doh.example.net (
+   resolver.arpa  7200  IN HTTPS 1 doh.example.net (
                         ipv4hint=x.y.z.w
                         dohuri=https://doh.example.net/dns-query )
 ~~~
@@ -356,7 +356,10 @@ This document adds a key to the "Additional Information PvD Keys" registry {{!I-
 |:------------|:-----------------------|:---------------------|:------------|
 | trustedNames     | Names of servers that can validate resolver designation.  | Array of Strings | [ "example.com" ] |
 
-## DoH URI Template DNS Parameter
+## DoH URI Template DNS Service Parameter
+
+This document adds a parameter to the "Service Binding (SVCB) Parameter" registry.
+The allocation request is 32768, taken from the to the First Come First Served range.
 
 If present, this parameters indicates the URI template of a DoH server that is designated
 for use with the name being resolved. This is a string encoded as UTF-8 characters.
@@ -365,7 +368,7 @@ Name:
 : dohuri
 
 SvcParamKey:
-: TBD
+: 32768
 
 Meaning:
 : URI template for a designated DoH server
