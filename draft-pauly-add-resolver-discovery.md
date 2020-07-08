@@ -239,11 +239,11 @@ discovered Companion DoH Server MUST be used whenever the original Direct Resolv
 the client SHOULD suppress queries for Companion DoH Servers against this resolver for the TTL of the negative 
 or invalid response and continue to use the original Direct Resolver.
 
-The following example shows a record containing a Companion DoH URI, as returned by a query for
-the HTTPS variant of the SVCB record type for "dns://resolver.arpa":
+The following example shows a record containing a Companion DoH URI, as returned by a query for an SVCB record 
+for "dns://resolver.arpa":
 
 ~~~
-   _dns.resolver.arpa  7200  IN HTTPS 1 doh.example.net (
+   _dns.resolver.arpa  7200  IN SVCB 1 doh.example.net (
                         ipv4hint=x.y.z.w
                         dohuri=https://doh.example.net/dns-query )
 ~~~
