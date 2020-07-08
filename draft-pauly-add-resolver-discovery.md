@@ -344,7 +344,8 @@ Clients must be careful in determining to which DoH servers they send queries
 directly. A malicious resolver that can direct queries to itself
 can track or profile client activity. In order to avoid the possibility of a spoofed SVCB
 record designating a malicious DoH server for a name, clients MUST ensure that
-such records validate using DNSSEC ({{svcb}}) or using mutual confirmation ({{pvd-mutual}}).
+such records validate using DNSSEC ({{svcb}}), using mutual confirmation ({{pvd-mutual}}), or using  
+domain names in TLS certificates ({{cert-name-check}}).
 
 Even servers that are validly designated can risk leaking or logging information
 about client lookups. Such risk can be mitigated by further restricting the list of
