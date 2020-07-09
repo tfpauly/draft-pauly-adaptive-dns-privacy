@@ -219,14 +219,14 @@ the one described in {{pvd-mutual}}.
 # Discovery of DoH Capabilities for Direct Resolvers
 
 Direct Resolvers can advertise a Companion DoH server that offers equivalent services and is controlled 
-by the same entity. To do this, a DNS server returns an SVCB record for the "resolver.arpa"
-domain with "ipv4hint" and/or "ipv6hint" set to a valid IP address and the "dohuri" key set to a valid DoH URI 
+by the same entity. To do this, a DNS server returns an SVCB record for "dns://resolver.arpa"
+with "ipv4hint" and/or "ipv6hint" set to a valid IP address and the "dohuri" key set to a valid DoH URI 
 template as with the Designated DoH Server SVCB record. The TLS certificate used with the
 DoH URI MUST have the IP addresses for each of its DNS endpoints, classic or DoH, within the 
 SubjectAlternativeName field to allow the client to verify ownership.
 
 Once a client is configured to query a Direct Resolver, it SHOULD query the resolver for SVCB records 
-for the "resolver.arpa" domain before making other queries. This will help the client avoid leaking queries that 
+for "dns://resolver.arpa" before making other queries. This will help the client avoid leaking queries that 
 could go over DoH once the Companion DoH Server is discovered. If an SVCB record is returned, its "dohip" field 
 designates an IP address the client can send DoH queries to in lieu of sending classic DNS queries to the Direct 
 Resolver. The "dohuri" field contains the DoH URI similarly to the SVCB record for a Designated 
@@ -239,11 +239,11 @@ discovered Companion DoH Server MUST be used whenever the original Direct Resolv
 the client SHOULD suppress queries for Companion DoH Servers against this resolver for the TTL of the negative 
 or invalid response and continue to use the original Direct Resolver.
 
-The following example shows a record containing a Companion DoH URI, as returned by a query for
-the HTTPS variant of the SVCB record type on the "resolver.arpa" domain.
+The following example shows a record containing a Companion DoH URI, as returned by a query for an SVCB record 
+for "dns://resolver.arpa":
 
 ~~~
-   resolver.arpa  7200  IN HTTPS 1 doh.example.net (
+   _dns.resolver.arpa  7200  IN SVCB 1 doh.example.net (
                         ipv4hint=x.y.z.w
                         dohuri=https://doh.example.net/dns-query )
 ~~~
