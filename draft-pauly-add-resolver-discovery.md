@@ -210,9 +210,9 @@ which triggered the original designation query.
 
 The following example shows an HTTPS variant of the SVCB record type for "foo.example.com". If this record was
 received without DNSSEC, the client can confirm its validity by establishing a connection to "doh.example.net" 
-and checking the TLS certificate for the "foo.example.com" name. If the queried domain is not present in the TLS 
-certificate of the designated DoH server, the client may confirm the validity by an alternate method such as 
-mutual confirmation {#pvd-mutual} but MUST NOT use the record until otherwise validated.
+and verifying the TLS certificate contains an exact match for the "foo.example.com" name. If the queried domain 
+is not present in the TLS certificate of the designated DoH server, the client may confirm the validity by an 
+alternate method such as mutual confirmation {#pvd-mutual} but MUST NOT use the record until otherwise validated.
 
 ~~~
    foo.example.com.  7200  IN HTTPS 1 . (
