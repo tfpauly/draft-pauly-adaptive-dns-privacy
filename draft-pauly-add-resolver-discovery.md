@@ -114,6 +114,7 @@ There are several methods that can be used to designate a resolver:
 - Based on SVCB DNS records issued to another resolver ({{svcb}})
 - Based on information in a provisioning domain (PvD) from the Designated DoH Resolver that is confirmed via SVCB DNS records ({{pvd}})
 - Based on mutual agreement through confirmation of domains over HTTPS ({{pvd-mutual}})
+- Based on confirmation of domain name ownership within TLS certificates ({{cert-name-check}})
 
 Note that clients MUST NOT accept designations for effective top-level domains (eTLDs), such as ".com".
 
@@ -198,6 +199,24 @@ Note that the domains listed in "trustedNames" may be broader than the zones tha
      "dnsZones": ["foo.example.com", "bar.example.com"],
      "trustedNames": ["example.com"]
    }
+~~~
+
+# Confirmation of Domain Name Ownership with TLS Certificates {#cert-name-check}
+
+A DoH server designation without DNSSEC or a PvD for mutual confirmation can be confirmed by the 
+SubjectAlternativeName field in the TLS certificate. When a client wants to confirm the validity of the 
+designation in this situation, it checks the TLS certificate of the DoH server for the name of the domain 
+which triggered the original designation query.
+
+The following example shows an HTTPS variant of the SVCB record type for "foo.example.com". If this record was
+received without DNSSEC, the client can confirm its validity by establishing a connection to "doh.example.net" 
+and verifying the TLS certificate contains an exact match for the "foo.example.com" name. If the queried domain 
+is not present in the TLS certificate of the designated DoH server, the client may confirm the validity by an 
+alternate method such as mutual confirmation {#pvd-mutual} but MUST NOT use the record until otherwise validated.
+
+~~~
+   foo.example.com.  7200  IN HTTPS 1 . (
+                           dohuri=https://doh.example.net/dns-query )
 ~~~
 
 # Explicit Discovery of Local Resolvers {#local-discovery}
@@ -325,7 +344,8 @@ Clients must be careful in determining to which DoH servers they send queries
 directly. A malicious resolver that can direct queries to itself
 can track or profile client activity. In order to avoid the possibility of a spoofed SVCB
 record designating a malicious DoH server for a name, clients MUST ensure that
-such records validate using DNSSEC ({{svcb}}) or using mutual confirmation ({{pvd-mutual}}).
+such records validate using DNSSEC ({{svcb}}), using mutual confirmation ({{pvd-mutual}}), or using  
+domain names in TLS certificates ({{cert-name-check}}).
 
 Even servers that are validly designated can risk leaking or logging information
 about client lookups. Such risk can be mitigated by further restricting the list of
