@@ -139,19 +139,32 @@ the HTTPS variant of the SVCB record type on "foo.example.com".
 
 If this record is DNSSEC-signed {{!RFC4033}}, clients can immediately create a mapping that indicates the server (doh.example.net) as a Designated Resolver for the name in the SVCB record (foo.example.com).
 
+Once a record that designated a DoH server has expired, the client SHOULD issue another SVCB/HTTPS query whenever issuing queries within the designated domain. This query SHOULD still be performed using the designated DoH server. If the response designates a different DoH server, the client should verify and use the new designation.
+
 If this record is not DNSSEC-signed, clients MUST perform other validation to determine that the zone designation is permitted, as described in {{pvd-mutual}}.
 
 ## Additional Designation with PvD JSON {#pvd}
 
-A provisioning domain (PvD) defines a coherent set of information that can be used to access a network and resolve names. {{!I-D.ietf-intarea-provisioning-domains}} defines a JSON dictionary format that can be fetched over HTTPS at the well-known URI "/.well-known/pvd".
+A provisioning domain (PvD) defines a coherent set of information that can be used to access a network and resolve names. Section 4.3 of {{!I-D.ietf-intarea-provisioning-domains}} defines a JSON dictionary format that can be fetched over HTTPS at the well-known URI "/.well-known/pvd".
 
 Designated Resolvers that support DoH SHOULD provide a PvD JSON dictionary available at the well-known PvD URI with the path of the DoH server's URI template appended.
 
 For example, the PvD JSON for the DoH server "https://doh.example.net/dns-query" would be available at "https://doh.example.net/.well-known/pvd/dns-query".
 
+The key "dohTemplate" is defined within the JSON dictionary ({{iana}}) to point back to the DoH URI Template itself. This is used for confirming the DoH server when the PvD is discovered locally or during mutual confirmation ({{pvd-mutual}}).
+
 Names that are listed in the "dnsZones" key in the JSON dictionary indicate other names that designate the resolver. For each of those domains, clients SHOULD issue an SVCB query to the DoH resolver. If this record confirms the designation and is DNSSEC-signed, clients can create a mapping to designate the resolver. In order to optimize the validation of these domains, servers MAY use HTTP Server Push to deliver the records prior to the request being made.
 
-The key "dohTemplate" is also defined within the JSON dictionary ({{iana}}) to point back to the DoH URI Template itself. This is used for confirming the DoH server when the PvD is discovered locally or during mutual confirmation ({{pvd-mutual}}).
+The "expires" key indicates a time after which the content of the PvD file is no longer valid. Clients SHOULD re-fetch PvD information if the expiration time has passed before using any designations that were based on the PvD content.
+
+~~~
+   {
+	 "identifier": "doh.example.net.",
+	 "dohTemplate": "https://doh.example.net/dns-query",
+	 "dnsZones": ["example.com"],
+	 "expires": "2020-08-23T06:00:00Z"
+   }
+~~~
 
 ## Mutual Confirmation with PvD JSON {#pvd-mutual}
 
@@ -166,7 +179,8 @@ For example, the JSON dictionary retrieved at "https://doh.example.net/.well-kno
      "identifier": "doh.example.net.",
      "dohTemplate": "https://doh.example.net/dns-query",
      "dnsZones": ["example.com"],
-     "trustedNames": ["example.com"]
+     "trustedNames": ["example.com"],
+     "expires": "2020-08-23T06:00:00Z"
    }
 ~~~
 
@@ -178,6 +192,7 @@ Clients MUST validate the resolver designation by checking a resource hosted by 
    {
      "identifier": "example.com.",
      "dohTemplate": "https://doh.example.net/dns-query",
+     "expires": "2020-08-23T06:00:00Z"
    }
 ~~~
 
@@ -186,7 +201,8 @@ A client MUST NOT trust a designation if the JSON content is not present, does n
 ~~~
    {
      "identifier": "example.com.",
-     "dohTemplate": "https://not-the-doh-youre-looking-for.example.net/dns-query",
+     "dohTemplate": "https://not-the-doh-youre-looking-for.example.net/dns-query"
+     "expires": "2020-08-23T06:00:00Z"
    }
 ~~~
 
@@ -197,7 +213,8 @@ Note that the domains listed in "trustedNames" may be broader than the zones tha
      "identifier": "doh.example.net.",
      "dohTemplate": "https://doh.example.net/dns-query",
      "dnsZones": ["foo.example.com", "bar.example.com"],
-     "trustedNames": ["example.com"]
+     "trustedNames": ["example.com"],
+     "expires": "2020-08-23T06:00:00Z"
    }
 ~~~
 
