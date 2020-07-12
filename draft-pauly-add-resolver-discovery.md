@@ -103,18 +103,18 @@ equivalent to querying a particular Direct Resolver.
 
 An encrypted DNS resolver, such as a DoH or DoT server, can be designated for use in resolving names within one or more zones. This means that clients can learn about an explicit mapping from a given domain or zone to one or more Designated Resolvers, and use that mapping to select the best resolver for a given query.
 
-Designating a resolver MUST rely on mutual agreement between the entity managing a zone (the Domain Owner) and the entity operating the resolver. These entities can be one and the same, or a Domain Owner can choose to designate a third-party resolver to handle its traffic. Proof of this mutual agreement asserts to clients that sending any query to the designated resolver exposes no more information than sending that query to the entity managing the corresponding zone.
+Designating a resolver MUST rely on agreement between the entity managing a zone (the Domain Owner) and the entity operating the resolver, such that clients can securely validate this designation. These entities can be one and the same, or a Domain Owner can choose to designate a third-party resolver to handle its traffic. Proof of this agreement asserts to clients that sending any query to the designated resolver exposes no more information than sending that query to the entity managing the corresponding zone.
 
 As an example with only one entity, a company that runs many sites within "enterprise.example.com" can provide its own DoH resolver, "doh.enterprise.example.com", and designate only that resolver for all names that fall within "enterprise.example.com". This means that no other resolver would be designated for those names, and clients would only resolve names with the same entity that would service TLS connections.
 
 As an example with several entities, the organization that operates sites within "example.org" may work with two different Content Delivery Networks (CDNs) to serve its sites. It might designate names under "example.com" to two different entities, "doh.cdn-a.net" and "doh.cdn-b.net". These are CDNs that have an existing relationship with the organization that runs "example.org", and have agreements with that organization about how data with information on names and users is handled.
 
-There are several methods that can be used to designate a resolver:
+There are several methods that can be used to discover and validate a resolver designation:
 
-- Based on SVCB DNS records issued to another resolver ({{svcb}})
-- Based on information in a provisioning domain (PvD) from the Designated DoH Resolver that is confirmed via SVCB DNS records ({{pvd}})
-- Based on mutual agreement through confirmation of domains over HTTPS ({{pvd-mutual}})
-- Based on confirmation of domain name ownership within TLS certificates ({{cert-name-check}})
+- Discovery using SVCB DNS records ({{svcb}}), and validation using DNSSEC
+- Discovery using information in a provisioning domain (PvD) file from the Designated DoH Resolver
+- Validation using a file hosted on a well-known HTTPS URI based on a zone apex ({{confirm-zone-apex}})
+- Validation using TLS certificates to confirm of domain name ownership ({{confirm-cert-name}})
 
 Note that clients MUST NOT accept designations for effective top-level domains (eTLDs), such as ".com".
 
@@ -141,7 +141,7 @@ If this record is DNSSEC-signed {{!RFC4033}}, clients can immediately create a m
 
 Once a record that designated a DoH server has expired, the client SHOULD issue another SVCB/HTTPS query whenever issuing queries within the designated domain. This query SHOULD still be performed using the designated DoH server. If the response designates a different DoH server, the client should verify and use the new designation.
 
-If this record is not DNSSEC-signed, clients MUST perform other validation to determine that the zone designation is permitted, as described in {{pvd-mutual}}.
+If this record is not DNSSEC-signed, clients MUST perform other validation to determine that the zone designation is permitted, as described in {{confirm-zone-apex}}.
 
 ## Additional Designation with PvD JSON {#pvd}
 
@@ -151,9 +151,9 @@ Designated Resolvers that support DoH SHOULD provide a PvD JSON dictionary avail
 
 For example, the PvD JSON for the DoH server "https://doh.example.net/dns-query" would be available at "https://doh.example.net/.well-known/pvd/dns-query".
 
-The key "dohTemplate" is defined within the JSON dictionary ({{iana}}) to point back to the DoH URI Template itself. This is used for confirming the DoH server when the PvD is discovered locally or during mutual confirmation ({{pvd-mutual}}).
+The key "dohTemplate" is defined within the JSON dictionary ({{iana}}) to point back to the DoH URI Template itself. This is used for confirming the DoH server when the PvD is discovered locally or during zone apex confirmation ({{confirm-zone-apex}}).
 
-Names that are listed in the "dnsZones" key in the JSON dictionary indicate other names that designate the resolver. For each of those domains, clients SHOULD issue an SVCB query to the DoH resolver. If this record confirms the designation and is DNSSEC-signed, clients can create a mapping to designate the resolver. In order to optimize the validation of these domains, servers MAY use HTTP Server Push to deliver the records prior to the request being made.
+Names that are listed in the "dnsZones" key in the JSON dictionary indicate a set of zones that designate the resolver. These are the zones that are available to resolve through the associated DoH server. Note that this list does not need to be exhaustive, but is the set of common zones managed by the resolver that all clients should be aware of. Before using  DNS results for these names, clients MUST validate the designation either with a DNSSEC-signed SVCB record ({{svcb}}), or the confirmation methods described in {{confirm-zone-apex}} and {{confirm-cert-name}}. DNS queries for validating records SHOULD be sent the DoH resolver. In order to optimize the validation of these domains, servers MAY use HTTP Server Push to deliver the signed SVCB answers prior to requests being made.
 
 The "expires" key indicates a time after which the content of the PvD file is no longer valid. Clients SHOULD re-fetch PvD information if the expiration time has passed before using any designations that were based on the PvD content.
 
@@ -166,13 +166,25 @@ The "expires" key indicates a time after which the content of the PvD file is no
    }
 ~~~
 
-## Mutual Confirmation with PvD JSON {#pvd-mutual}
+## Confirmation of Designation with Zone Apex PvD {#confirm-zone-apex}
 
-Designated DoH Resolvers that provide the PvD JSON described in {{pvd}} can also provide information to allow validation of zone designations without DNSSEC.
+Designated DoH Resolvers that provide the PvD JSON described in {{pvd}} can also provide information to validate of zone's designation without DNSSEC.
+In order to confirm the designation, the client requests a well-known HTTPS URI based on a zone apex name, and checks a PvD file to ensure that
+it matches the DoH resolver. This ensures that a DoH resolver cannot claim a designation for a given zone without cooperation from the entity that owns
+the certificate for the apex of that zone.
 
-The JSON dictionary MAY contain a key "trustedNames" that is an array of strings containing domains that can be used for mutual confirmation of resolver designation.
+In order to list out the zone apex names that confirm designation in this manner, the DoH resolver's PvD JSON dictionary can contain
+an array of strings, with the key "trustedNames". Clients can validate the resolver designation by checking a resource hosted by a
+name indicated in "trustedNames". The client first issues an HTTP GET request by appending "/.well-known/pvd" to the trusted name,
+using the "https" scheme. The client's query for the address of the trusted name MAY use the DoH resolver prior to fully validating the designation.
 
-For example, the JSON dictionary retrieved at "https://doh.example.net/.well-known/pvd/dns-query" can contain the following contents:
+Note that the names listed in "trustedNames" are only useful for confirming a designation that was indicated either by a non-DNSSEC-signed
+SVCB designation ({{svcb}}), or an additional designation provided by the DoH resolver's PvD ({{pvd}}). A trusted name MUST be an exact match of
+a designating name, or else a parent of a designating name.
+
+If a name has more specific sub-domains that should not be allowed to designate a given DoH resolver, this method of confirmation MUST NOT be used.
+
+As an example of this process, the JSON dictionary for the DoH server "https://doh.example.net/dns-query", which is retrieved from "https://doh.example.net/.well-known/pvd/dns-query", could contain the following contents:
 
 ~~~
    {
@@ -186,7 +198,7 @@ For example, the JSON dictionary retrieved at "https://doh.example.net/.well-kno
 
 This indicates that "example.com" should be treated as a designated domain, and that it can be validated by checking with the "example.com" server rather than using DNSSEC.
 
-Clients MUST validate the resolver designation by checking a resource hosted by the name indicated in "trustedNames". The client first issues an HTTP GET request by appending "/.well-known/pvd" to the trusted name, using the "https" scheme. In this example, the resulting URI is "https://example.com/.well-known/pvd". In order to trust the designation, this request must return valid JSON with the "dohTemplate" key matching the original DoH resolver. For example, this dictionary could contain the following contents:
+In this example, the well-known URI used for validation is "https://example.com/.well-known/pvd". In order to trust the designation, this request must return valid JSON with the "dohTemplate" key matching the original DoH resolver. For example, this dictionary could contain the following contents:
 
 ~~~
    {
@@ -218,18 +230,18 @@ Note that the domains listed in "trustedNames" may be broader than the zones tha
    }
 ~~~
 
-# Confirmation of Domain Name Ownership with TLS Certificates {#cert-name-check}
+## Confirmation of Designation with TLS Certificates {#confirm-cert-name}
 
-A DoH server designation without DNSSEC or a PvD for mutual confirmation can be confirmed by the 
-SubjectAlternativeName field in the TLS certificate. When a client wants to confirm the validity of the 
-designation in this situation, it checks the TLS certificate of the DoH server for the name of the domain 
+A DoH server designation can also be validating by checking the SubjectAlternativeName field in the DoH
+server's own TLS certificate. When a client wants to confirm the validity of the 
+designation in this situation, it can check the TLS certificate of the DoH server for the name of the domain 
 which triggered the original designation query.
 
 The following example shows an HTTPS variant of the SVCB record type for "foo.example.com". If this record was
 received without DNSSEC, the client can confirm its validity by establishing a connection to "doh.example.net" 
 and verifying the TLS certificate contains an exact match for the "foo.example.com" name. If the queried domain 
 is not present in the TLS certificate of the designated DoH server, the client may confirm the validity by an 
-alternate method such as mutual confirmation {#pvd-mutual} but MUST NOT use the record until otherwise validated.
+alternate method such as zone apex confirmation ({{confirm-zone-apex}}) but MUST NOT use the record until otherwise validated.
 
 ~~~
    foo.example.com.  7200  IN HTTPS 1 . (
@@ -245,12 +257,11 @@ for which the local network's resolver is authoritative. The keys for DoH resolv
 If an RA provided by the router on the network defines an Explicit PvD that has additional
 information, and this additional information JSON dictionary contains the key "dohTemplate",
 then the client SHOULD add this DoH server to its list of known DoH configurations. The
-domains that the DoH server claims authority for are listed in the "dnsZones" key. Clients
-MUST use one of the methods for validating a designation described in {{svcb}} or {{pvd-mutual}}.
+domains that the DoH server claims authority for are listed in the "dnsZones" key.
 
 Local deployments that want to designate a resolver for a private name that is not easily
-signed with DNSSEC MUST provide an alternate method of validating a designation, particularly
-the one described in {{pvd-mutual}}.
+signed with DNSSEC MUST provide an alternate method of validating a designation, such as described
+in {{confirm-zone-apex}} or {{confirm-cert-name}}.
 
 # Discovery of DoH Capabilities for Direct Resolvers
 
@@ -361,8 +372,8 @@ Clients must be careful in determining to which DoH servers they send queries
 directly. A malicious resolver that can direct queries to itself
 can track or profile client activity. In order to avoid the possibility of a spoofed SVCB
 record designating a malicious DoH server for a name, clients MUST ensure that
-such records validate using DNSSEC ({{svcb}}), using mutual confirmation ({{pvd-mutual}}), or using  
-domain names in TLS certificates ({{cert-name-check}}).
+such records validate using DNSSEC ({{svcb}}), using zone apex confirmation ({{confirm-zone-apex}}),
+or using domain names in TLS certificates ({{confirm-cert-name}}).
 
 Even servers that are validly designated can risk leaking or logging information
 about client lookups. Such risk can be mitigated by further restricting the list of
