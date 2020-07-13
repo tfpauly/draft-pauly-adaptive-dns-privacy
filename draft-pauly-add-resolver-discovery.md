@@ -125,6 +125,8 @@ SVCB DNS resource record, or a SVCB-conformant resource record type, like HTTPS 
 This record provides the URI Template of a DoH server that is designated for a specific domain.
 A specific domain may have more than one such record.
 
+The rationale for using SVCB records for recolver discovery is discussed in {{rationale}}.
+
 In order to designate a DoH server for a domain, a SVCB record can
 contain the "dohuri" ({{iana}}). The value stored in the parameter
 is a URI, which is the DoH URI template {{!RFC8484}}.
@@ -265,7 +267,7 @@ Local deployments that want to designate a resolver for a private name that is n
 signed with DNSSEC MUST provide an alternate method of validating a designation, such as described
 in {{confirm-zone-apex}} or {{confirm-cert-name}}.
 
-# Discovery of DoH Capabilities for Direct Resolvers
+# Discovery of DoH Capabilities for Direct Resolvers {#direct}
 
 Direct Resolvers can advertise a Companion DoH server that offers equivalent services and is controlled 
 by the same entity. To do this, a DNS server returns an SVCB record for "dns://resolver.arpa"
@@ -438,3 +440,34 @@ other purposes where the resolver wishes to provide information about itself to 
 Thanks to Erik Nygren, Lorenzo Colitti, Mikael Abrahamsson,
 Ben Schwartz, Ask Hansen, Leif Hedstrom, Tim McCoy, Stuart Cheshire, Miguel Vega,
 Joey Deng, Ted Lemon, and Elliot Briggs for their feedback and input on this document.
+
+--- back
+
+# Rationale for using SVCB records {#rationale}
+
+This mechanism uses SVCB/HTTPS resource records {{!I-D.ietf-dnsop-svcb-https}} to communicate that a given
+domain designates a particular DoH resolver for clients to use for subsequent queries to within the domain.
+
+There are various other proposals for how to provide similar functionality. There are several reasons that this
+mechanism has chosen SVCB records:
+
+- Discovering encrypted resolver using DNS records keeps client logic for DNS self-contained, and allows an operator
+of a DNS zone to define exactly which names should use a given DoH server.
+
+- Using DNS records also doesn't rely on bootstrapping with higher-level application operations
+(such as {{?I-D.schinazi-httpbis-doh-preference-hints}}).
+
+- SVCB records are extensible and allow definition of parameter keys. This makes them a superior mechanism
+for extensibility, as compared to approaches such as overloading TXT records. The same keys can be used both
+for upgrading direct resolvers to DoH through an explicit query ({{direct}}) and for discovering designated resolvers
+when issuing standard HTTPS queries ({{svcb}}).
+
+- Clients and servers that are interested in privacy of names will already need to support SVCB records in order
+to use Encrypted TLS Client Hello {{!I-D.ietf-tls-esni}}. Without encrypting names in TLS, the value of encrypting
+DNS is reduced, so pairing the solutions provides the largest benefit.
+
+- Clients that support SVCB will generally send out three queries when accessing web content on a dual-stack
+network: A, AAAA, and HTTPS queries. Discovering a resolver designation for a zone as part of one of these queries,
+without having to add yet another query, minimizes the total number of queries clients send. While {{?RFC5507}}
+recommends adding new RRTypes for new functionality, SVCB provides an extension mechanism that simplifies
+client behavior.
