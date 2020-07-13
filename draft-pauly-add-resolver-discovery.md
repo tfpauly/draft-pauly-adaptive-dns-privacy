@@ -96,7 +96,7 @@ Designated Resolver:
 : A DNS resolver that is designated as a responsible resolver for a given domain or zone. Designated resolvers use encrypted transports.
 
 Companion DoH Server:
-: A DNS resolver that provides connectivity over HTTPS (DoH) that is designated as 
+: A DNS resolver that provides connectivity over HTTPS (DoH) that is designated as
 equivalent to querying a particular Direct Resolver.
 
 # Designated Resolvers
@@ -125,7 +125,7 @@ SVCB DNS resource record, or a SVCB-conformant resource record type, like HTTPS 
 This record provides the URI Template of a DoH server that is designated for a specific domain.
 A specific domain may have more than one such record.
 
-The rationale for using SVCB records for recolver discovery is discussed in {{rationale}}.
+The rationale for using SVCB records for resolver discovery is discussed in {{rationale}}.
 
 In order to designate a DoH server for a domain, a SVCB record can
 contain the "dohuri" ({{iana}}). The value stored in the parameter
@@ -237,14 +237,14 @@ Note that the domains listed in "trustedNames" may be broader than the zones tha
 ## Confirmation of Designation with TLS Certificates {#confirm-cert-name}
 
 A DoH server designation can also be validated by checking the SubjectAlternativeName field in the DoH
-server's own TLS certificate. When a client wants to confirm the validity of the 
-designation in this situation, it can check the TLS certificate of the DoH server for the name of the domain 
+server's own TLS certificate. When a client wants to confirm the validity of the
+designation in this situation, it can check the TLS certificate of the DoH server for the name of the domain
 which triggered the original designation query.
 
 The following example shows an HTTPS variant of the SVCB record type for "foo.example.com". If this record was
-received without DNSSEC, the client can confirm its validity by establishing a connection to "doh.example.net" 
-and verifying the TLS certificate contains an exact match for the "foo.example.com" name. If the queried domain 
-is not present in the TLS certificate of the designated DoH server, the client may confirm the validity by an 
+received without DNSSEC, the client can confirm its validity by establishing a connection to "doh.example.net"
+and verifying the TLS certificate contains an exact match for the "foo.example.com" name. If the queried domain
+is not present in the TLS certificate of the designated DoH server, the client may confirm the validity by an
 alternate method such as zone apex confirmation ({{confirm-zone-apex}}) but MUST NOT use the record until otherwise validated.
 
 ~~~
@@ -269,28 +269,28 @@ in {{confirm-zone-apex}} or {{confirm-cert-name}}.
 
 # Discovery of DoH Capabilities for Direct Resolvers {#direct}
 
-Direct Resolvers can advertise a Companion DoH server that offers equivalent services and is controlled 
+Direct Resolvers can advertise a Companion DoH server that offers equivalent services and is controlled
 by the same entity. To do this, a DNS server returns an SVCB record for "dns://resolver.arpa"
-with "ipv4hint" and/or "ipv6hint" set to a valid IP address and the "dohuri" key set to a valid DoH URI 
+with "ipv4hint" and/or "ipv6hint" set to a valid IP address and the "dohuri" key set to a valid DoH URI
 template as with the Designated DoH Server SVCB record. The TLS certificate used with the
-DoH URI MUST have the IP addresses for each of its DNS endpoints, classic or DoH, within the 
+DoH URI MUST have the IP addresses for each of its DNS endpoints, classic or DoH, within the
 SubjectAlternativeName field to allow the client to verify ownership.
 
-Once a client is configured to query a Direct Resolver, it SHOULD query the resolver for SVCB records 
-for "dns://resolver.arpa" before making other queries. This will help the client avoid leaking queries that 
-could go over DoH once the Companion DoH Server is discovered. If an SVCB record is returned, its "dohip" field 
-designates an IP address the client can send DoH queries to in lieu of sending classic DNS queries to the Direct 
-Resolver. The "dohuri" field contains the DoH URI similarly to the SVCB record for a Designated 
-DoH Server. 
+Once a client is configured to query a Direct Resolver, it SHOULD query the resolver for SVCB records
+for "dns://resolver.arpa" before making other queries. This will help the client avoid leaking queries that
+could go over DoH once the Companion DoH Server is discovered. If an SVCB record is returned, its "dohip" field
+designates an IP address the client can send DoH queries to in lieu of sending classic DNS queries to the Direct
+Resolver. The "dohuri" field contains the DoH URI similarly to the SVCB record for a Designated
+DoH Server.
 
-To validate the Companion DoH Server and the resolver that advertised it are related, the client MUST 
-check the SubjectAlternativeName field of the Companion DoH Server's TLS certificate for the original 
+To validate the Companion DoH Server and the resolver that advertised it are related, the client MUST
+check the SubjectAlternativeName field of the Companion DoH Server's TLS certificate for the original
 resolver's IP address and the advertised IP address for the Companion DoH server. If both are present, the
-discovered Companion DoH Server MUST be used whenever the original Direct Resolver would be used. Otherwise, 
-the client SHOULD suppress queries for Companion DoH Servers against this resolver for the TTL of the negative 
+discovered Companion DoH Server MUST be used whenever the original Direct Resolver would be used. Otherwise,
+the client SHOULD suppress queries for Companion DoH Servers against this resolver for the TTL of the negative
 or invalid response and continue to use the original Direct Resolver.
 
-The following example shows a record containing a Companion DoH URI, as returned by a query for an SVCB record 
+The following example shows a record containing a Companion DoH URI, as returned by a query for an SVCB record
 for "dns://resolver.arpa":
 
 ~~~
@@ -299,9 +299,9 @@ for "dns://resolver.arpa":
                         dohuri=https://doh.example.net/dns-query )
 ~~~
 
-A DNS resolver MAY return more than one SVCB record of this form to advertise multiple Companion 
-DoH Servers that are valid as a replacement for itself. Any or all of these servers may have the same IP 
-address as the DNS resolver itself. In this case, clients will only have one IP address to check for when 
+A DNS resolver MAY return more than one SVCB record of this form to advertise multiple Companion
+DoH Servers that are valid as a replacement for itself. Any or all of these servers may have the same IP
+address as the DNS resolver itself. In this case, clients will only have one IP address to check for when
 verifying ownership of the Companion DoH server.
 
 # Server Deployment Considerations
@@ -430,10 +430,10 @@ Reference:
 
 ## Special Use Domain Name "resolver.arpa"
 
-This document calls for the creation of the "resolver.arpa" SUDN. This will allow resolvers to respond to 
+This document calls for the creation of the "resolver.arpa" SUDN. This will allow resolvers to respond to
 queries directed at themselves rather than a specific domain name. While this document uses "resolver.arpa"
 to return SVCB records indicating DoH capability, the name is generic enough to allow future reuse for
-other purposes where the resolver wishes to provide information about itself to the client. 
+other purposes where the resolver wishes to provide information about itself to the client.
 
 # Acknowledgments
 
@@ -451,8 +451,8 @@ domain designates a particular DoH resolver for clients to use for subsequent qu
 There are various other proposals for how to provide similar functionality. There are several reasons that this
 mechanism has chosen SVCB records:
 
-- Discovering encrypted resolver using DNS records keeps client logic for DNS self-contained, and allows an operator
-of a DNS zone to define exactly which names should use a given DoH server.
+- Discovering encrypted resolver using DNS records keeps client logic for DNS self-contained and allows an operator of a
+DNS zone to define exactly which names should use a given DoH server.
 
 - Using DNS records also doesn't rely on bootstrapping with higher-level application operations
 (such as {{?I-D.schinazi-httpbis-doh-preference-hints}}).
