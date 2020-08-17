@@ -184,7 +184,7 @@ Using a content-provider's encrypted resolver can also provide several privacy a
 - Verify that answers come from the entity that manages the domains being resolved
 - Reduce the number of entities able to monitor the specific names accessed by a client to only the client
 and the content provider, assuming that the content provider would already see the names upon a secure connection
-later being made
+later being made based on the DNS answers (e.g., in the TLS SNI extension)
 
 # Distilled discovery mechanisms {#mechanisms}
 
