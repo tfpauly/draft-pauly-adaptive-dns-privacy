@@ -5,6 +5,8 @@ This is the working area for individual Internet-Drafts.
 ## Adaptive DNS Resolver Discovery
 
 * [Editor's Copy](https://tfpauly.github.io/draft-pauly-adaptive-dns-privacy/#go.draft-pauly-add-resolver-discovery.html)
+* [Individual Draft](https://tools.ietf.org/html/draft-pauly-add-resolver-discovery.html)
+* [Compare Editor's Copy to Individual Draft](https://tfpauly.github.io/draft-pauly-adaptive-dns-privacy/#go.draft-pauly-add-resolver-discovery.diff)
 
 ## Oblivious DNS Over HTTPS
 
