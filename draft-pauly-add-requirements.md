@@ -202,7 +202,7 @@ to communicate with a provisioned unencrypted DNS resolver and discover the equi
 DNS resolver.
 
 For the second group, mechanisms additionally need to provide some information about the applicability and capabilities
-of encrypted resolvers, including a list of domains that should use the resolver. This information could either be provisioned,
+of encrypted resolvers. This information could either be provisioned,
 or be discovered based on clients actively trying to access content.
 
 # Privacy and security requirements {#priv-sec}
