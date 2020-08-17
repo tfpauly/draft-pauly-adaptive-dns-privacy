@@ -239,7 +239,8 @@ already describes how to use DNS-over-TLS opporunistically.
 
 Even with encrypted DNS resolver discovery in place, clients must be prepared to handle certain scenarios where encrypted DNS
 cannot be used. In these scenarios, clients must consider if it is appropriate to fail open by sending the DNS queries without
-encryption, fail closed by not doing so, or presenting a choice to a user or administrator.
+encryption, fail closed by not doing so, or presenting a choice to a user or administrator. The exact behavior is a 
+local client policy decision. 
 
 Some networks that use Captive Portals will not allow any Internet connectivity until a client has interacted with the portal
 {{?I-D.ietf-capport-architecture}}. If these networks do not use encrypted DNS for their own resolution, a client will need to perform
