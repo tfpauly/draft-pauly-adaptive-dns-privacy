@@ -98,8 +98,8 @@ DNS servers are often provisioned by a network as part of DHCP options {{?RFC213
 IPv6 Router Advertisement (RA) options {{?RFC8106}}. These options describe one or more 
 DNS resolver IP addresses, to be used for traditional unencrypted DNS.
 
-Discovering an encrypted resolver that is provisioned by the network can provide several
-benefits:
+Using an encrypted resolver that is provisioned by the network can provide several
+benefits that are not possible if only unencrypted DNS is used:
 
 - Prevent other devices on the network from observing client DNS messages
 - Verify that answers come from the selected DNS resolver
