@@ -169,7 +169,7 @@ it might be necessary to discover a local encrypted resolver along with specific
 
 This case also include accessing content specific to a home network.
 
-## Encrypted resolvers for CDN content {#cdn-content}
+## Encrypted resolvers for content providers {#cdn-content}
 
 Content Delivery Networks (CDNs), and content-providers more broadly, can also provide encrypted
 DNS resolvers that can be used by clients over the public Internet. These resolvers can either allow
