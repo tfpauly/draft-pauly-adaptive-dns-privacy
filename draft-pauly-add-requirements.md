@@ -221,7 +221,7 @@ Given these capabilities, an attacker may have a variety of goals, including, th
 - Block encrypted DNS
 
 Clients cannot assume that their network does not have such an attacker unless given some means of authenticating or otherwise
-trusting the network.
+trusting the communication with their DNS resolver.
 
 Given this type of attacker, discovery mechanisms must be designed carefully to not worsen a client's security or
 privacy posture in such networks. In particular, attackers must not be able to:
