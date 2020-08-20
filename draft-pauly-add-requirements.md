@@ -220,7 +220,7 @@ Given these capabilities, an attacker may have a variety of goals, including, th
 
 - Block encrypted DNS
 
-Clients MUST treat the network as such an attacker unless given some means of authenticating or otherwise
+Clients cannot assume that their network does not have such an attacker unless given some means of authenticating or otherwise
 trusting the network.
 
 Given this type of attacker, discovery mechanisms must be designed carefully to not worsen a client's security or
