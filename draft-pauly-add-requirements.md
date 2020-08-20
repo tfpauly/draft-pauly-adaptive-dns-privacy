@@ -208,8 +208,8 @@ or can be discovered based on clients actively trying to access content.
 
 # Privacy and security requirements {#priv-sec}
 
-A primary goal of encrypted DNS is improving the privacy and security of DNS queries and answers in the presence
-of malicious attackers. Such attackers are assumed to interfere with or otherwise impede DNS traffic and corresponding
+Encrypted DNS improves the privacy and security of DNS queries and answers in the presence of malicious
+attackers. Such attackers are assumed to interfere with or otherwise impede DNS traffic and corresponding
 discovery mechanisms. They may be on-path or off-path between the client and entities with which the client
 communicates {{?RFC3552}}. These attackers can inject, tamper, or otherwise interfere with traffic as needed.
 Given these capabilities, an attacker may have a variety of goals, including, though not limited to:
