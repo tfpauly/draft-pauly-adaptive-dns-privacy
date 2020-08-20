@@ -192,19 +192,19 @@ The use cases described in {{use-cases}} do not all necessarily require separate
 
 Generally, the use cases can be summarized in two categories:
 
-1. Encrypted resolver discovery: Discover encrypted resolvers equivalent to (or associated with) unencrypted resolvers.
+1. Resolver upgrade: Discover encrypted resolvers equivalent to (or associated with) unencrypted resolvers.
 Examples include network-provisioned, client-selected, and VPN-configured resolvers.
-2. Domain-specific encrypted resolver discovery: Discover encrypted resolvers applicable to a limited set of domains.
+2. Domain-specific resolvers: Discover encrypted resolvers applicable to a limited set of domains.
 Examples include resolvers for enterprise or private names, local content, and CDN content.
 
-Encrypted resolver discovery mechanisms can either add new parameters to existing provisioning
+Resolver upgrade mechanisms can either add new parameters to existing provisioning
 mechanisms (adding necessary information to use DoT or DoH to options in DHCP, RAs, or IKEv2) or else provide a way
 to communicate with a provisioned unencrypted DNS resolver and discover the equivalent or associated encrypted
 DNS resolver.
 
-Domain-specific encrypted resolver discovery mechanisms additionally need to provide some information about the
-applicability and capabilities of encrypted resolvers. This information could either be provisioned,
-or be discovered based on clients actively trying to access content.
+Domain-specific resolver discovery mechanisms additionally need to provide some information about the
+applicability and capabilities of encrypted resolvers. This information can either be provisioned
+or can be discovered based on clients actively trying to access content.
 
 # Privacy and security requirements {#priv-sec}
 
@@ -216,19 +216,19 @@ Given these capabilities, an attacker may have a variety of goals, including, th
 
 - Monitor and profile clients by observing unencrypted DNS traffic
 
-- Modify client unencrypted DNS traffic to interfere with or augment the user experience
+- Modify unencrypted DNS traffic to filter or augment the user experience
 
 - Block encrypted DNS
 
-Clients MUST treat the network as such an attacker unless given some means of authenticating or otherwise
-trusting the network.
+Clients cannot assume that their network does not have such an attacker unless given some means of authenticating or otherwise
+trusting the communication with their DNS resolver.
 
-Given this type of attacker, discovery mechanisms must be designed carefully to not worsen a client's security or
-privacy posture in such networks. In particular, attackers must not be able to:
+Given this type of attacker, resolver discovery mechanisms must be designed carefully to not worsen a client's security or
+privacy posture. In particular, attackers must not be able to:
 
 - Redirect DNS traffic to themselves.
 
-- Override or adversely influence client resolver selection by users or administrators.
+- Override or interfere with the resolver preferences of a user or administrator.
 
 - Cause clients to use a discovered resolver which has no authenticated delegation from a client-known entity.
 
