@@ -228,7 +228,7 @@ privacy posture. In particular, attackers must not be able to:
 
 - Redirect DNS traffic to themselves.
 
-- Override or adversely influence client resolver selection by users or administrators.
+- Override or interfere with the resolver preferences of a user or administrator.
 
 - Cause clients to use a discovered resolver which has no authenticated delegation from a client-known entity.
 
