@@ -192,7 +192,7 @@ The use cases described in {{use-cases}} do not all necessarily require separate
 
 Generally, the use cases can be summarized in two categories:
 
-1. Encrypted resolver discovery: Discover encrypted resolvers equivalent to (or associated with) unencrypted resolvers.
+1. Resolver upgrade: Discover encrypted resolvers equivalent to (or associated with) unencrypted resolvers.
 Examples include network-provisioned, client-selected, and VPN-configured resolvers.
 2. Domain-specific encrypted resolver discovery: Discover encrypted resolvers applicable to a limited set of domains.
 Examples include resolvers for enterprise or private names, local content, and CDN content.
