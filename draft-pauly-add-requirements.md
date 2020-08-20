@@ -202,7 +202,7 @@ mechanisms (adding necessary information to use DoT or DoH to options in DHCP, R
 to communicate with a provisioned unencrypted DNS resolver and discover the equivalent or associated encrypted
 DNS resolver.
 
-Domain-specific encrypted resolver discovery mechanisms additionally need to provide some information about the
+Domain-specific resolver discovery mechanisms additionally need to provide some information about the
 applicability and capabilities of encrypted resolvers. This information could either be provisioned,
 or be discovered based on clients actively trying to access content.
 
