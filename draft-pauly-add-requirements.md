@@ -197,7 +197,7 @@ Examples include network-provisioned, client-selected, and VPN-configured resolv
 2. Domain-specific resolvers: Discover encrypted resolvers applicable to a limited set of domains.
 Examples include resolvers for enterprise or private names, local content, and CDN content.
 
-Encrypted resolver discovery mechanisms can either add new parameters to existing provisioning
+Resolver upgrade mechanisms can either add new parameters to existing provisioning
 mechanisms (adding necessary information to use DoT or DoH to options in DHCP, RAs, or IKEv2) or else provide a way
 to communicate with a provisioned unencrypted DNS resolver and discover the equivalent or associated encrypted
 DNS resolver.
