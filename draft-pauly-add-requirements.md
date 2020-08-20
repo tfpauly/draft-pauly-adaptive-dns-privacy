@@ -224,7 +224,7 @@ Clients cannot assume that their network does not have such an attacker unless g
 trusting the communication with their DNS resolver.
 
 Given this type of attacker, resolver discovery mechanisms must be designed carefully to not worsen a client's security or
-privacy posture in such networks. In particular, attackers must not be able to:
+privacy posture. In particular, attackers must not be able to:
 
 - Redirect DNS traffic to themselves.
 
