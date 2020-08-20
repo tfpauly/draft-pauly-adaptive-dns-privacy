@@ -203,8 +203,8 @@ to communicate with a provisioned unencrypted DNS resolver and discover the equi
 DNS resolver.
 
 Domain-specific resolver discovery mechanisms additionally need to provide some information about the
-applicability and capabilities of encrypted resolvers. This information could either be provisioned,
-or be discovered based on clients actively trying to access content.
+applicability and capabilities of encrypted resolvers. This information can either be provisioned
+or can be discovered based on clients actively trying to access content.
 
 # Privacy and security requirements {#priv-sec}
 
