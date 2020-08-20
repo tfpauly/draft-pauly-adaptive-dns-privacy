@@ -210,9 +210,18 @@ or be discovered based on clients actively trying to access content.
 
 A primary goal of encrypted DNS is improving the privacy and security of DNS queries and answers in the presence
 of malicious attackers. Such attackers are assumed to interfere with or otherwise impede DNS traffic and corresponding
-discovery mechanisms, in any way possible, in an attempt to prevent usage of encrypted DNS. For example, an attacker
-may block connectivity to a resolver chosen by the user. Clients MUST treat the network as such an attacker unless given
-some means of authenticating or otherwise trusting the network.
+discovery mechanisms. They may be on-path or off-path between the client and entities with which the client
+communicates. These attackers can inject, tamper, or otherwise interfere with traffic as needed.
+Given these capabilities, an attacker may have a variety of goals, including, though not limited to:
+
+- Monitor and profile clients by observing unencrypted DNS traffic
+
+- Modify client unencrypted DNS traffic to interfere with or augment the user experience
+
+- Block encrypted DNS
+
+Clients MUST treat the network as such an attacker unless given some means of authenticating or otherwise
+trusting the network.
 
 Given this type of attacker, discovery mechanisms must be designed carefully to not worsen a client's security or
 privacy posture in such networks. In particular, attackers must not be able to:
@@ -221,7 +230,7 @@ privacy posture in such networks. In particular, attackers must not be able to:
 
 - Override or adversely influence client resolver selection by users or administrators.
 
-- Cause clients to use a discovered resolver which has no trust association with a client-known entity.
+- Cause clients to use a discovered resolver which has no authenticated delegation from a client-known entity.
 
 - Influence automatic discovery mechanisms such that a client uses one or more resolvers that are not
 otherwise involved with providing service to the client, such as: a network provider, a VPN server, a
