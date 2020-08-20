@@ -216,7 +216,7 @@ Given these capabilities, an attacker may have a variety of goals, including, th
 
 - Monitor and profile clients by observing unencrypted DNS traffic
 
-- Modify client unencrypted DNS traffic to interfere with or augment the user experience
+- Modify unencrypted DNS traffic to filter or augment the user experience
 
 - Block encrypted DNS
 
