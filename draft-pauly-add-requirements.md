@@ -95,7 +95,7 @@ are briefly described.
 ## Network-provisioned resolvers {#local-network}
 
 DNS servers are often provisioned by a network as part of DHCP options {{?RFC2132}} or
-IPv6 Router Advertisement (RA) options {{?RFC8106}}. These options describe one or more 
+IPv6 Router Advertisement (RA) options {{?RFC8106}}. These options describe one or more
 DNS resolver IP addresses, to be used for traditional unencrypted DNS.
 
 Using an encrypted resolver that is provisioned by the network can provide several
@@ -165,7 +165,7 @@ is able to resolve names local content, this can fall into the use case describe
 it might be necessary to discover a local encrypted resolver along with specific domains if:
 
 - the network-provisioned encrypted resolver is not able to resolve local-only names, or
-- the client has a more-prerred encrypted resolver for generic traffic, and would otherwise not be able to access local content
+- the client has a more-preferred encrypted resolver for generic traffic, and would otherwise not be able to access local content
 
 This case also include accessing content specific to a home network.
 
@@ -186,61 +186,75 @@ Using a content-provider's encrypted resolver can also provide several privacy a
 and the content provider, assuming that the content provider would already see the names upon a secure connection
 later being made based on the DNS answers (e.g., in the TLS SNI extension)
 
-# Distilled discovery mechanisms {#mechanisms}
+# Discovery mechanisms {#mechanisms}
 
-The various use cases described in {{use-cases}} do not all necessarily require separate mechanisms.
+The use cases described in {{use-cases}} do not all necessarily require separate mechanisms.
 
-Generally, the use cases can be summarized in two catgories:
+Generally, the use cases can be summarized in two categories:
 
-1. Discover encrypted resolvers equivalent to (or associated with) unencrypted resolvers. (Network-provisioned,
-client-selected, VPN)
-2. Discover encrypted resolvers applicability to a limited set of domains. (Private names, local content, CDN content)
+1. Resolver upgrade: Discover encrypted resolvers equivalent to (or associated with) unencrypted resolvers.
+Examples include network-provisioned, client-selected, and VPN-configured resolvers.
+2. Domain-specific resolvers: Discover encrypted resolvers applicable to a limited set of domains.
+Examples include resolvers for enterprise or private names, local content, and CDN content.
 
-For the first group, mechanisms to discover equivalent resolvers can either add new parameters to existing provisioning
+Resolver upgrade mechanisms can either add new parameters to existing provisioning
 mechanisms (adding necessary information to use DoT or DoH to options in DHCP, RAs, or IKEv2) or else provide a way
 to communicate with a provisioned unencrypted DNS resolver and discover the equivalent or associated encrypted
 DNS resolver.
 
-For the second group, mechanisms additionally need to provide some information about the applicability and capabilities
-of encrypted resolvers. This information could either be provisioned,
-or be discovered based on clients actively trying to access content.
+Domain-specific resolver discovery mechanisms additionally need to provide some information about the
+applicability and capabilities of encrypted resolvers. This information can either be provisioned
+or can be discovered based on clients actively trying to access content.
 
 # Privacy and security requirements {#priv-sec}
 
-Since one of the main reasons for enabling encrypted DNS on clients is to improve the privacy and security properties
-of DNS queries, discovery mechanisms must be designed carefully to not weaken a client's security or privacy.
+Encrypted DNS improves the privacy and security of DNS queries and answers in the presence of malicious
+attackers. Such attackers are assumed to interfere with or otherwise impede DNS traffic and corresponding
+discovery mechanisms. They may be on-path or off-path between the client and entities with which the client
+communicates {{?RFC3552}}. These attackers can inject, tamper, or otherwise interfere with traffic as needed.
+Given these capabilities, an attacker may have a variety of goals, including, though not limited to:
 
-- Clients are always responsible for selecting which resolver(s) to use. Standards describing resolver discovery
-mechanisms must not place any requirements on clients to select some resolvers instead of other resolvers.
+- Monitor and profile clients by observing unencrypted DNS traffic
 
-- User or administrator preference must always be able to override any discovery mechanism. Networks
-may block connectivity to the resolver chosen by the user, but that does not mean that systems should ignore user
-preference.
+- Modify unencrypted DNS traffic to filter or augment the user experience
 
-- Automatic discovery mechanisms must be tied to an entity that is already otherwise involved in providing
-service to the client, such as: a network provider, a VPN server, a content provider being accessed, or
-a server that the client has manually configured.
+- Block encrypted DNS
 
-- The relationship between a discovered resolver and the client-known entity must be securely authenticated.
+Clients cannot assume that their network does not have such an attacker unless given some means of authenticating or otherwise
+trusting the communication with their DNS resolver.
 
-- Discovery mechanisms must not allow an attacker not associated with the client-known entity to successfully
-redirect DNS traffic to themselves.
+Given this type of attacker, resolver discovery mechanisms must be designed carefully to not worsen a client's security or
+privacy posture. In particular, attackers must not be able to:
 
-## Role of opportunistic encryption
+- Redirect DNS traffic to themselves.
+
+- Override or interfere with the resolver preferences of a user or administrator.
+
+- Cause clients to use a discovered resolver which has no authenticated delegation from a client-known entity.
+
+- Influence automatic discovery mechanisms such that a client uses one or more resolvers that are not
+otherwise involved with providing service to the client, such as: a network provider, a VPN server, a
+content provider being accessed, or a server that the client has manually configured.
+
+Beyond these requirements, standards describing resolver discovery mechanisms must not place any requirements
+on clients to select particular resolvers over others.
+
+## On opportunistic encryption
 
 Opportunistic encrypted DNS, when the client cannot authenticate the entity that provides encrypted DNS, does
 not meet the requirements laid out here for resolver discovery. While opportunistic encryption can provide some
-benefits, specifically in reducing the ability for other entities to observe traffic, it opens up avenues for on-path attackers.
+benefits, specifically in reducing the ability for other entities to observe traffic, it is not a viable solution
+against an on-path attacker.
 
 Performing opportunistic encrypted DNS does not require specific discovery mechanisms. Section 4.1 of {{?RFC7858}}
-already describes how to use DNS-over-TLS opporunistically.
+already describes how to use DNS-over-TLS opportunistically.
 
 ## Handling exceptions and failures
 
 Even with encrypted DNS resolver discovery in place, clients must be prepared to handle certain scenarios where encrypted DNS
 cannot be used. In these scenarios, clients must consider if it is appropriate to fail open by sending the DNS queries without
-encryption, fail closed by not doing so, or presenting a choice to a user or administrator. The exact behavior is a 
-local client policy decision. 
+encryption, fail closed by not doing so, or presenting a choice to a user or administrator. The exact behavior is a
+local client policy decision.
 
 Some networks that use Captive Portals will not allow any Internet connectivity until a client has interacted with the portal
 {{?I-D.ietf-capport-architecture}}. If these networks do not use encrypted DNS for their own resolution, a client will need to perform
@@ -248,6 +262,6 @@ unencrypted DNS queries in order to get out of captivity. Many operating systems
 and interacting with Captive Portals; these system components may be good candidates for failing open, since they do not generally
 represent user traffic.
 
-Other networks may not allow any use of encypted DNS, or any use of encrypted DNS to resolvers other than a network-provisioned
+Other networks may not allow any use of encrypted DNS, or any use of encrypted DNS to resolvers other than a network-provisioned
 resolver. Clients should not silently fail open in these cases, but if these networks are trusted by or administered by the user, the user
 may want to specifically follow the network's DNS policy instead of what the client would do on an unknown or untrusted network.
