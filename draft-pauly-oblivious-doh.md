@@ -300,8 +300,8 @@ are encoded as follows:
 
 ~~~
 struct {
-   uint8  message_type;
    opaque key_id<0..2^16-1>;
+   uint8  message_type;
    opaque encrypted_message<1..2^16-1>;
 } ObliviousDoHMessage;
 ~~~
@@ -359,7 +359,7 @@ The client then sends Q to the Oblivious Proxy according to {{oblivious-request}
 ~~~
 def encrypt_query_body(pkR, key_id, Q_plain):
   enc, context = SetupBaseS(pkR, "odoh-query")
-  aad = 0x01 || len(key_id) || key_id
+  aad = len(key_id) || key_id || 0x01
   ct = context.Seal(aad, Q_plain)
   Q_encrypted = enc || ct
   return Q_encrypted
@@ -409,14 +409,14 @@ def derive_secrets(Q_plain):
 def decrypt_query_body(skR, key_id, Q_encrypted):
   enc || ct = Q_encrypted
   dec, context = SetupBaseR(skR, "odoh-query")
-  aad = 0x01 || len(key_id) || key_id
+  aad = len(key_id) || key_id || 0x01
   Q_plain, error = context.Open(aad, ct)
   return Q_plain, error
 ~~~
 
 ~~~
 def encrypt_response_body(R_plain, answer_key, answer_nonce):
-  aad = 0x02 || 0x0000 // 0x0000 represents a 0-length KeyId
+  aad = 0x0000 || 0x02 // 0x0000 represents a 0-length KeyId
   R_encrypted = Seal(answer_key, answer_nonce, aad, R_plain)
   return R_encrypted
 ~~~
@@ -433,7 +433,7 @@ validate R_plain.padding (as all zeros) before using R_plain.dns_message.
 
 ~~~
 def decrypt_response_body(R_encrypted):
-  aad = 0x02 || 0x0000
+  aad = 0x0000 || 0x02 // 0x0000 represents a 0-length KeyId
   R_plain = Open(response_key, 0^Nn, aad, R_encrypted)
   return R_plain
 ~~~
