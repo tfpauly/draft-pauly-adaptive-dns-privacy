@@ -36,11 +36,11 @@ author:
   -
     ins: C. A. Wood
     name: Christopher A. Wood
-    org: Apple Inc.
-    street: One Apple Park Way
-    city: Cupertino, California 95014
+    org: Cloudflare
+    street: 101 Townsend St
+    city: San Francisco
     country: United States of America
-    email: cawood@apple.com
+    email: caw@heapingbits.net
 
 --- abstract
 
@@ -109,8 +109,8 @@ clients based on keys.
 
 The mechanism for discovering and provisioning the DoH URI Templates and public keys
 is via parameters added to DNS resource records. The mechanism for discovering the public
-key is decribed in {{keydiscovery}}. The mechanism for discovering a DoH URI Template is
-described in {{!I-D.pauly-dprive-adaptive-dns-privacy}}.
+key is described in {{keydiscovery}}. The mechanism for discovering a DoH URI Template is
+described in {{!I-D.pauly-add-resolver-discovery}}.
 
 # HTTP Exchange
 
@@ -199,9 +199,9 @@ Content-Type HTTP header to "application/oblivious-dns-message" for all successf
 The body of the response contains a DNS message that is encrypted with the client's symmetric key ({{encryption}}).
 
 The response from an Oblivious Target MUST set the Content-Type HTTP header to "application/oblivious-dns-message" which
-MUST be forwarded by the Oblivious Proxy to the Client. A Client MUST only consider a response which contains the 
+MUST be forwarded by the Oblivious Proxy to the Client. A Client MUST only consider a response which contains the
 Content-Type header in the response before processing the payload. A response without the appropriate header MUST be
-treated as an error and be handled appropriately. All other aspects of the HTTP response and error handling are 
+treated as an error and be handled appropriately. All other aspects of the HTTP response and error handling are
 inherited from standard DoH.
 
 ## HTTP Response Example
@@ -221,9 +221,9 @@ content-length = 154
 
 In order to use a DoH server as an Oblivious Target, the client must know a public key to use
 for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type
-({{!I-D.nygren-dnsop-svcb-httpssvc}}) for a name owned by the server.
+({{!I-D.ietf-dnsop-svcb-https}}) for a name owned by the server.
 
-The Service Binding key name is "odohkey" ({{iana}}). If present, this key/value
+The Service Binding key name is "odohconfig" ({{iana}}). If present, this key/value
 pair contains the public key to use when encrypting Oblivious DoH messages
 that will be targeted at a DoH server. The format of the key is defined in ({{publickey}}).
 
@@ -240,14 +240,58 @@ struct {
    uint16 kdf_id;
    uint16 aead_id;
    opaque public_key<1..2^16-1>;
-} ObliviousDNSKey;
+} ObliviousDoHConfigContents;
+
+struct {
+   uint16 version;
+   uint16 length;
+   select (ObliviousDoHConfig.version) {
+      case 0xff02: ObliviousDoHConfigContents contents;
+   }
+} ObliviousDoHConfig;
+
+ObliviousDoHConfig ObliviousDoHConfigs<1..2^16-1>;
 ~~~
 
-It contains the information needed to encrypt a message under ObliviousDNSKey.public_key
-such that only the owner of the corresponding private key can decrypt the message. The
-values for ObliviousDNSKey.kem_id, ObliviousDNSKey.kdf_id, and ObliviousDNSKey.aead_id
-are described in {{!I-D.irtf-cfrg-hpke}} Section 7. For convenience, let
-Identifier(ObliviousDNSKey) be defined as the SHA256 value of ObliviousDNSKey serialized.
+The `ObliviousDoHConfigs` structure contains one or more `ObliviousDoHConfig` structures in decreasing order of
+preference. This allows a server to support multiple versions of Oblivious DoH and multiple sets of Oblivious DoH
+parameters.
+
+An `ObliviousDoHConfig` contains a versioned representation of an Oblivious DoH configuration,
+with the following fields.
+
+version
+: The version of Oblivious DoH for which this configuration is used. Clients MUST ignore any
+`ObliviousDoHConfig` structure with a version they do not support.
+
+length
+: The length, in bytes, of the next field.
+
+contents
+: An opaque byte string whose contents depend on the version. For this
+specification, the contents are an `ObliviousDoHConfigContents` structure.
+
+An `ObliviousDoHConfigContents` contains the information needed to encrypt a message under
+`ObliviousDoHConfigContents.public_key` such that only the owner of the corresponding private
+key can decrypt the message. The values for `ObliviousDoHConfigContents.kem_id`,
+`ObliviousDoHConfigContents.kdf_id`, and `ObliviousDoHConfigContents.aead_id`
+are described in {{!I-D.irtf-cfrg-hpke}} Section 7. The fields in this structure
+are as follows:
+
+kem_id
+: The HPKE KEM identifier corresponding to `public_key`. Clients MUST ignore any
+`ObliviousDoHConfig` structure with a key using a KEM they do not support.
+
+kdf_id
+: The HPKE KDF identifier corresponding to `public_key`. Clients MUST ignore any
+`ObliviousDoHConfig` structure with a key using a KDF they do not support.
+
+aead_id
+: The HPKE AEAD identifier corresponding to `public_key`. Clients MUST ignore any
+`ObliviousDoHConfig` structure with a key using an AEAD they do not support.
+
+public_key
+: The HPKE public key used by the client to encrypt Oblivious DoH queries.
 
 # Oblivious DoH Message Format {#encryption}
 
@@ -256,18 +300,28 @@ are encoded as follows:
 
 ~~~
 struct {
-   uint8  message_type;
    opaque key_id<0..2^16-1>;
+   uint8  message_type;
    opaque encrypted_message<1..2^16-1>;
-} ObliviousDNSMessage;
+} ObliviousDoHMessage;
 ~~~
 
-ObliviousDNSMessage.message_type = 0x01 for Query messages and
-ObliviousDNSMessage.message_type = 0x02 for Response messages.
-ObliviousDNSMessage.key_id contains the identifier of the corresponding ObliviousDNSKey key.
-ObliviousDNSMessage.encrypted_message contains an encrypted message for the Oblivious Target
-(for Query messages) or client (for Response messages). The following sections describe how
-these meessage bodies are constructed.
+The `ObliviousDoHMessage` structure contains the following fields:
+
+message_type
+: A one-byte identifier for the type of message. Query messages use `message_type` 0x01, and Response
+messages use `message_type` 0x02.
+
+key_id
+: The identifier of the corresponding `ObliviousDoHConfigContents` key. This is computed as
+`Expand(Extract("", config), "odoh_key_id", Nh)`, where `config` is the ObliviousDoHConfigContents
+structure and `Extract`, `Expand`, and `Nh` are as specified by the HPKE cipher suite KDF corresponding
+to `config.kdf_id`.
+
+encrypted_message
+: An encrypted message for the Oblivious Target (for Query messages) or client (for Response messages).
+
+The following sections describe how these message bodies are constructed.
 
 ## Oblivious Queries
 
@@ -285,26 +339,27 @@ struct {
    opaque dns_message<1..2^16-1>;
    opaque response_seed[32];
    opaque padding<0..2^16-1>;
-} ObliviousDNSQueryBody;
+} ObliviousDoHQueryBody;
 ~~~
 
 Let M be a DNS message a client wishes to protect with Oblivious DoH. When sending an Oblivious DoH Query
-for resolving M to an Oblivious Target with ObliviousDNSKey key pk, a client does the following:
+for resolving M to an Oblivious Target with ObliviousDoHConfigContents config, a client does the following:
 
 1. Generate a random response seed of length 32 octets according to the guidelines in {{!RFC4086}}.
-2. Create an ObliviousDNSQueryBody structure, carrying the message M, response_seed, and padding, to produce Q_plain.
-3. Unmarshal pk.public_key to produce a public key pkR of type pk.kem_id.
-4. Compute the encrypted message as Q_encrypted = encrypt_query_body(pkR, key_id, Q_plain).
-key_id is defined as Identifier(pk).
-5. Output a ObliviousDNSMessage message Q where Q.message_type = 0x01,
-Q.key_id carries Identifier(pk), and Q.encrypted_message = Q_encrypted.
+2. Create an ObliviousDoHQueryBody structure, carrying the message M, response_seed, and padding, to produce Q_plain.
+3. Deserialize config.public_key to produce a public key pkR of type config.kem_id.
+4. Compute the encrypted message as Q_encrypted = encrypt_query_body(pkR, key_id, Q_plain),
+where `key_id` is as computed in {{encryption}}. Note also that `len(key_id)` outputs the length of `key_id`
+as a two-byte unsigned integer.
+5. Output a ObliviousDoHMessage message `Q` where `Q.message_type = 0x01`, `Q.key_id` carries `key_id`,
+and `Q.encrypted_message = Q_encrypted`.
 
 The client then sends Q to the Oblivious Proxy according to {{oblivious-request}}.
 
 ~~~
 def encrypt_query_body(pkR, key_id, Q_plain):
-  enc, context = SetupBaseI(pkR, "odns-query")
-  aad = 0x01 || key_id
+  enc, context = SetupBaseS(pkR, "odoh-query")
+  aad = len(key_id) || key_id || 0x01
   ct = context.Seal(aad, Q_plain)
   Q_encrypted = enc || ct
   return Q_encrypted
@@ -313,56 +368,56 @@ def encrypt_query_body(pkR, key_id, Q_plain):
 ## Oblivious Responses
 
 An Oblivious DoH Response message carries the DNS response (dns_message) along with padding.
-This message is encrypted with the client's chosen response key.
+This message is encrypted with a key derived from the client's chosen seed and the corresponding
+DNS query.
 
 ~~~
 struct {
    opaque dns_message<1..2^16-1>;
    opaque padding<0..2^16-1>;
-} ObliviousDNSResponseBody;
+} ObliviousDoHResponseBody;
 ~~~
 
 Targets that receive a Query message Q decrypt and process it as follows:
 
-1. Look up the ObliviousDNSKey according to Q.key_id. If no such key exists,
+1. Look up the ObliviousDoHConfigContents according to Q.key_id. If no such key exists,
 the Target MAY discard the query. Otherwise, let skR be the private key
 corresponding to this public key, or one chosen for trial decryption, and pk
-be the corresponding ObliviousDNSKey.
+be the corresponding ObliviousDoHConfigContents.
 2. Compute Q_plain, error = decrypt_query_body(skR, Q.key_id, Q.encrypted_message).
 3. If no error was returned, and Q_plain.padding is valid (all zeros), resolve
 Q_plain.dns_message as needed, yielding a DNS message M.
-4. Create an ObliviousDNSResponseBody structure, carrying the message M and padding,
+4. Create an ObliviousDoHResponseBody structure, carrying the message M and padding,
 to produce R_plain.
-5. Compute akey, anonce = derive_keys(Q_plain). (See definition for
-derive_keys below. Hash, Expand, Extract, Nn, and Nk are functions and parameters
-bound to the target's HPKE public key.)
-6. Compute R_encrypted = encrypt_response_body(R_plain, akey, anonce). (See definition
-for encrypt_response_body below. The key_id field used for encryption is empty,
-yielding 0x0000 as part of the AAD.)
-7. Output a ObliviousDNSMessage message R where R.message_type = 0x02,
+5. Compute answer_key, answer_nonce = derive_secrets(Q_plain). (See definition for derive_secrets below.)
+6. Compute R_encrypted = encrypt_response_body(R_plain, answer_key, answer_nonce). See definition
+for encrypt_response_body below. The `key_id` field used for encryption is empty,
+yielding `0x0000` as part of the AAD. Also, the `Seal` function is that which is associated
+with the HPKE AEAD.
+7. Output a ObliviousDoHMessage message R where R.message_type = 0x02,
 R.key_id = nil, and R.encrypted_message = R_encrypted.
 
 ~~~
-def derive_keys(Q_plain):
-  context = Hash(Q_plain.dns_message)
-  key = Expand(Q_plain.response_seed, concat("odoh key", context), Nk)
-  nonce = Expand(Q_plain.response_seed, concat("odoh nonce", context), Nn)
+def derive_secrets(Q_plain):
+  odoh_prk = Extract(Q_plain.dns_message, Q_plain.response_seed)
+  key = Expand(odoh_prk, "odoh key", Nk)
+  nonce = Expand(odoh_prk, "odoh nonce", Nn)
   return key, nonce
 ~~~
 
 ~~~
 def decrypt_query_body(skR, key_id, Q_encrypted):
   enc || ct = Q_encrypted
-  dec, context = SetupBaseR(skR, "odns-query")
-  aad = 0x01 || key_id
+  dec, context = SetupBaseR(skR, "odoh-query")
+  aad = len(key_id) || key_id || 0x01
   Q_plain, error = context.Open(aad, ct)
   return Q_plain, error
 ~~~
 
 ~~~
-def encrypt_response_body(R_plain, akey, anonce):
-  aad = 0x02 || 0x0000 // 0x0000 represents a 0-length KeyId
-  R_encrypted = Seal(akey, anonce, aad, R_plain)
+def encrypt_response_body(R_plain, answer_key, answer_nonce):
+  aad = 0x0000 || 0x02 // 0x0000 represents a 0-length KeyId
+  R_encrypted = Seal(answer_key, answer_nonce, aad, R_plain)
   return R_encrypted
 ~~~
 
@@ -378,7 +433,7 @@ validate R_plain.padding (as all zeros) before using R_plain.dns_message.
 
 ~~~
 def decrypt_response_body(R_encrypted):
-  aad = 0x02 || 0x0000
+  aad = 0x0000 || 0x02 // 0x0000 represents a 0-length KeyId
   R_plain = Open(response_key, 0^Nn, aad, R_encrypted)
   return R_plain
 ~~~
@@ -403,7 +458,7 @@ query contents and destination.
 keys.
 
 Traffic analysis mitigations are outside the scope of this document. In particular, this document
-does not recommend padding lengths for ObliviousDNSQueryBody and ObliviousDNSResponseBody messages.
+does not recommend padding lengths for ObliviousDoHQueryBody and ObliviousDoHResponseBody messages.
 Implementations SHOULD follow the guidance for choosing padding length in {{!RFC8467}}.
 
 Oblivious DoH security does not depend on proxy and target indistinguishability. Specifically, an
@@ -421,18 +476,19 @@ one or both of these servers in the event of such failure.
 
 ## General Proxy Services
 
-Using DoH over anonymizing proxy services such as Tor would also achieve the desired goal of separating 
+Using DoH over anonymizing proxy services such as Tor would also achieve the desired goal of separating
 query origins from their contents. However, there are several reasons why such systems are undesirable
 in comparison Oblivious DoH:
 
-1. Tor is also meant as a generic connection-level anonymity system, and thus seems overly complex for 
-the purpose of proxying individual DoH queries. In contrast, Oblivious DoH is a lightweight extension 
-to standard DoH that can be enabled as a default mode for users which need increased privacy.
+1. Tor is also meant as a generic connection-level anonymity system, and thus seems overly complex
+and costly for the purpose of proxying individual DoH queries. In contrast, Oblivious DoH is a
+lightweight extension to standard DoH, implemented as an application-layer proxy, that can be enabled
+as a default mode for users which need increased privacy.
 
 2. As a one-hop proxy, Oblivious DoH encourages connection-less proxies to mitigate client query correlation
 with few round-trips. In contrast, multi-hop systems such as Tor often run secure connections (TLS) end-to-end,
 which means that DoH servers could track queries over the same connection. Using a fresh DoH connection
-per query would incur a non-negligible penalty in connection setup time. 
+per query would incur a non-negligible penalty in connection setup time.
 
 # IANA Considerations {#iana}
 
@@ -479,16 +535,16 @@ Change controller: IETF
 ## Oblivious DoH Public Key DNS Parameter
 
 This document defines one new key to be added to the Service Binding (SVCB) Parameter Registry
-{{!I-D.nygren-dnsop-svcb-httpssvc}}.
+{{!I-D.ietf-dnsop-svcb-https}}.
 
 Name:
-: odohkey
+: odohconfig
 
 SvcParamKey:
-: TBD
+: odohconfig
 
 Meaning:
-: Public key used to encrypt messages in Oblivious DoH
+: Public key configuration used for encrypting Oblivious DoH messages
 
 Reference:
 : This document.
