@@ -84,14 +84,14 @@ they appear in all capitals, as shown here.
 
 This document defines the following terms:
 
+Oblivious Resolution Server:
+: A server that acts as either a Proxy or Target.
+
 Oblivious Proxy:
-: A server that proxies encrypted client DNS queries to a resolution server that
-will be able to decrypt the query (the Oblivious Target). Oblivious DoH servers
-can function as proxies, but other non-resolver proxy servers could also be used.
+: An ODoH server that proxies encrypted DNS queries and responses between a client and an ODoH Target. 
 
 Oblivious Target:
-: A resolution server that receives encrypted client DNS queries and
-generates encrypted DNS responses transferred via an Oblivious Proxy.
+: An ODoH server that receives and decrypts encrypted client DNS queries from a Proxy, and returns encrypted DNS responses via that same  Proxy. A Target may be co-located with a resolver or part of the resolver itself, but neither is a requirement.
 
 # Deployment Requirements
 
