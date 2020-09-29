@@ -217,16 +217,9 @@ content-length = 154
 <Bytes containing the encrypted payload for an Oblivious DNS response>
 ~~~
 
-The following example shows a 4xx (Client Error) response that can be sent from an Oblivious
-Target to a client via an Oblivious Proxy.
+Requests that cannot be processed result in 4xx (Client Error) responses.
 
-~~~
-:status = 400
-content-type = application/oblivious-dns-message
-content-length = 0
-~~~
-
-# Public Key Discovery {#keydiscovery}
+# Configuration and Public Key Discovery {#keydiscovery}
 
 In order to use a DoH server as an Oblivious Target, the client must know a public key to use
 for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type
@@ -239,7 +232,7 @@ that will be targeted at a DoH server. The format of the key is defined in ({{pu
 Clients MUST only use keys that were retrieved from records protected by DNSSEC {{!RFC4033}}
 to encrypt messages to an Oblivious Target.
 
-# Public Key Format {#publickey}
+# Configuration and Public Key Format {#publickey}
 
 An Oblivious DNS public key is a structure encoded, using TLS-style encoding {{!RFC8446}}, as follows:
 
