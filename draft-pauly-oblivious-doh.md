@@ -478,8 +478,15 @@ Oblivious DoH aims to keep knowledge of the true query origin and its contents k
 clients. In particular, it assumes a Dolev-Yao style attacker which can observe all client queries,
 including those forwarded by oblivious proxies, and does not collude with target resolvers. (Indeed,
 if a target colludes with the network attacker, then said attacker can learn the true query origin
-and its contents.) Oblivious DoH aims to achieve the following confidentiality goals in the presence
-of this attacker:
+and its contents.) Moreover, Oblivious DoH assumes that Proxies and Targets are not malicious and
+they do not collude. Malicious Targets are out of scope because DNS recursive resolvers behind
+targets may reply with legitimate or bogus answers in the absence of DNSSEC, so Target malfeasance
+does not introduce a unique threat. Moreover, malicious Proxies are out of scope because clients must
+trust them to access Targets. Malicious Proxies could block or otherwise tamper with Oblivious DoH
+queries, though this is not different from a malicious network which blocks client access to a
+DoH server.
+
+Oblivious DoH aims to achieve the following confidentiality goals in the presence of this threat model:
 
 1. Queries and answers are known only to clients and targets in possession of the corresponding
 response key and HPKE keying material. In particular, proxies know the origin and destination
@@ -500,11 +507,15 @@ direct DoH queries. However, this has no effect on confidentiality goals listed 
 ## Denial of Service
 
 Malicious clients (or proxies) may send bogus Oblivious DoH queries to targets as a Denial-of-Service
-(DoS) attack. Target servers may throttle processing requests if such an event occurs.
+(DoS) attack. Target servers may throttle processing requests if such an event occurs. Additionally,
+since Targets provide explicit errors upon decryption failure, i.e., if ciphertext decryption fails
+or if the plaintext DNS message is malformed, Proxies may throttle specific clients in response to
+these errors.
 
-Malicious targets or proxies may send bogus answers in response to Oblivious DoH queries. Response
-decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to stop using
-one or both of these servers in the event of such failure.
+Malicious Targets or Proxies may send bogus answers in response to Oblivious DoH queries. Response
+decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to
+stop using one or both of these servers in the event of such failure. However, as above, malicious
+Targets and Proxies are out of scope for the threat model.
 
 ## General Proxy Services
 
