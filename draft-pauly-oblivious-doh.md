@@ -467,22 +467,22 @@ back to the client as the HTTP response to the client's original HTTP request.
 
 DISCLAIMER: this is a work in progress draft and has not yet seen significant security analysis.
 
-Oblivious DoH aims to keep knowledge of the true query origin and its contents known to only
-clients. In particular, it assumes an extended Dolev-Yao style attacker which can observe all client
-queries, including those forwarded by oblivious proxies, and does not collude with target resolvers.
-Indeed, if a target colludes with the network attacker, then said attacker can learn the true query
-origin and its contents.
-
+Oblivious DoH aims to keep knowledge of the true query origin and its contents known to only clients.
 As a simplified model, consider a case where there exists two clients C1 and C2, one proxy P, and
-one target T. The attacker can adaptively compromise either P or T, but not C1 or C2. Once compromised,
+one target T. Oblivious DoH assumes an extended Dolev-Yao style attacker which can observe all
+network activity and can adaptively compromise either P or T, but not C1 or C2. Once compromised,
 the attacker has access to all session information and private key material. (This generalizes to
 arbitrarily many clients, proxies, and targets, with the constraint that not all targets and proxies
-are compromised, and all but two clients are left uncompromised.) In this model, both C1 and C2 send
-an Oblivious DoH query Q1 and Q2, respectively, through P to T, and T provides answers A1 and A2. The
-attacker aims to link C1 to (Q1, A1) and C2 to (Q2, A2), respectively. The attacker succeeds if this
-linkability is possible without any additional interaction. (For example, if T is compromised, it may
-return a DNS answer corresponding to an entity it controls, and then observe the subsequent connection
-from a client, learning its identity in the process. Such attacks are out of scope for this model.)
+are simultaneously compromised, and all but two clients are left uncompromised.) The attacker is
+prohibited from sending client identifying information, such as IP addresses, to targets. (This would
+allow the attacker to trivially link a query to the corresponding client.)
+
+In this model, both C1 and C2 send an Oblivious DoH queries Q1 and Q2, respectively, through P to T,
+and T provides answers A1 and A2. The attacker aims to link C1 to (Q1, A1) and C2 to (Q2, A2), respectively.
+The attacker succeeds if this linkability is possible without any additional interaction. (For example,
+if T is compromised, it may return a DNS answer corresponding to an entity it controls, and then observe
+the subsequent connection from a client, learning its identity in the process. Such attacks are out of
+scope for this model.)
 
 Oblivious DoH security prevents such linkability. Informally, this means:
 
