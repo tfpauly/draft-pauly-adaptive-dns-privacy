@@ -326,23 +326,23 @@ message, encoded as follows:
 
 ~~~
 struct {
-   opaque key_id<0..2^16-1>;
    uint8  message_type;
+   opaque key_id<0..2^16-1>;
    opaque encrypted_message<1..2^16-1>;
 } ObliviousDoHMessage;
 ~~~
 
 The `ObliviousDoHMessage` structure contains the following fields:
 
+message_type
+: A one-byte identifier for the type of message. Query messages use `message_type` 0x01, and Response
+messages use `message_type` 0x02.
+
 key_id
 : The identifier of the corresponding `ObliviousDoHConfigContents` key. This is computed as
 `Expand(Extract("", config), "odoh_key_id", Nh)`, where `config` is the ObliviousDoHConfigContents
 structure and `Extract`, `Expand`, and `Nh` are as specified by the HPKE cipher suite KDF corresponding
 to `config.kdf_id`.
-
-message_type
-: A one-byte identifier for the type of message. Query messages use `message_type` 0x01, and Response
-messages use `message_type` 0x02.
 
 encrypted_message
 : An encrypted message for the Oblivious Target (for Query messages) or client (for Response messages).
@@ -361,7 +361,7 @@ encrypt_query_body: Encrypt an Oblivious DoH query.
 ~~~
 def encrypt_query_body(pkR, key_id, Q_plain):
   enc, context = SetupBaseS(pkR, "odoh query")
-  aad = len(key_id) || key_id || 0x01
+  aad = 0x01 || len(key_id) || key_id
   ct = context.Seal(aad, Q_plain)
   Q_encrypted = enc || ct
   return Q_encrypted
@@ -372,7 +372,7 @@ decrypt_response_body: Decrypt an Oblivious DoH response.
 ~~~
 def decrypt_response_body(context, Q_plain, R_encrypted):
   key, nonce = derive_secrets(context, Q_plain)
-  aad = 0x0000 || 0x02 // 0x0000 represents a 0-length KeyId
+  aad = 0x02 || 0x0000 // 0x0000 represents a 0-length KeyId
   R_plain, error = Open(key, nonce, aad, R_encrypted)
   return R_plain, error
 ~~~
@@ -395,7 +395,7 @@ decrypt_query_body: Decrypt an Oblivious DoH query.
 
 ~~~
 def decrypt_query_body(context, key_id, Q_encrypted):
-  aad = len(key_id) || key_id || 0x01
+  aad = 0x01 || len(key_id) || key_id
   Q_plain, error = context.Open(aad, ct)
   return Q_plain, error
 ~~~
@@ -415,7 +415,7 @@ encrypt_response_body: Encrypt an Oblivious DoH response.
 
 ~~~
 def encrypt_response_body(R_plain, answer_key, answer_nonce):
-  aad = 0x0000 || 0x02 // 0x0000 represents a 0-length KeyId
+  aad = 0x02 || 0x0000 // 0x0000 represents a 0-length KeyId
   R_encrypted = Seal(answer_key, answer_nonce, aad, R_plain)
   return R_encrypted
 ~~~
