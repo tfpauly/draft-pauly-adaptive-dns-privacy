@@ -377,6 +377,8 @@ def decrypt_response_body(context, Q_plain, R_encrypted):
   return R_plain, error
 ~~~
 
+The `derive_secrets` function is described below.
+
 Oblivious Targets use the following utility functions in processing
 queries and producing responses as described in {{odoh-target}}.
 
@@ -402,7 +404,7 @@ derive_secrets: Derive keying material used for encrypting an Oblivious DoH resp
 
 ~~~
 def derive_secrets(context, Q_plain):
-  odoh_epsk = context.Export("odoh response", 32)
+  odoh_secret = context.Export("odoh secret", 32)
   odoh_prk = Extract(Q_plain.dns_message, odoh_epsk)
   key = Expand(odoh_prk, "odoh key", Nk)
   nonce = Expand(odoh_prk, "odoh nonce", Nn)
