@@ -91,7 +91,7 @@ Oblivious Proxy:
 : An ODoH server that proxies encrypted DNS queries and responses between a client and an ODoH Target. 
 
 Oblivious Target:
-: An ODoH server that receives and decrypts encrypted client DNS queries from a Proxy, and returns encrypted DNS responses via that same  Proxy. A Target may be co-located with a resolver or part of the resolver itself, but neither is a requirement.
+: An ODoH server that receives and decrypts encrypted client DNS queries from a Proxy, and returns encrypted DNS responses via that same Proxy. In order to provide DNS responses, the target can be a DNS resolver, be co-located with a resolver, or forward to a resolver.
 
 # Deployment Requirements
 
