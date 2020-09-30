@@ -468,18 +468,23 @@ back to the client as the HTTP response to the client's original HTTP request.
 DISCLAIMER: this is a work in progress draft and has not yet seen significant security analysis.
 
 Oblivious DoH aims to keep knowledge of the true query origin and its contents known to only
-clients. In particular, it assumes a Dolev-Yao style attacker which can observe all client queries,
-including those forwarded by oblivious proxies, and does not collude with target resolvers. (Indeed,
-if a target colludes with the network attacker, then said attacker can learn the true query origin
-and its contents.) Moreover, Oblivious DoH assumes that Proxies and Targets are not malicious and
-they do not collude. Malicious Targets are out of scope because DNS recursive resolvers behind
-targets may reply with legitimate or bogus answers in the absence of DNSSEC, so Target malfeasance
-does not introduce a unique threat. Moreover, malicious Proxies are out of scope because clients must
-trust them to access Targets. Malicious Proxies could block or otherwise tamper with Oblivious DoH
-queries, though this is not different from a malicious network which blocks client access to a
-DoH server.
+clients. In particular, it assumes an extended Dolev-Yao style attacker which can observe all client
+queries, including those forwarded by oblivious proxies, and does not collude with target resolvers.
+Indeed, if a target colludes with the network attacker, then said attacker can learn the true query
+origin and its contents.
 
-Oblivious DoH aims to achieve the following confidentiality goals in the presence of this threat model:
+As a simplified model, consider a case where there exists two clients C1 and C2, one proxy P, and
+one target T. The attacker can adaptively compromise either P or T, but not C1 or C2. Once compromised,
+the attacker has access to all session information and private key material. (This generalizes to
+arbitrarily many clients, proxies, and targets, with the constraint that not all targets and proxies
+are compromised, and all but two clients are left uncompromised.) In this model, both C1 and C2 send
+an Oblivious DoH query Q1 and Q2, respectively, through P to T, and T provides answers A1 and A2. The
+attacker aims to link C1 to (Q1, A1) and C2 to (Q2, A2), respectively. The attacker succeeds if this
+linkability is possible without any additional interaction. (For example, if T is compromised, it may
+return a DNS answer corresponding to an entity it controls, and then observe the subsequent connection
+from a client, learning its identity in the process. Such attacks are out of scope for this model.)
+
+Oblivious DoH security prevents such linkability. Informally, this means:
 
 1. Queries and answers are known only to clients and targets in possession of the corresponding
 response key and HPKE keying material. In particular, proxies know the origin and destination
@@ -490,7 +495,7 @@ query contents and destination.
 keys.
 
 Traffic analysis mitigations are outside the scope of this document. In particular, this document
-does not recommend padding lengths for ObliviousDoHQueryBody and ObliviousDoHResponseBody messages.
+does not recommend padding lengths for ObliviousDoHQuery and ObliviousDoHResponse messages.
 Implementations SHOULD follow the guidance for choosing padding length in {{!RFC8467}}.
 
 Oblivious DoH security does not depend on proxy and target indistinguishability. Specifically, an
