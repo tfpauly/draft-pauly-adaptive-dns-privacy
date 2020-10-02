@@ -475,7 +475,7 @@ one target T. Oblivious DoH assumes an extended Dolev-Yao style attacker which c
 network activity and can adaptively compromise either P or T, but not C1 or C2. Once compromised,
 the attacker has access to all session information and private key material. (This generalizes to
 arbitrarily many clients, proxies, and targets, with the constraint that not all targets and proxies
-are simultaneously compromised, and all but two clients are left uncompromised.) The attacker is
+are simultaneously compromised, and at least two clients are left uncompromised.) The attacker is
 prohibited from sending client identifying information, such as IP addresses, to targets. (This would
 allow the attacker to trivially link a query to the corresponding client.)
 
