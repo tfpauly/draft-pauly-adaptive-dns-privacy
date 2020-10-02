@@ -80,28 +80,29 @@ in the broader context of Adaptive DNS {{!I-D.pauly-dprive-adaptive-dns-privacy}
 
 This document defines the following terms:
 
-Oblivious Resolution Server:
-: A server that acts as either a Proxy or Target.
+Oblivious Server:
+: A DoH server that acts as either an Oblivious Proxy or Oblivious Target.
 
 Oblivious Proxy:
-: An ODoH server that proxies encrypted DNS queries and responses between a client and an ODoH Target. 
+: An Oblivious Server that proxies encrypted DNS queries and responses between a client and an
+Oblivious Target.
 
 Oblivious Target:
-: An ODoH server that receives and decrypts encrypted client DNS queries from a Proxy, and returns encrypted DNS responses via that same Proxy. In order to provide DNS responses, the target can be a DNS resolver, be co-located with a resolver, or forward to a resolver.
+: An Oblivious Server that receives and decrypts encrypted client DNS queries from an Oblivious Proxy,
+and returns encrypted DNS responses via that same Proxy. In order to provide DNS responses, the Target
+can be a DNS resolver, be co-located with a resolver, or forward to a resolver.
+
+Throughout the rest of this document, we use the terms Proxy and Target to refer to an Oblivious
+Proxy and Oblivious Target, respectively.
 
 # Deployment Requirements
 
 Oblivious DoH requires, at a minimum:
 
-- Two DoH servers, where one can act as an Oblivious Proxy, and the other can act as an
-Oblivious Target.
-- Public keys for encrypting DNS queries that are passed from a client through a proxy
-to a target ({{publickey}}). These keys guarantee that only the intended Oblivious Target
-can decrypt client queries.
-- Client ability to generate random {{!RFC4086}} one-time-use symmetric keys to encrypt DNS responses. These
-symmetric keys ensure that only the client will be able to decrypt the response from the
-Oblivious Target. They are only used once to prevent the Oblivious Target from tracking
-clients based on keys.
+- Two Oblivious Servers, where one can act as a Proxy, and the other can act as a Target.
+- Public keys for encrypting DNS queries that are passed from a client through a Proxy
+  to a Target ({{publickey}}). These keys guarantee that only the intended Target can
+  decrypt client queries.
 
 The mechanism for discovering and provisioning the DoH URI Templates and public keys
 is via parameters added to DNS resource records. The mechanism for discovering the public
@@ -113,10 +114,9 @@ described in {{!I-D.pauly-add-resolver-discovery}}.
 Unlike direct resolution, oblivious hostname resolution over DoH involves three parties:
 
 1. The Client, which generates queries.
-2. The Oblivious Proxy, which is a resolution server that receives encrypted queries from the client
-and passes them on to another resolution server.
-3. The Oblivious Target, which is a resolution server that receives proxied queries from the client
-via the Oblivious Proxy.
+2. The Proxy, which receives encrypted queries from the client and passes them on to a Target.
+3. The Target, which receives proxied queries from the client via the Proxy and produces proxied
+   answers.
 
 ~~~
      --- [ Request encrypted with target public key ] -->
@@ -130,11 +130,11 @@ via the Oblivious Proxy.
 
 ## HTTP Request {#oblivious-request}
 
-Oblivious DoH queries are created by the Client, and sent to the Oblivious Proxy.
-Requests to the Oblivious Proxy indicate which DoH server to use as an Oblivious
-Target by specifying two variables: "targethost", which indicates the host name
-of the Oblivious Target server, and "targetpath", which indicates the path on which
-the Oblivious Target's DoH server is running. See {{request-example}} for an
+Oblivious DoH queries are created by the Client, and sent to the Proxy.
+Requests to the Proxy indicate which DoH server to use as a Target by
+specifying two variables: "targethost", which indicates the host name of
+the Target server, and "targetpath", which indicates the path on which
+the Target's DoH server is running. See {{request-example}} for an
 example request.
 
 Oblivious DoH messages have no cache value since both requests and responses are
@@ -149,16 +149,16 @@ set this same value for the HTTP Accept header.
 Upon receiving a request that contains a "application/oblivious-dns-message" Content-Type,
 the DoH server looks for the "targethost" and "targetpath" variables. If the variables are not
 present, then it is the target of the query, and it can decrypt the query ({{encryption}}).
-If the variables are present, then the DoH server is acting as an Oblivious Proxy.
-If it is a proxy, it is expected to send the request on to the Oblivious
-Target using the URI template constructed as "https://targethost/targetpath".
+If the variables are present, then the DoH server is acting as a Proxy.
+If it is a proxy, it is expected to send the request on to the Target
+using the URI template constructed as "https://targethost/targetpath".
 
 ## HTTP Request Example {#request-example}
 
-The following example shows how a client requests that an Oblivious Proxy, "dnsproxy.example.net",
-forwards an encrypted message to "dnstarget.example.net". The URI template for the Oblivious
+The following example shows how a client requests that a Proxy, "dnsproxy.example.net",
+forwards an encrypted message to "dnstarget.example.net". The URI template for the
 Proxy is "https://dnsproxy.example.net/dns-query{?targethost,targetpath}". The URI template for
-the Oblivious Target is "https://dnstarget.example.net/dns-query".
+the Target is "https://dnstarget.example.net/dns-query".
 
 ~~~
 :method = POST
@@ -173,7 +173,7 @@ content-length = 106
 <Bytes containing the encrypted payload for an Oblivious DNS query>
 ~~~
 
-The Oblivious Proxy then sends the following request on to the Oblivious Target:
+The Proxy then sends the following request on to the Target:
 
 ~~~
 :method = POST
@@ -190,20 +190,20 @@ content-length = 106
 
 ## HTTP Response {#oblivious-response}
 
-The response to an Oblivious DoH query is generated by the Oblivious Target. It MUST set the
+The response to an Oblivious DoH query is generated by the Target. It MUST set the
 Content-Type HTTP header to "application/oblivious-dns-message" for all successful responses.
 The body of the response contains a DNS message that is encrypted with the client's symmetric key ({{encryption}}).
 
-The response from an Oblivious Target MUST set the Content-Type HTTP header to "application/oblivious-dns-message" which
-MUST be forwarded by the Oblivious Proxy to the Client. A Client MUST only consider a response which contains the
+The response from a Target MUST set the Content-Type HTTP header to "application/oblivious-dns-message" which
+MUST be forwarded by the Proxy to the Client. A Client MUST only consider a response which contains the
 Content-Type header in the response before processing the payload. A response without the appropriate header MUST be
 treated as an error and be handled appropriately. All other aspects of the HTTP response and error handling are
 inherited from standard DoH.
 
 ## HTTP Response Example
 
-The following example shows a 2xx (Successful) response that can be sent from an Oblivious
-Target to a client via an Oblivious Proxy.
+The following example shows a 2xx (Successful) response that can be sent from a Target to
+a client via a Proxy.
 
 ~~~
 :status = 200
@@ -217,7 +217,7 @@ Requests that cannot be processed result in 4xx (Client Error) responses.
 
 # Configuration and Public Key Discovery {#keydiscovery}
 
-In order to use a DoH server as an Oblivious Target, the client must know a public key to use
+In order to use a DoH server as a Target, the client must know a public key to use
 for encrypting its queries. This key can be discovered using the SVCB or HTTPSSVC record type
 ({{!I-D.ietf-dnsop-svcb-https}}) for a name owned by the server.
 
@@ -226,11 +226,12 @@ pair contains the public key to use when encrypting Oblivious DoH messages
 that will be targeted at a DoH server. The format of the key is defined in ({{publickey}}).
 
 Clients MUST only use keys that were retrieved from records protected by DNSSEC {{!RFC4033}}
-to encrypt messages to an Oblivious Target.
+to encrypt messages to a Target.
 
 # Configuration and Public Key Format {#publickey}
 
-An Oblivious DNS public key is a structure encoded, using TLS-style encoding {{!RFC8446}}, as follows:
+An Oblivious DNS public key configuration is a structure encoded, using TLS-style
+encoding {{!RFC8446}}, as follows:
 
 ~~~
 struct {
@@ -375,8 +376,8 @@ def decrypt_response_body(context, Q_plain, R_encrypted):
 
 The `derive_secrets` function is described below.
 
-Oblivious Targets use the following utility functions in processing
-queries and producing responses as described in {{odoh-target}}.
+Targets use the following utility functions in processing queries and producing
+responses as described in {{odoh-target}}.
 
 setup_query_context: Set up an HPKE context used for decrypting an Oblivious DoH query.
 
@@ -430,7 +431,7 @@ as a two-byte unsigned integer.
 1. Output a ObliviousDoHMessage message `Q` where `Q.message_type = 0x01`, `Q.key_id` carries `key_id`,
 and `Q.encrypted_message = Q_encrypted`.
 
-The client then sends `Q` to the Oblivious Proxy according to {{oblivious-request}}.
+The client then sends `Q` to the Proxy according to {{oblivious-request}}.
 Once the client receives a response `R`, encrypted as specified in {{odoh-target}},
 it uses `decrypt_response_body` to decrypt `R.encrypted_message` and produce R_plain.
 Clients MUST validate `R_plain.padding` (as all zeros) before using R_plain.dns_message.
@@ -591,5 +592,11 @@ Reference:
 # Acknowledgments
 
 This work is inspired by Oblivious DNS {{?I-D.annee-dprive-oblivious-dns}}. Thanks to all of the
-authors of that document. Thanks to Frederic Jacobs, Elliot Briggs, Paul Schmitt, Brian Swander, and
-Tommy Jensen for the feedback and input.
+authors of that document. Thanks to
+Elliot Briggs,
+Marwan Fayed,
+Frederic Jacobs,
+Tommy Jensen
+Paul Schmitt, and
+Brian Swander
+for the feedback and input.
