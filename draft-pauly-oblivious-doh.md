@@ -57,28 +57,24 @@ DNS Over HTTPS (DoH) {{!RFC8484}} defines a mechanism to allow DNS messages to b
 transmitted in encrypted HTTP messages. This provides improved confidentiality and authentication
 for DNS interactions in various circumstances.
 
-While DoH can prevent eavesdroppers from directly reading the contents of DNS exchanges, it does
-not allow clients to send DNS queries and receive answers from servers without revealing
+While DoH can prevent eavesdroppers from directly reading the contents of DNS exchanges,
+clients cannot send DNS queries and receive answers from servers without revealing
 their local IP address, and thus information about the identity or location of the client.
 
-Proposals such as Oblivious DNS ({{?I-D.annee-dprive-oblivious-dns}}) allow increased privacy
-by not allowing any single DNS server to be aware of both the client IP address and the
-message contents.
+Proposals such as Oblivious DNS ({{?I-D.annee-dprive-oblivious-dns}}) increase privacy
+by ensuring no single DNS server is aware of both the client IP address and the message
+contents.
 
-This document defines Oblivious DoH, an extension to DoH that allows for a proxied mode
-of resolution, in which DNS messages are encrypted in such a way that no DoH server
-can independently read both the client IP address and the DNS message contents.
+This document defines Oblivious DoH, an extension to DoH that permits proxied resolution,
+in which DNS messages are encrypted so that no DoH server can independently read both the
+client IP address and the DNS message contents.
 
 This mechanism is intended to be used as one option for resolving privacy-sensitive content
 in the broader context of Adaptive DNS {{!I-D.pauly-dprive-adaptive-dns-privacy}}.
 
 ## Specification of Requirements
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-"OPTIONAL" in this document are to be interpreted as described in BCP 14
-{{?RFC2119}} {{?RFC8174}} when, and only when,
-they appear in all capitals, as shown here.
+{::boilerplate bcp14}
 
 # Terminology
 
@@ -474,8 +470,8 @@ As a simplified model, consider a case where there exists two clients C1 and C2,
 one target T. Oblivious DoH assumes an extended Dolev-Yao style attacker which can observe all
 network activity and can adaptively compromise either P or T, but not C1 or C2. Once compromised,
 the attacker has access to all session information and private key material. (This generalizes to
-arbitrarily many clients, proxies, and targets, with the constraint that not all targets and proxies
-are simultaneously compromised, and all but two clients are left uncompromised.) The attacker is
+arbitrarily many clients, proxies, and targets, with the constraints that not all targets and proxies
+are simultaneously compromised, and at least two clients are left uncompromised.) The attacker is
 prohibited from sending client identifying information, such as IP addresses, to targets. (This would
 allow the attacker to trivially link a query to the corresponding client.)
 
