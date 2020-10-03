@@ -302,7 +302,7 @@ Both messages carry the following information:
 1. A DNS message, which is either a Query or Response, depending on context.
 1. Padding of arbitrary length which MUST contain all zeros.
 
-They are encoded encoded using the following structure:
+They are encoded using the following structure:
 
 ~~~
 struct {
