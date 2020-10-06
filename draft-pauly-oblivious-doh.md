@@ -463,6 +463,15 @@ The Target then sends `R` in a 2xx (Successful) response to the Proxy according
 to {{oblivious-response}}. The Proxy forwards the message `R` without modification
 back to the client as the HTTP response to the client's original HTTP request.
 
+# Compliance Requirements {#compliance}
+
+In the absence of an application profile standard specifying otherwise, a compliant
+Oblivious DoH implementation MUST support the following HPKE cipher suite:
+
+- KEM: DHKEM(X25519, HKDF-SHA256) (see {{!I-D.irtf-cfrg-hpke}}, Section 7.1)
+- KDF: HKDF-SHA256 (see {{!I-D.irtf-cfrg-hpke}}, Section 7.2)
+- AEAD: AES-128-GCM (see {{!I-D.irtf-cfrg-hpke}}, Section 7.3)
+
 # Security Considerations
 
 DISCLAIMER: this is a work in progress draft and has not yet seen significant security analysis.
