@@ -261,7 +261,8 @@ with the following fields.
 
 version
 : The version of Oblivious DoH for which this configuration is used. Clients MUST ignore any
-`ObliviousDoHConfig` structure with a version they do not support.
+`ObliviousDoHConfig` structure with a version they do not support. The version of Oblivious DoH
+specified in this document is `0x0001`.
 
 length
 : The length, in bytes, of the next field.
