@@ -383,7 +383,7 @@ responses as described in {{odoh-target}}.
 setup_query_context: Set up an HPKE context used for decrypting an Oblivious DoH query.
 
 ~~~
-def setup_query_context(skR, key_id):
+def setup_query_context(skR, key_id, Q_encrypted):
   enc || ct = Q_encrypted
   context = SetupBaseR(enc, skR, "odoh query")
   return context
