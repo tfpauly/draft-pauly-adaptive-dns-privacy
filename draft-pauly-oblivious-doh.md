@@ -403,7 +403,7 @@ derive_secrets: Derive keying material used for encrypting an Oblivious DoH resp
 ~~~
 def derive_secrets(context, Q_plain):
   odoh_secret = context.Export("odoh secret", 32)
-  odoh_prk = Extract(Q_plain.dns_message, odoh_epsk)
+  odoh_prk = Extract(Q_plain.dns_message, odoh_secret)
   key = Expand(odoh_prk, "odoh key", Nk)
   nonce = Expand(odoh_prk, "odoh nonce", Nn)
   return key, nonce
