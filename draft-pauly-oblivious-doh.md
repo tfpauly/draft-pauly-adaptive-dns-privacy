@@ -338,7 +338,7 @@ messages use `message_type` 0x02.
 
 key_id
 : The identifier of the corresponding `ObliviousDoHConfigContents` key. This is computed as
-`Expand(Extract("", config), "odoh_key_id", Nh)`, where `config` is the ObliviousDoHConfigContents
+`Expand(Extract("", config), "odoh key id", Nh)`, where `config` is the ObliviousDoHConfigContents
 structure and `Extract`, `Expand`, and `Nh` are as specified by the HPKE cipher suite KDF corresponding
 to `config.kdf_id`.
 
