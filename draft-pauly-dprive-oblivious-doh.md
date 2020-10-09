@@ -1,7 +1,7 @@
 ---
 title: "Oblivious DNS Over HTTPS"
 abbrev: Oblivious DoH
-docname: draft-pauly-oblivious-doh-latest
+docname: draft-pauly-dprive-oblivious-doh-latest
 date:
 category: std
 
