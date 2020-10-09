@@ -413,7 +413,7 @@ This document adds a key to the "Additional Information PvD Keys" registry {{!I-
 This document adds a parameter to the "Service Binding (SVCB) Parameter" registry.
 The allocation request is 32768, taken from the to the First Come First Served range.
 
-If present, this parameters indicates the URI template of a DoH server that is designated
+If present, this parameter indicates the URI template of a DoH server that is designated
 for use with the name being resolved. This is a string encoded as UTF-8 characters.
 
 Name:

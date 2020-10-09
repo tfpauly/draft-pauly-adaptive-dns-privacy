@@ -585,17 +585,22 @@ Change controller: IETF
 
 ## Oblivious DoH Public Key DNS Parameter
 
-This document defines one new key to be added to the Service Binding (SVCB) Parameter Registry
-{{!I-D.ietf-dnsop-svcb-https}}.
+This document adds a parameter ("odohconfig") to the "Service Binding (SVCB) Parameter"
+registry {{!I-D.ietf-dnsop-svcb-https}}. The allocation request is 32769, taken from the
+to the First Come First Served range.
+
+If present, the "odohconfig" parameter contains a ObliviousDoHConfigs structure. In wire
+format, the value of the parameter is an ObliviousDoHConfigs vector, including the
+redundant length prefix. In presentation format, the value is encoded in {{!base64=RFC4648}}.
 
 Name:
 : odohconfig
 
 SvcParamKey:
-: odohconfig
+: 32769
 
 Meaning:
-: Public key configuration used for encrypting Oblivious DoH messages
+: An ObliviousDoHConfigs structure.
 
 Reference:
 : This document.
