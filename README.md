@@ -2,6 +2,12 @@
 
 This is the working area for individual Internet-Drafts.
 
+## Discovery of Equivalent Encrypted Resolvers
+
+* [Editor's Copy](https://tfpauly.github.io/draft-pauly-adaptive-dns-privacy/#go.draft-pauly-add-deer.html)
+* [Individual Draft](https://tools.ietf.org/html/draft-pauly-add-deer)
+* [Compare Editor's Copy to Individual Draft](https://tfpauly.github.io/draft-pauly-adaptive-dns-privacy/#go.draft-pauly-add-deer.diff)
+
 ## Adaptive DNS: Improving Privacy of Name Resolution
 
 * [Editor's Copy](https://tfpauly.github.io/draft-pauly-adaptive-dns-privacy/#go.draft-pauly-adaptive-dns-privacy.html)
