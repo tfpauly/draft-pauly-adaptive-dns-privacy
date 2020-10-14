@@ -267,7 +267,21 @@ Local deployments that want to designate a resolver for a private name that is n
 signed with DNSSEC MUST provide an alternate method of validating a designation, such as described
 in {{confirm-zone-apex}} or {{confirm-cert-name}}.
 
-# Discovery of DoH Capabilities for Direct Resolvers {#direct}
+# Discovery of Encrypted DNS Capabilities for Direct Resolvers {#direct}
+
+Direct Resolvers can advertise associated servers for clients who want to upgrade to an
+encrypted DNS connection. This section defines both authenticated and unathenticated approaches.
+
+The authenticated approach is designed to allow clients to verify a given DoH server is associated
+with the same IP address that recommended it over unencrypted DNS. This is useful when the Direct Resolver
+and the DoH server are found at different IP addresses.
+
+The unauthenticated approach is defined to allow clients to opportunistically upgrade to an encrypted
+connection. Because this connection cannot be authenticated, it is only designed to connect to the same
+IP address. This ensures clients cannot be directed to an attacking server that did not already have the 
+ability to interfere with the existing DNS traffic.
+
+## Authenticated Discovery of DoH Capabilities {#directauthenticated}
 
 Direct Resolvers can advertise a Companion DoH server that offers equivalent services and is controlled
 by the same entity. To do this, a DNS server returns an SVCB record for "dns://resolver.arpa"
@@ -303,6 +317,17 @@ A DNS resolver MAY return more than one SVCB record of this form to advertise mu
 DoH Servers that are valid as a replacement for itself. Any or all of these servers may have the same IP
 address as the DNS resolver itself. In this case, clients will only have one IP address to check for when
 verifying ownership of the Companion DoH server.
+
+## Unauthenticated Discovery of DoT Capabilities
+
+A Direct Resolver MAY choose to offer encrypted DNS capabilities without being able to authenticate the relationship
+between the classic DNS traffic and the encrypted connection. For example, clients communicating with private IP 
+addresses which cannot be verified by {{directauthenticated}} may want to use opportunistic encryption to limit the
+number of parties who can observe their traffic. A client MUST NOT use this mechanism if {{directauthenticated}}
+successfully defines a Companion DoH server.
+
+To accomplish unauthenticated discovery, a client MAY attempt a DoT connection to the Direct Resolver's IP
+address according to RFC7858 section 4.1, "Opportunistic Privacy Profile". 
 
 # Server Deployment Considerations
 
