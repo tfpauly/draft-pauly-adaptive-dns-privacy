@@ -134,11 +134,8 @@ this resolver for the TTL of the negative or invalid response and continue to us
 It is imperative that DNS clients require the IP addresses of both the Unencrypted Resolver
 and the Equivalent Encrypted Resolver to be present in the TLS certificate.
 
-If the Unencrypted Resolver's IP address is not verified, an attacker can craft an
-SVCB record that will send the client to a valid Encrypted Resolver that has no
-relationship with the Unencrypted Resolver.
-
-If the Encrypted Resolver's IP address is not verified, ... TODO:
+If either IP address is not verified, an attacker can craft an SVCB record that will send the client
+to a valid Encrypted Resolver that has no relationship with the Unencrypted Resolver.
 
 ### Encrypted Resolver SVCB Key Names {#encryption-types}
 
@@ -245,16 +242,17 @@ a DoH and DoT server equivalent to the address the query was sent to:
 ~~~
    _dns.resolver.arpa  7200  IN SVCB 1 dns.example.net (
                         ipv4hint=x.y.z.w
-						dothostname=dns.example.net
+                        dothostname=dns.example.net
                         dohuri=https://dns.example.net/dns-query )
 ~~~
 
 Resolver administrators should be mindful of the implications of combining resolver
 definitions into a single record, such as the shared TTL.
 
-# Security Considerations
+# Considerations
 
-TODO: are these all covered in the various sections?
+Resolver owners will need to list valid referring IP addresses in their TLS certificates.
+This may pose challenges for resolvers with a large number of referring IP addresses.
 
 # IANA Considerations {#iana}
 
@@ -308,7 +306,7 @@ future reuse for other purposes where the resolver wishes to provide information
 
 # Acknowledgments
 
-Thanks!
+Pending initial draft feedback.
 
 # Rationale for using SVCB records {#rationale}
 
@@ -322,7 +320,7 @@ mechanism has chosen SVCB records:
 - Discovering encrypted resolver using DNS records keeps client logic for DNS self-contained and allows a DNS
 resolver operator to define which resolver names and IP addresses are related to one another.
 
-- Using DNS records also doesn't rely on bootstrapping with higher-level application operations
+- Using DNS records also does not rely on bootstrapping with higher-level application operations
 (such as {{?I-D.schinazi-httpbis-doh-preference-hints}}).
 
 - SVCB records are extensible and allow definition of parameter keys. This makes them a superior mechanism
