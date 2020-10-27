@@ -466,6 +466,7 @@ back to the client as the HTTP response to the client's original HTTP request.
 
 # Compliance Requirements {#compliance}
 
+Oblivious DoH uses draft-06 of HPKE for public key encryption {{!I-D.irtf-cfrg-hpke}}.
 In the absence of an application profile standard specifying otherwise, a compliant
 Oblivious DoH implementation MUST support the following HPKE cipher suite:
 
