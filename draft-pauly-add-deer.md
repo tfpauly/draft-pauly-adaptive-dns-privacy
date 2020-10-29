@@ -50,9 +50,9 @@ author:
 --- abstract
 
 This document defines Discovery of Equivalent Encrypted Resolvers (DEER), a mechanism for DNS
-clients to query a resolver over unencrypted DNS for encrypted DNS configuration. It is
-designed to be agnostic of different forms of DNS encryption for future flexibility. It
-is also designed to provide assurance that the encrypted server connection is controlled
+clients to use unencrypted DNS to discover a resolver's encrypted DNS configuration. It is
+designed to be agnostic to different forms of DNS encryption for future flexibility. It
+is also designed to ensure that the encrypted server connection is controlled
 by the same party controlling the unencrypted transmission of the configuration.
 Opportunistic encryption that does not provide that assurance is defined as an option for
 clients willing to accept that risk.
@@ -63,18 +63,18 @@ clients willing to accept that risk.
 
 When DNS clients wish to use encrypted protocols such as DNS-over-TLS (DoT) {{!RFC7858}}
 or DNS-over-HTTPS (DoH) {{!RFC8484}}, they require additional information beyond the IP
-address of the DNS server. However, it is common for DNS clients to only learn a
-resolver's IP address during configuration. Such mechanisms include network advertisement
-such as DHCP and RA as well as manual configuration.
+address of the DNS server, such as the resolver's hostname. However, it is common for DNS
+clients to only learn a resolver's IP address during configuration. Such mechanisms include
+network provisioning protocols like DHCP and IPv6 Router Advertisements, as well as manual
+configuration.
 
-This document addresses encrypted DNS resolver discovery with two goals in mind:
-enable discovery from only an IP address, and allow clients to confirm the encrypted
-server connection they establish is the same entity they were querying without
-encryption.
+This document addresses encrypted DNS resolver discovery with two goals in mind: enable
+discovery when only an IP address is known, and allow clients to confirm that the encrypted
+resolver they connect to is the same entity as the known resolver that did not use encryption.
 
 For DNS servers that do not support encryption, their encrypted connection configuration
 can be requested by a new special use domain name (SUDN). For DNS servers that do support
-encryption, this configuration can be requested by their own domain name.
+encryption, this configuration can be requested based on a query for their own domain name.
 
 ## Specification of Requirements
 
@@ -129,7 +129,7 @@ be used whenever the Unencrypted Resolver would have been used. Otherwise, the c
 discovered resolver and SHOULD suppress queries for Equivalent Encrypted Resolvers against
 this resolver for the TTL of the negative or invalid response and continue to use the original resolver.
 
-### Why both IP addresses are required
+### Rationale for Validating Both Resolver Addresses
 
 It is imperative that DNS clients require the IP addresses of both the Unencrypted Resolver
 and the Equivalent Encrypted Resolver to be present in the TLS certificate.
@@ -199,9 +199,9 @@ query to the name of the Encrypted Resolver instead of the resolver.arpa SUDN.
 This enables a resolver to modify its answer to match the name being queried. It also
 enables resolvers to recursively answer the query if it is for a name it is not authoritative
 for. An example where this would be useful is when a client has DoH and DoT configuration
-for resolver Foo but only DoH configuration for resolver Bar. If DoH is being blocked on
-the current network connection, a client can ask resolver Foo over DoT for the DoT configuration
-for resolver Bar.
+for foo.resolver.example.com but only DoH configuration for bar.resolver.example.com. If DoH is
+being blocked on the current network connection, a client can ask foo.resolver.example.com over
+DoT for the DoT configuration for bar.resolver.example.com.
 
 This differs from {{bootstrapping}} in that a trusted connection has already been
 established. SVCB records containing Equivalent Encrypted Resolver configuration MUST NOT be
