@@ -184,23 +184,38 @@ If the IP address of the Encrypted Resolver is not checked... [WHAT IS THE ATTAC
 
 A DNS client may want to discover other DNS encryption transports supported by a known
 Encrypted Resolver. This can be accomplished by sending the SVCB query using the known
-name of the resolver. For example, if the client already knows about a DoH server
-`resolver.example.com`, it can issue an SVCB query for `_dns.resolver.example.com`.
+name of the resolver.
 
 This query can be issued to the known Encrypted Resolver itself, or to any other resolver.
-The record may present an alternate hostname for a resolver with a different protocol.
-If this is the case, the TLS certificate of the Equivalent Encrypted Resolver MUST include
-both names in the SubjectAlternativeName field. [SHOULD WE REQUIRE THIS?]
+Unlike the case of bootstrapping from an Unencrypted Resolver ({{bootstrapping}}), these
+records SHOULD be available in the public DNS. Also unlike the bootstrapping case,
+no address hints are required.
 
-An example where this would be useful is when a client has DoH and DoT configuration
-for `foo.resolver.example.com` but only a DoH configuration for `bar.resolver.example.com`.
-If DoH is being blocked on the current network connection, a client can send a query to 
-`foo.resolver.example.com` using DoT for the DoT configuration for
-`bar.resolver.example.com`.
+For example, if the client already knows about a DoT server `resolver.example.com`,
+it can issue an SVCB query for `_dns.resolver.example.com` to discover if there are
+other encrypted DNS protocols available. In the following example, the SVCB answers
+indicate that `resolver.example.com` supports both DoH and DoT, and that the DoH
+server indicates a higher priority than the DoT server.
 
-This differs from {{bootstrapping}} in that a trusted connection has already been
-established. SVCB records containing Equivalent Encrypted Resolver configuration MUST NOT be
-used if they were retrieved over an opportunistic encrypted DNS connection.
+~~~
+_dns.resolver.example.com  7200  IN SVCB 1 . (
+     alpn=h2 dohpath=/dns-query{?dns} )
+_dns.resolver.example.com  7200  IN SVCB 2 . (
+     alpn=dot )
+~~~
+
+Often, the various supported encrypted DNS protocols will be accessible using the same
+hostname. In the example above, both DoH and DoT use the name `resolver.example.com`
+for their TLS certficates. If a deployment uses a different hostname for one protocol,
+but still wants clients to treat the DNS servers as equivalent, the TLS certificates MUST
+include both names in the SubjectAlternativeName fields. Note that this name verification
+is not related to the DNS resolver that provided the SVCB answer.
+
+An example where discovering and Equivalent Encrypted Resolver for a known Encrypted Resolver
+would be useful is when a client has a DoT configuration for `foo.resolver.example.com`,
+but is on a network that blocks DoT traffic. The client can still send a query to some other accessible
+resolver (either the local network resolver, or an accessible DoH server) to discover if there is an
+equivalent DoH server for `foo.resolver.example.com`.
 
 ## Opportunistic Discovery from Unencrypted Resolvers
 
