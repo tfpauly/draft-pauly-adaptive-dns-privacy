@@ -149,36 +149,46 @@ resource record type (64) {{I-D.ietf-dnsop-svcb-https}}.
 
 If the recursive resolver that receives this query has one or more Equivalent Encrypted Resolvers,
 it will return the corresponding SVCB records. When responding to these special queries
-for "dns://resolver.arpa", the SVCB records MUST contain at least one "ipv4hint" and/or "ipv6hint"
+for "dns://resolver.arpa", the SVCB records SHOULD contain at least one "ipv4hint" and/or "ipv6hint"
 keys. These address hints indicate the address on which the corresponding Encrypted Resolver
-can be reached.
+can be reached and avoid requiring an additional DNS lookup for the A and AAAA records of the
+Encrypted Resolver name.
 
-The TLS certificate used with the resolver name MUST have the IP addresses for each of its DNS
-endpoints within the SubjectAlternativeName field to allow the client to support authenticated
-discovery.
+If multiple Equivalent Encrypted Resolvers are available, using one or more encrypted DNS protocols,
+the resolver deployment can indicate a preference using the priority fields in each SVCB record {{I-D.ietf-dnsop-svcb-https}}.
 
-In order to validate that a discovered Encrypted Resolver and the original Unencrypted Resolver are
-equivalent, the client MUST check the SubjectAlternativeName field of the Equivalent Encrypted Resolver's
-TLS certificate for both the Unencrypted Resolver's IP address and the advertised IP address for the
-Equivalent Encrypted Resolver. Note that these addresses may be the same, at which point only
-one address needs to be validated. If both are present, client SHOULD use the discovered Equivalent Encrypted
-Resolver for any cases in which it would have otherwise used the Unencrypted Resolver. If both addresses
-are not present, or the certificate validation fails for any other reason, the client MUST NOT use the
-discovered Encrypted Resolver. Additionally, the client SHOULD suppress any further queries for Equivalent
-Encrypted Resolvers using this Unencrypted Resolver for the length of time indicated by the SVCB record's
-Time to Live (TTL).
+In order to be considered an authenticated Equivalent Encrypted Resolver, the TLS certificate presented by the
+Encrypted Resolver MUST contain both the domain name (from the SVCB answer) and the IP address of its
+equivalent Unencrypted Resolver within the SubjectAlternativeName certificate field.
+The client MUST check the SubjectAlternativeName field for both the Unencrypted Resolver's IP address
+and the advertised name of the Equivalent Encrypted Resolver. If the certificate can be validated, the client
+SHOULD use the discovered Equivalent Encrypted Resolver for any cases in which it would have otherwise
+used the Unencrypted Resolver. If the Equivalent Encrypted Resolver has a different IP address than the
+Unencrypted Resolver and the TLS certificate does not cover the Unencrypted Resolver address, the client
+MUST NOT use the discovered Encrypted Resolver. Additionally, the client SHOULD suppress any
+further queries for Equivalent Encrypted Resolvers using this Unencrypted Resolver for the length of time
+indicated by the SVCB record's Time to Live (TTL).
 
-### Rationale for Validating Both Resolver Addresses
+If the Equivalent Encrypted Resolver and the Unencrypted Resolver share an IP address, clients MAY
+choose to opportunistically use the Encrypted Resolver even without this certificate check ({{opportunistic}}).
 
-It is required that DNS clients validate that the IP addresses of both the Unencrypted Resolver
-and the Equivalent Encrypted Resolver are present in the TLS certificate of the Encrypted Resolver.
+## Opportunistic Discovery from Unencrypted Resolvers {#opportunistic}
 
-If the IP address of the Unencrypted Resolver is not checked, it is possible for an attacker to inject an
-SVCB record that directs the client to use an Encrypted Resolver that has no relationship with the
-Unencrypted Resolver. This Encrypted Resolver might have a valid certificate, but be operated by
-an entity that is trying to observe or modify user queries without the knowledge of the client or network.
+There are situations where authenticated discovery of encrypted DNS configuration over
+unencrypted DNS is not possible. This includes unencrypted resolvers on non-public IP
+addresses whose identity cannot be confirmed using TLS certificates.
 
-If the IP address of the Encrypted Resolver is not checked... [WHAT IS THE ATTACK HERE?]
+Clients who wish to attempt opportunistic DNS encryption MUST try authenticated
+discovery first if the Unencrypted Resolver in use has a public IP address. If that
+fails or the Unencrypted Resolver does not have a public IP address, the client MAY
+attempt opportunistic encryption as defined in Section 4.1 of {{!RFC7858}} to the same
+IP address without validating the resolver identity.
+
+A client MAY opportunistically try using information from an SVCB record for
+"dns://resolver.arpa" (as described in {{bootstrapping}}) as long as the IP address of
+the Encrypted Resolver is not different than the IP address of the Unencrypted Resolver.
+If the IP addresses for the Encrypted and Unencrypted Resolvers are not the same,
+the client MUST NOT use the Encrypted Resolver opportunistically.
 
 ## Encrypted Resolvers Advertising Equivalent Encrypted Resolvers {#encrypted}
 
@@ -188,8 +198,7 @@ name of the resolver.
 
 This query can be issued to the known Encrypted Resolver itself, or to any other resolver.
 Unlike the case of bootstrapping from an Unencrypted Resolver ({{bootstrapping}}), these
-records SHOULD be available in the public DNS. Also unlike the bootstrapping case,
-no address hints are required.
+records SHOULD be available in the public DNS.
 
 For example, if the client already knows about a DoT server `resolver.example.com`,
 it can issue an SVCB query for `_dns.resolver.example.com` to discover if there are
@@ -216,30 +225,6 @@ would be useful is when a client has a DoT configuration for `foo.resolver.examp
 but is on a network that blocks DoT traffic. The client can still send a query to some other accessible
 resolver (either the local network resolver, or an accessible DoH server) to discover if there is an
 equivalent DoH server for `foo.resolver.example.com`.
-
-## Opportunistic Discovery from Unencrypted Resolvers
-
-There are situations where authenticated discovery of encrypted DNS configuration over
-unencrypted DNS is not possible. This includes unencrypted resolvers on non-public IP
-addresses whose identity cannot be confirmed using PKI.
-
-Clients who wish to attempt opportunistic DNS encryption MUST try authenticated
-discovery first if the Unencrypted Resolver in use has a public IP address. If that
-fails or the Unencrypted Resolver does not have a public IP address, the client MAY
-attempt opportunistic encryption as defined in Section 4.1 of {{!RFC7858}} to the same
-IP address without validating the resolver identity.
-
-### Opportunistic Discovery Cannot Change IP Addresses
-
-Opportunistic discovery of DNS encryption MUST NOT identify a different IP address from
-the Unencrypted Resolver's IP address. This is why there are no mechanisms defined for
-Unencrypted Resolvers to advertise a different IP address unless it can be authenticated.
-
-The reasoning behind this is to ensure the threat model for opportunistic encryption is
-not weaker than simply continuing to use unencrypted DNS. If the IP address of the
-Unencrypted Resolver was acquired by the DNS client securely such as by manual configuration,
-allowing on-path attackers an opportunity to change the destination IP address for an
-encrypted connection would worsen the security of the client. 
 
 # Deployment Considerations
 
@@ -271,6 +256,23 @@ Encrypted Resolvers.
 
 Resolver owners will need to list valid referring IP addresses in their TLS certificates.
 This may pose challenges for resolvers with a large number of referring IP addresses.
+
+# Security Considerations
+
+While the IP address of the Unencrypted Resolver is often provisioned over insecure mechanisms,
+it can also be provisioned securely, such as via manual configuration, a VPN, or on a network with
+protections like RA guard {{?RFC6105}}. An attacker might try to direct Encrypted DNS traffic to itself
+by causing the client to think that a discovered Equivalent Encrypted Resolver uses a different IP
+address from the Unencrypted Resolver. Such an Encrypted Resolver might have a valid certificate,
+but be operated by an attacker that is trying to observe or modify user queries without the knowledge
+of the client or network.
+
+If the IP address of an Equivalent Encrypted Resolver differs from that of an Unencrypted Resolver, clients
+MUST validate that the IP address of the Unencrypted Resolver is covered by the SubjectAlternativeName
+of the Encrypted Resolver's TLS certificate ({{bootstrapping}}).
+
+Opportunistic use of Encrypted Resolvers MUST be limited to cases where the Unencrypted Resolver
+and Equivalent Encrypted Resolver have the same IP address ({{opportunistic}}).
 
 # IANA Considerations {#iana}
 
