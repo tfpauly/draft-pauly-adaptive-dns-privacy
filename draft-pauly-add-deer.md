@@ -50,12 +50,12 @@ author:
 --- abstract
 
 This document defines Discovery of Equivalent Encrypted Resolvers (DEER), a mechanism for DNS
-clients to use unencrypted DNS to discover a resolver's encrypted DNS configuration. It is
-designed to be agnostic to different forms of DNS encryption for future flexibility. It
-is also designed to ensure that the encrypted server connection is controlled
-by the same party controlling the unencrypted transmission of the configuration.
-Opportunistic encryption that does not provide that assurance is defined as an option for
-clients willing to accept that risk.
+clients to use DNS records to discover a resolver's encrypted DNS configuration. This
+mechanism can be used to move from unencrypted DNS to encrypted DNS, when only the IP
+address of an encrypted resolver is known. It can also be used to discover supported
+encrypted DNS protocols when the name of an encrypted resolver is known. This mechanism
+is designed to be limited to cases where equivalent encrypted and unencrypted
+resolvers are operated by the same entity.
 
 --- middle
 
@@ -63,18 +63,26 @@ clients willing to accept that risk.
 
 When DNS clients wish to use encrypted protocols such as DNS-over-TLS (DoT) {{!RFC7858}}
 or DNS-over-HTTPS (DoH) {{!RFC8484}}, they require additional information beyond the IP
-address of the DNS server, such as the resolver's hostname. However, it is common for DNS
-clients to only learn a resolver's IP address during configuration. Such mechanisms include
-network provisioning protocols like DHCP and IPv6 Router Advertisements, as well as manual
-configuration.
+address of the DNS server, such as the resolver's hostname, non-standard ports, or URL
+paths. However, it is common for DNS clients to only learn a resolver's IP address during configuration. Such mechanisms include network provisioning protocols like DHCP {{?RFC2132}}
+and IPv6 Router Advertisement (RA) options {{?RFC8106}}, as well as manual configuration.
 
-This document addresses encrypted DNS resolver discovery with two goals in mind: enable
-discovery when only an IP address is known, and allow clients to confirm that the encrypted
-resolver they connect to is the same entity as the known resolver that did not use encryption.
+This document defines two ways clients can discover equivalent resolvers using
+DNS server Service Binding (SVCB, {{I-D.ietf-dnsop-svcb-https}}) records:
 
-For DNS servers that do not support encryption, their encrypted connection configuration
-can be requested by a new special use domain name (SUDN). For DNS servers that do support
-encryption, this configuration can be requested based on a query for the encrypted server's name.
+1. When only an IP address of an Unencrypted Resolver is known, the client queries
+a special use domain name to discover DNS SVCB records associated
+with the Unencrypted Resolver ({{bootstrapping}}).
+
+2. When the hostname of an encrypted DNS server is known, the client requests details
+by sending a query for a DNS SVCB record. This can be used to discover alternate encrypted DNS protocols supported by a known server, or provide details if a resolver name
+is provisioned by a network ({{encrypted}}).
+
+Both of these approaches allow clients to confirm that a discovered encrypted resolver
+is equivalent to the originally provisioned resolver. "Equivalence" in this context
+means that the resolvers are operated by the same entity; for example, the resolvers
+are accessible on the same IP address, or there is a certificate that claims ownership
+over both resolvers. 
 
 ## Specification of Requirements
 
@@ -98,12 +106,12 @@ mechanisms such as DoH and DoT as well as future mechanisms.
 
 Equivalent Encrypted Resolver:
 : An Encrypted Resolver which is considered to provide answers equivalent to a given 
-resolver. This equivalency can be authenticated with PKI.
+resolver. This equivalency can be authenticated with TLS certificates.
 
 Unencrypted Resolver:
 : A DNS resolver using TCP or UDP port 53.
 
-# Discovery Mechanism
+# DNS Service Binding Records
 
 DNS resolvers can advertise one or more Equivalent Encrypted Resolvers that offer
 equivalent services over encrypted channels and are controlled by the same entity.
@@ -127,20 +135,15 @@ _dns.example.net  7200  IN SVCB 1 dot.example.net (
      alpn=dot port=8530 ipv4hint=x.y.z.w )
 ~~~
 
-This document defines two ways clients can send queries for DNS server SVCB records:
-
-1. Using a special use domain name to discover DNS server SVCB records associated
-with the recursive resolver that is receiving the query {{bootstrapping}}.
-
-2. Using the name of a known encrypted DNS server to query for alternate encrypted
-DNS protocols supported by the server {{encrypted}}.
+If multiple Equivalent Encrypted Resolvers are available, using one or more encrypted DNS protocols,
+the resolver deployment can indicate a preference using the priority fields in each SVCB record {{I-D.ietf-dnsop-svcb-https}}.
 
 This document focuses on discovering DoH and DoT Equivalent Encrypted Resolvers.
 Other protocols can also use the format defined by {{!I-D.schwartz-svcb-dns}}. However, if
 any protocol does not involve some form of certificate validation, new validation mechanisms
-will need to be defined to be equivalent to {{bootstrapping}}.
+will need to be defined to support validating equivalence {{authenticated}}.
 
-## Unencrypted Resolvers Advertising Equivalent Encrypted Resolvers {#bootstrapping}
+# Discovery Using Resolver IP Addresses {#bootstrapping}
 
 When a DNS client is configured with an Unencrypted Resolver IP address, it SHOULD query
 the resolver for SVCB records for "dns://resolver.arpa" before making other queries.
@@ -154,8 +157,7 @@ keys. These address hints indicate the address on which the corresponding Encryp
 can be reached and avoid requiring an additional DNS lookup for the A and AAAA records of the
 Encrypted Resolver name.
 
-If multiple Equivalent Encrypted Resolvers are available, using one or more encrypted DNS protocols,
-the resolver deployment can indicate a preference using the priority fields in each SVCB record {{I-D.ietf-dnsop-svcb-https}}.
+## Authenticated Discovery {#authenticated}
 
 In order to be considered an authenticated Equivalent Encrypted Resolver, the TLS certificate presented by the
 Encrypted Resolver MUST contain both the domain name (from the SVCB answer) and the IP address of its
@@ -172,33 +174,36 @@ indicated by the SVCB record's Time to Live (TTL).
 If the Equivalent Encrypted Resolver and the Unencrypted Resolver share an IP address, clients MAY
 choose to opportunistically use the Encrypted Resolver even without this certificate check ({{opportunistic}}).
 
-## Opportunistic Discovery from Unencrypted Resolvers {#opportunistic}
+## Opportunistic Discovery {#opportunistic}
 
 There are situations where authenticated discovery of encrypted DNS configuration over
 unencrypted DNS is not possible. This includes unencrypted resolvers on non-public IP
 addresses whose identity cannot be confirmed using TLS certificates.
 
-Clients who wish to attempt opportunistic DNS encryption MUST try authenticated
-discovery first if the Unencrypted Resolver in use has a public IP address. If that
-fails or the Unencrypted Resolver does not have a public IP address, the client MAY
-attempt opportunistic encryption as defined in Section 4.1 of {{!RFC7858}} to the same
-IP address without validating the resolver identity.
+Opportunistic Privacy is defined for DoT in Section 4.1 of {{!RFC7858}} as
+a mode in which clients do not validate the name of the resolver presented in
+the certificate. A client MAY use information from the SVCB record for
+"dns://resolver.arpa" with this "opportunistic" approach (not validating the names
+presented in the SubjectAlternativeName field of the certificate) as long as the
+IP address of the Encrypted Resolver does not differ from the IP address of the
+Unencrypted Resolver, and that IP address is a private address (such as those
+defined in {{!RFC1918}}). This approach can be used for DoT or DoH.
 
-A client MAY opportunistically try using information from an SVCB record for
-"dns://resolver.arpa" (as described in {{bootstrapping}}) as long as the IP address of
-the Encrypted Resolver is not different than the IP address of the Unencrypted Resolver.
-If the IP addresses for the Encrypted and Unencrypted Resolvers are not the same,
-the client MUST NOT use the Encrypted Resolver opportunistically.
+If the IP addresses of the Encrypted and Unencrypted Resolvers are not the same,
+or the shared IP address is not a private IP address, the client MUST NOT use the
+Encrypted Resolver opportunistically.
 
-## Encrypted Resolvers Advertising Equivalent Encrypted Resolvers {#encrypted}
+# Discovery Using Resolver Names {#encrypted}
 
-A DNS client may want to discover other DNS encryption transports supported by a known
-Encrypted Resolver. This can be accomplished by sending the SVCB query using the known
-name of the resolver.
+A DNS client that already knows the name of an Encrypted Resolver can use DEER
+to discover details about all supported encrypted DNS protocols. This situation
+can arise if a client has been configured to use a given Encrypted Resolver, or
+if a network provisioning protocol (such as DHCP or IPv6 Router Advertisements)
+provides a name for an Encrypted Resolver alongside the resolver IP address.
 
-This query can be issued to the known Encrypted Resolver itself, or to any other resolver.
-Unlike the case of bootstrapping from an Unencrypted Resolver ({{bootstrapping}}), these
-records SHOULD be available in the public DNS.
+For these cases, the client simply sends a DNS SVCB query using the known name
+of the resolver. This query can be issued to the named Encrypted Resolver itself, or
+to any other resolver. Unlike the case of bootstrapping from an Unencrypted Resolver ({{bootstrapping}}), these records SHOULD be available in the public DNS.
 
 For example, if the client already knows about a DoT server `resolver.example.com`,
 it can issue an SVCB query for `_dns.resolver.example.com` to discover if there are
@@ -228,36 +233,37 @@ equivalent DoH server for `foo.resolver.example.com`.
 
 # Deployment Considerations
 
-## Dropped Records
+Resolver deployments that support DEER are advised to consider the following
+points.
 
-Because DEER relies on unencrypted DNS to acquire encrypted DNS configuration, on-path
-attackers can prevent successful discovery by dropping SVCB packets. Clients should be
-aware that it is not possible to distinguish between resolvers not supporting DEER and
-DEER being actively blocked by an attacker.
-
-## Forwarders
+## Caching Forwarders
 
 If a caching forwarder consults multiple resolvers, it may be possible for it to cache
-records for the resolver.arpa SUDN for multiple resolvers. This may result in clients
-using DEER to acquire Equivalent Encrypted Resolvers for resolver Foo and receiving
-SVCB records for resolvers Foo and Bar. 
+records for the "resolver.arpa" SUDN for multiple resolvers. This may result in clients
+sending queries intended to discover Equivalent Encrypted Resolvers for resolver `foo`
+and receiving answers for resolvers `foo` and `bar`. 
 
 A client will successfully reject unintended connections because the authenticated
-discovery will fail or, in the case of local addresses, because these records are not
-used for opportunistic encryption. Clients who attempt opportunistic encryption to
-addresses discovered through SVCB queries run the risk of connecting to the wrong server
-in this scenario.
+discovery will fail or the resolver addresses do not match. Clients that attempt
+unauthenticated connections to resolvers discovered through SVCB queries run the
+risk of connecting to the wrong server in this scenario.
 
-To prevent unnecessary traffic by clients to the wrong resolvers, DNS caching resolvers
-SHOULD NOT cache results for the resolver.arpa SUDN other than their own Equivalent
+To prevent unnecessary traffic from clients to incorrect resolvers, DNS caching resolvers
+SHOULD NOT cache results for the "resolver.arpa" SUDN other than their own Equivalent
 Encrypted Resolvers.
 
 ## Certificate Management
 
-Resolver owners will need to list valid referring IP addresses in their TLS certificates.
-This may pose challenges for resolvers with a large number of referring IP addresses.
+Resolver owners that support authenticated discovery will need to list valid
+referring IP addresses in their TLS certificates. This may pose challenges for
+resolvers with a large number of referring IP addresses.
 
 # Security Considerations
+
+Since client can receive DNS SVCB answers over unencrypted DNS, on-path attackers
+can prevent successful discovery by dropping SVCB packets. Clients should be
+aware that it might not be possible to distinguish between resolvers that do not
+have any Equivalent Encrypted Resolver and such an active attack.
 
 While the IP address of the Unencrypted Resolver is often provisioned over insecure mechanisms,
 it can also be provisioned securely, such as via manual configuration, a VPN, or on a network with
@@ -269,7 +275,7 @@ of the client or network.
 
 If the IP address of an Equivalent Encrypted Resolver differs from that of an Unencrypted Resolver, clients
 MUST validate that the IP address of the Unencrypted Resolver is covered by the SubjectAlternativeName
-of the Encrypted Resolver's TLS certificate ({{bootstrapping}}).
+of the Encrypted Resolver's TLS certificate ({{authenticated}}).
 
 Opportunistic use of Encrypted Resolvers MUST be limited to cases where the Unencrypted Resolver
 and Equivalent Encrypted Resolver have the same IP address ({{opportunistic}}).
