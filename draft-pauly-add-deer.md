@@ -170,44 +170,49 @@ Encrypted Resolver name.
 
 ## Authenticated Discovery {#authenticated}
 
+If the Unencrypted Resolver's IP address is in a public range, it is considered
+a global reference identity, and is subject to cryptographic authentication.
+
 In order to be considered an authenticated Equivalent Encrypted Resolver, the
-TLS certificate presented by the Encrypted Resolver MUST contain both the domain
-name (from the SVCB answer) and the IP address of its equivalent Unencrypted
+TLS certificate presented by the Encrypted Resolver MUST contain the IP address
+of its equivalent Unencrypted
 Resolver within the SubjectAlternativeName certificate field. The client MUST
-check the SubjectAlternativeName field for both the Unencrypted Resolver's IP
-address and the advertised name of the Equivalent Encrypted Resolver. If the
+check the SubjectAlternativeName field for the Unencrypted Resolver's IP
+address. If the
 certificate can be validated, the client SHOULD use the discovered Equivalent
 Encrypted Resolver for any cases in which it would have otherwise used the
-Unencrypted Resolver. If the Equivalent Encrypted Resolver has a different IP
-address than the Unencrypted Resolver and the TLS certificate does not cover the
-Unencrypted Resolver address, the client MUST NOT use the discovered Encrypted
+Unencrypted Resolver.  Otherwise, the client MUST NOT use the discovered Encrypted
 Resolver. Additionally, the client SHOULD suppress any further queries for
 Equivalent Encrypted Resolvers using this Unencrypted Resolver for the length of
 time indicated by the SVCB record's Time to Live (TTL).
 
-If the Equivalent Encrypted Resolver and the Unencrypted Resolver share an IP
-address, clients MAY choose to opportunistically use the Encrypted Resolver even
-without this certificate check ({{opportunistic}}).
-
 ## Opportunistic Discovery {#opportunistic}
 
-There are situations where authenticated discovery of encrypted DNS
-configuration over unencrypted DNS is not possible. This includes Unencrypted
-Resolvers on non-public IP addresses whose identity cannot be confirmed using
-TLS certificates.
+If the Unencrypted Resolver's IP address is in a private range, it is considered
+a local reference identity that cannot be confirmed using TLS certificates.
+Instead, the ability to respond to queries confirms control of the address.
+The client MUST repeat the discovery process at least every 5 minutes (e.g. by
+limiting the SVCB response TTL) to confirm that the result is still valid, and
+MUST stop using any Encrypted Resolver that is no longer included.
 
 Opportunistic Privacy is defined for DoT in Section 4.1 of {{!RFC7858}} as a
 mode in which clients do not validate the name of the resolver presented in the
 certificate. A client MAY use information from the SVCB record for
 "dns://resolver.arpa" with this "opportunistic" approach (not validating the
 names presented in the SubjectAlternativeName field of the certificate) as long
-as the IP address of the Encrypted Resolver does not differ from the IP address
-of the Unencrypted Resolver, and that IP address is a private address (such as
+as the IP address of the Encrypted Resolver is also a private address (such as
 those defined in {{!RFC1918}}). This approach can be used for DoT or DoH.
 
-If the IP addresses of the Encrypted and Unencrypted Resolvers are not the same,
-or the shared IP address is not a private IP address, the client MUST NOT use
-the Encrypted Resolver opportunistically.
+In order to refer the user to an Encrypted Resolver with a public IP address, the
+Unencrypted Resolver MUST return a CNAME that aliases `_dns.resolver.arpa` to
+`_dns.$HOSTNAME`.  If the client receives such a CNAME, it MAY proceed with
+name-based discovery for `$HOSTNAME` ({{encrypted}}), subject to the above TTL
+limit.  Clients MUST NOT connect to an Encrypted Resolver on a public IP address
+without TLS authentication.
+
+Resolvers that support authenticated discovery ({{authenticated}}) can also support
+opportunistic discovery via local forwarders by publishing such a CNAME record and
+placing their SVCB records at `_dns.$HOSTNAME`.
 
 # Discovery Using Resolver Names {#encrypted}
 
@@ -301,9 +306,13 @@ Unencrypted Resolver, clients MUST validate that the IP address of the
 Unencrypted Resolver is covered by the SubjectAlternativeName of the Encrypted
 Resolver's TLS certificate ({{authenticated}}).
 
-Opportunistic use of Encrypted Resolvers MUST be limited to cases where the
-Unencrypted Resolver and Equivalent Encrypted Resolver have the same IP address
-({{opportunistic}}).
+When the Unencrypted Resolver has a local IP address, use of the Equivalent
+Encrypted Resolver ({{opportunistic}}) MUST be subject to strict freshness
+requirements to ensure that a transient attacker who forges a discovery response
+cannot gain persistent access to the client's DNS queries.  If the Unencrypted
+Resolver is on the local network but the Encrypted Resolver is remote,
+name-based authentication is REQUIRED to ensure that an external attacker cannot
+intercept the connection.
 
 # IANA Considerations {#iana}
 
