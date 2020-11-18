@@ -257,6 +257,18 @@ client can still send a query to any other accessible resolver (either the local
 network resolver or an accessible DoH server) to discover if there is an
 equivalent DoH server for `foo.resolver.example.com`.
 
+# Optimizations
+
+To avoid periods of unencrypted resolution, clients SHOULD repeat the discovery
+query at least several seconds before the current SVCB record expires.  To reduce
+server load, idle clients MAY defer repeating discovery until there is a pending
+query, and SHOULD delay the pending query until after discovery completes.
+
+When the client has performed Opportunistic Discovery ({{bootstrapping}}) and is
+using an Equivalent Encrypted Resolver on the same private IP address as the
+Unencrypted Resolver, it MAY use the SVCB record for its full TTL, without the 5
+minute limit.
+
 # Deployment Considerations
 
 Resolver deployments that support DEER are advised to consider the following
@@ -287,24 +299,25 @@ resolvers with a large number of referring IP addresses.
 
 # Security Considerations
 
-Since client can receive DNS SVCB answers over unencrypted DNS, on-path
-attackers can prevent successful discovery by dropping SVCB packets. Clients
-should be aware that it might not be possible to distinguish between resolvers
+Since client can receive DNS SVCB answers over unencrypted DNS, in-path
+attackers can prevent successful discovery by dropping SVCB packets. When using
+IP-based discovery ({{bootstrapping}}), it is not possible to distinguish between resolvers
 that do not have any Equivalent Encrypted Resolver and such an active attack.
+Clients that wish to defend against these attacks MUST use name-based discovery
+({{encrypted}}) with local DNSSEC validation, or otherwise have an authenticated
+indication that there is an Equivalent Encrypted Resolver.
 
 While the IP address of the Unencrypted Resolver is often provisioned over
 insecure mechanisms, it can also be provisioned securely, such as via manual
 configuration, a VPN, or on a network with protections like RA guard
-{{?RFC6105}}. An attacker might try to direct Encrypted DNS traffic to itself by
-causing the client to think that a discovered Equivalent Encrypted Resolver uses
-a different IP address from the Unencrypted Resolver. Such an Encrypted Resolver
-might have a valid certificate, but be operated by an attacker that is trying to
-observe or modify user queries without the knowledge of the client or network.
+{{?RFC6105}}. An attacker who is temporarily in-path might then try to gain persistent
+access to the client's DNS traffic by causing the client to discover an apparent
+Equivalent Encrypted Resolver that is actually operated by the attacker.
 
-If the IP address of an Equivalent Encrypted Resolver differs from that of an
-Unencrypted Resolver, clients MUST validate that the IP address of the
-Unencrypted Resolver is covered by the SubjectAlternativeName of the Encrypted
-Resolver's TLS certificate ({{authenticated}}).
+If the IP address of an Unencrypted Resolver is public, clients MUST validate
+that this IP address is covered by the SubjectAlternativeName of the Encrypted
+Resolver's TLS certificate ({{authenticated}}).  This ensures that the Encrypted
+Resolver is authorized by the operator of the Unencrypted Resolver.
 
 When the Unencrypted Resolver has a local IP address, use of the Equivalent
 Encrypted Resolver ({{opportunistic}}) MUST be subject to strict freshness
