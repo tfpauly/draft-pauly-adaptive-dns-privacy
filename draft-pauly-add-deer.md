@@ -212,7 +212,8 @@ without TLS authentication.
 
 Resolvers that support authenticated discovery ({{authenticated}}) can also support
 opportunistic discovery via local forwarders by publishing such a CNAME record and
-placing their SVCB records at `_dns.$HOSTNAME`.
+placing their SVCB records at `_dns.$HOSTNAME`.  Local forwarders that wish to
+prevent this kind of discovery SHOULD intercept queries to `_dns.resolver.arpa`.
 
 # Discovery Using Resolver Names {#encrypted}
 
