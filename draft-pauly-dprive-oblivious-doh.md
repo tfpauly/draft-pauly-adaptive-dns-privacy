@@ -213,7 +213,11 @@ content-length = 154
 <Bytes containing the encrypted payload for an Oblivious DNS response>
 ~~~
 
-Requests that cannot be processed result in 4xx (Client Error) responses.
+Requests that cannot be processed by the target result in 4xx (Client Error) responses. If the target and client keys do not match, it is an authorization failure (HTTP status code 401; see Section 3.1 of {{!RFC7235}}). Otherwise, if the client's request is invalid, such as in the case of decryption failure, or wrong message type, or deserialization failure, this is a bad request (HTTP status code 400; see Section 6.5.1 of {{!RFC7231}}). 
+
+Even in case of DNS responses indicating failure such as SERVFAIL or NXDOMAIN, a successful HTTP response with a 2xx status code is used as long as the DNS response is valid. This is similar to how DoH {{!RFC8484}} handles HTTP response codes. 
+
+In case of server error, the usual HTTP status code 500 (see Section 6.6.1 of {{!RFC7231}}) applies.
 
 # Configuration and Public Key Discovery {#keydiscovery}
 
