@@ -249,7 +249,7 @@ struct {
    uint16 version;
    uint16 length;
    select (ObliviousDoHConfig.version) {
-      case 0xff02: ObliviousDoHConfigContents contents;
+      case 0xff03: ObliviousDoHConfigContents contents;
    }
 } ObliviousDoHConfig;
 
@@ -266,7 +266,7 @@ with the following fields.
 version
 : The version of Oblivious DoH for which this configuration is used. Clients MUST ignore any
 `ObliviousDoHConfig` structure with a version they do not support. The version of Oblivious DoH
-specified in this document is `0xff02`.
+specified in this document is `0xff03`.
 
 length
 : The length, in bytes, of the next field.
