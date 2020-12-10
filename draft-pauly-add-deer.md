@@ -298,6 +298,18 @@ Resolver owners that support authenticated discovery will need to list valid
 referring IP addresses in their TLS certificates. This may pose challenges for
 resolvers with a large number of referring IP addresses.
 
+## Legacy Partial Forwarders
+
+A "partial forwarder" is a DNS device that forwards some queries to an upstream
+resolver, and answers some queries directly.  This includes both filtering and
+split-horizon DNS behaviors.  As noted in {{opportunistic}}, such devices SHOULD
+intercept queries to `_dns.resolver.arpa` to ensure that the upstream resolver
+does not trigger an opportunistic upgrade.  However, some networks contain legacy
+partial forwarders whose behavior cannot be updated.  For compatibility with
+legacy partial forwarders, clients MAY impose additional conditions on
+opportunistic discovery, such as requiring that the Encrypted Resolver is on the
+same private IP address as the Unencrypted Resolver.
+
 # Security Considerations
 
 Since client can receive DNS SVCB answers over unencrypted DNS, in-path
