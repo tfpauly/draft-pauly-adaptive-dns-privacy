@@ -150,7 +150,8 @@ Proxies must check that client requests are correctly encoded, and MUST return a
 4xx (Client Error) if the check fails, along with the Proxy-Status response header
 with an "error" parameter of type "http_request_error" {{!I-D.ietf-ietf-httpbis-proxy-status}}.
 A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
-and HTTP method POST.
+and HTTP method POST. If the proxy does not operate as a target, then the request
+must additionally contain "targethost" and "targetpath" variables.
 
 Upon receiving a request that contains a "application/oblivious-dns-message" Content-Type,
 the DoH server looks for the "targethost" and "targetpath" variables. If the variables are not
