@@ -252,9 +252,10 @@ In case of server error, the usual HTTP status code 500 (see Section 6.6.1 of {{
 ## HTTP Metadata
 
 Proxies forward requests and responses between clients and targets as specified in {{oblivious-request}}.
+Metadata sent with these messages may inadvertently weaken or remove Oblivious DoH privacy properties.
 Proxies MUST NOT send any client-identifying information about clients to targets, such as
-"Forwarded" HTTP headers {{?RFC7239}}. Clients MUST NOT include any private state in requests
-to proxies, such as HTTP cookies.
+"Forwarded" HTTP headers {{?RFC7239}}. Additionally, clients MUST NOT include any private state in 
+requests to proxies, such as HTTP cookies.
 
 # Configuration and Public Key Discovery {#keydiscovery}
 
