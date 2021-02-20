@@ -222,7 +222,7 @@ inherited from standard DoH.
 Proxies MUST forward responses unmodified to clients. Specifically, the HTTP status code generated
 by Targets must be forwarded to clients unmodified. If a proxy receives a successful response from a
 target without the "application/oblivious-dns-message" HTTP Content-Type header, it MUST
-it MUST return a 502 (Bad Gateway) response to the client request, along with Proxy-Status response
+return a 502 (Bad Gateway) response to the client request, along with Proxy-Status response
 header with an "error" parameter of type "http_protocol_error".
 
 ## HTTP Response Example
