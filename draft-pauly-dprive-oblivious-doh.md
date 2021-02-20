@@ -143,8 +143,15 @@ headers that will prevent unhelpful cache storage of these exchanges (i.e., pref
 instead of GET).
 
 Clients MUST set the HTTP Content-Type header to "application/oblivious-dns-message"
-to indicate that this request is an Oblivious DoH query intended for proxying. Clients also SHOULD
-set this same value for the HTTP Accept header.
+to indicate that this request is an Oblivious DoH query intended for proxying. Clients
+also SHOULD set this same value for the HTTP Accept header.
+
+Proxies must check that client requests are correctly encoded, and MUST return a
+4xx (Client Error) if the check fails, along with the Proxy-Status response header
+with an "error" parameter of type "http_request_error" {{!I-D.ietf-ietf-httpbis-proxy-status}}.
+A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
+and HTTP method POST. If the proxy does not operate as a target, then the request
+must additionally contain "targethost" and "targetpath" variables.
 
 Upon receiving a request that contains a "application/oblivious-dns-message" Content-Type,
 the DoH server looks for the "targethost" and "targetpath" variables. If the variables are not
@@ -152,6 +159,18 @@ present, then it is the target of the query, and it can decrypt the query ({{enc
 If the variables are present, then the DoH server is acting as a Proxy.
 If it is a proxy, it is expected to send the request on to the Target
 using the URI template constructed as "https://targethost/targetpath".
+
+Note that "targethost" may contain a port. Proxies MAY choose to not forward
+connections to non-standard ports. In such cases, proxies MUST return a 4xx (Client Error)
+response to the client request, along with Proxy-Status response header with an "error"
+parameter of type "http_request_error",
+
+If the proxy cannot establish a connection to "targethost", it MUST return a 502 (Bad Gateway)
+response to the client request, along with Proxy-Status response header with an "error" parameter
+whose type indicates the reason. For example, if DNS resolution fails, the error type might be
+"dns_timeout", whereas if the TLS connection failed the error type might be "tls_protocol_error".
+Proxies SHOULD choose an error type that best captures the connection failure.
+
 
 ## HTTP Request Example {#request-example}
 
@@ -201,7 +220,10 @@ treated as an error and be handled appropriately. All other aspects of the HTTP 
 inherited from standard DoH.
 
 Proxies MUST forward responses unmodified to clients. Specifically, the HTTP status code generated
-by Targets must be forwarded to clients unmodified.
+by Targets must be forwarded to clients unmodified. If a proxy receives a successful response from a
+target without the "application/oblivious-dns-message" HTTP Content-Type header, it MUST
+return a 502 (Bad Gateway) response to the client request, along with Proxy-Status response
+header with an "error" parameter of type "http_protocol_error".
 
 ## HTTP Response Example
 
@@ -546,6 +568,13 @@ decryption failure is a signal that either the proxy or target is misbehaving. C
 stop using one or both of these servers in the event of such failure. However, as above, malicious
 Targets and Proxies are out of scope for the threat model.
 
+## Proxy Policies
+
+Proxies are free to enforce any forwarding policy they desire for clients. For example, they may only
+forward requests to known or otherwise trusted targets. Proxies that do not have an allow list of
+targets can attempt to determine if the specified target is a valid Oblivious DoH target by querying
+for the target configuration as specified in {{keydiscovery}}.
+
 ## General Proxy Services
 
 Using DoH over anonymizing proxy services such as Tor would also achieve the desired goal of separating
@@ -630,10 +659,13 @@ Reference:
 
 This work is inspired by Oblivious DNS {{?I-D.annee-dprive-oblivious-dns}}. Thanks to all of the
 authors of that document. Thanks to
+Nafeez Ahamed,
 Elliot Briggs,
 Marwan Fayed,
 Frederic Jacobs,
 Tommy Jensen
-Paul Schmitt, and
-Brian Swander
+Paul Schmitt,
+Brian Swander,
+Tanya Verma, and
+Peter Wu
 for the feedback and input.
