@@ -163,7 +163,7 @@ using the URI template constructed as "https://targethost/targetpath".
 Note that "targethost" may contain a port. Proxies MAY choose to not forward
 connections to non-standard ports. In such cases, proxies MUST return a 4xx (Client Error)
 response to the client request, along with Proxy-Status response header with an "error"
-parameter of type "http_request_error",
+parameter of type "http_request_error".
 
 If the proxy cannot establish a connection to "targethost", it MUST return a 502 (Bad Gateway)
 response to the client request, along with Proxy-Status response header with an "error" parameter
