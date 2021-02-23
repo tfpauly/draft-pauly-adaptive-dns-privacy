@@ -377,9 +377,9 @@ messages use `message_type` 0x02.
 
 key_id
 : The identifier of the corresponding `ObliviousDoHConfigContents` key. This is computed as
-`Expand(Extract("", config), "odoh key id", Nh)`, where `config` is the ObliviousDoHConfigContents
-structure and `Extract`, `Expand`, and `Nh` are as specified by the HPKE cipher suite KDF corresponding
-to `config.kdf_id`.
+`Expand(Extract("", config), "id", Nh)`, where `config` is the ObliviousDoHConfigContents structure
+and `Extract`, `Expand`, and `Nh` are as specified by the HPKE cipher suite KDF corresponding to
+`config.kdf_id`.
 
 encrypted_message
 : An encrypted message for the Oblivious Target (for Query messages) or client (for Response messages).
@@ -399,7 +399,7 @@ encrypt_query_body: Encrypt an Oblivious DoH query.
 
 ~~~
 def encrypt_query_body(pkR, key_id, Q_plain):
-  enc, context = SetupBaseS(pkR, "odoh query")
+  enc, context = SetupBaseS(pkR, "query")
   aad = 0x01 || len(key_id) || key_id
   ct = context.Seal(aad, Q_plain)
   Q_encrypted = enc || ct
@@ -426,7 +426,7 @@ setup_query_context: Set up an HPKE context used for decrypting an Oblivious DoH
 ~~~
 def setup_query_context(skR, key_id, Q_encrypted):
   enc || ct = Q_encrypted
-  context = SetupBaseR(enc, skR, "odoh query")
+  context = SetupBaseR(enc, skR, "query")
   return context
 ~~~
 
@@ -444,19 +444,25 @@ derive_secrets: Derive keying material used for encrypting an Oblivious DoH resp
 
 ~~~
 def derive_secrets(context, Q_plain):
-  odoh_secret = context.Export("odoh secret", 32)
-  odoh_prk = Extract(Q_plain, odoh_secret)
-  key = Expand(odoh_prk, "odoh key", Nk)
-  nonce = Expand(odoh_prk, "odoh nonce", Nn)
-  return key, nonce
+  secret = context.Export("response", Nk)
+  response_nonce = random(max(Nn, Nk))
+  salt = Q_plain || len(response_nonce) || response_nonce
+  prk = Extract(salt, secret)
+  key = Expand(odoh_prk, "key", Nk)
+  nonce = Expand(odoh_prk, "nonce", Nn)
+  return key, nonce, response_nonce
 ~~~
+
+The `random(N)` function returns `N` cryptographically secure random bytes
+from a good source of entropy {{!RFC4086}}. The `max(A, B)` function returns
+`A` if `A > B`, and `B` otherwise.
 
 encrypt_response_body: Encrypt an Oblivious DoH response.
 
 ~~~
-def encrypt_response_body(R_plain, answer_key, answer_nonce):
-  aad = 0x02 || 0x0000 // 0x0000 represents a 0-length KeyId
-  R_encrypted = Seal(answer_key, answer_nonce, aad, R_plain)
+def encrypt_response_body(R_plain, aead_key, aead_nonce, response_nonce):
+  aad = 0x02 || len(response_nonce) || response_nonce
+  R_encrypted = Seal(aead_key, aead_nonce, aad, R_plain)
   return R_encrypted
 ~~~
 
@@ -494,12 +500,13 @@ or one chosen for trial decryption.
 was returned or the padding was invalid, return a 400 (Client Error) response to the Proxy.
 1. Create an `ObliviousDoHResponseBody` structure, carrying the message `M` and padding,
 to produce `R_plain`.
-1. Compute `answer_key, answer_nonce = derive_secrets(context, Q_plain)`.
-1. Compute `R_encrypted = encrypt_response_body(R_plain, answer_key, answer_nonce)`.
-The `key_id` field used for encryption is empty, yielding `0x0000` as part of the AAD.
-Also, the `Seal` function is that which is associated with the HPKE AEAD.
+1. Compute `aead_key, aead_nonce, response_nonce = derive_secrets(context, Q_plain)`.
+1. Compute `R_encrypted = encrypt_response_body(R_plain, aead_key, aead_nonce, response_nonce)`.
+The `key_id` field used for encryption carries `response_nonce` in order for clients to
+derive the same secrets. Also, the `Seal` function is that which is associated with the
+HPKE AEAD.
 1. Output a `ObliviousDoHMessage` message `R` where `R.message_type = 0x02`,
-`R.key_id = nil`, and `R.encrypted_message = R_encrypted`.
+`R.key_id = response_nonce`, and `R.encrypted_message = R_encrypted`.
 
 The Target then sends `R` in a 2xx (Successful) response to the Proxy; see {{oblivious-response}}.
 The Proxy forwards the message `R` without modification back to the client as the HTTP response
