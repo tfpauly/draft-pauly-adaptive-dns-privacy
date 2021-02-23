@@ -377,7 +377,7 @@ messages use `message_type` 0x02.
 
 key_id
 : The identifier of the corresponding `ObliviousDoHConfigContents` key. This is computed as
-`Expand(Extract("", config), "id", Nh)`, where `config` is the ObliviousDoHConfigContents structure
+`Expand(Extract("", config), "odoh key id", Nh)`, where `config` is the ObliviousDoHConfigContents structure
 and `Extract`, `Expand`, and `Nh` are as specified by the HPKE cipher suite KDF corresponding to
 `config.kdf_id`.
 
@@ -399,7 +399,7 @@ encrypt_query_body: Encrypt an Oblivious DoH query.
 
 ~~~
 def encrypt_query_body(pkR, key_id, Q_plain):
-  enc, context = SetupBaseS(pkR, "query")
+  enc, context = SetupBaseS(pkR, "odoh query")
   aad = 0x01 || len(key_id) || key_id
   ct = context.Seal(aad, Q_plain)
   Q_encrypted = enc || ct
@@ -426,7 +426,7 @@ setup_query_context: Set up an HPKE context used for decrypting an Oblivious DoH
 ~~~
 def setup_query_context(skR, key_id, Q_encrypted):
   enc || ct = Q_encrypted
-  context = SetupBaseR(enc, skR, "query")
+  context = SetupBaseR(enc, skR, "odoh query")
   return context
 ~~~
 
@@ -444,12 +444,12 @@ derive_secrets: Derive keying material used for encrypting an Oblivious DoH resp
 
 ~~~
 def derive_secrets(context, Q_plain):
-  secret = context.Export("response", Nk)
+  secret = context.Export("odoh response", Nk)
   response_nonce = random(max(Nn, Nk))
   salt = Q_plain || len(response_nonce) || response_nonce
   prk = Extract(salt, secret)
-  key = Expand(odoh_prk, "key", Nk)
-  nonce = Expand(odoh_prk, "nonce", Nn)
+  key = Expand(odoh_prk, "odoh key", Nk)
+  nonce = Expand(odoh_prk, "odoh nonce", Nn)
   return key, nonce, response_nonce
 ~~~
 
