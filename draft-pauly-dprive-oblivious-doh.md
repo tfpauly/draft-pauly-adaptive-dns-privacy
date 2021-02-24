@@ -254,7 +254,7 @@ In case of server error, the usual HTTP status code 500 (see Section 6.6.1 of {{
 Proxies forward requests and responses between clients and targets as specified in {{oblivious-request}}.
 Metadata sent with these messages may inadvertently weaken or remove Oblivious DoH privacy properties.
 Proxies MUST NOT send any client-identifying information about clients to targets, such as
-"Forwarded" HTTP headers {{?RFC7239}}. Additionally, clients MUST NOT include any private state in 
+"Forwarded" HTTP headers {{?RFC7239}}. Additionally, clients MUST NOT include any private state in
 requests to proxies, such as HTTP cookies.
 
 # Configuration and Public Key Discovery {#keydiscovery}
@@ -417,9 +417,9 @@ def encrypt_query_body(pkR, key_id, Q_plain):
 decrypt_response_body: Decrypt an Oblivious DoH response.
 
 ~~~
-def decrypt_response_body(context, Q_plain, R_encrypted):
-  key, nonce = derive_secrets(context, Q_plain)
-  aad = 0x02 || 0x0000 // 0x0000 represents a 0-length KeyId
+def decrypt_response_body(context, Q_plain, R_encrypted, response_nonce):
+  aead_key, aead_nonce = derive_secrets(context, Q_plain, response_nonce)
+  aad = 0x02 || len(response_nonce) || response_nonce
   R_plain, error = Open(key, nonce, aad, R_encrypted)
   return R_plain, error
 ~~~
@@ -451,14 +451,13 @@ def decrypt_query_body(context, key_id, Q_encrypted):
 derive_secrets: Derive keying material used for encrypting an Oblivious DoH response.
 
 ~~~
-def derive_secrets(context, Q_plain):
+def derive_secrets(context, Q_plain, response_nonce):
   secret = context.Export("odoh response", Nk)
-  response_nonce = random(max(Nn, Nk))
   salt = Q_plain || len(response_nonce) || response_nonce
   prk = Extract(salt, secret)
   key = Expand(odoh_prk, "odoh key", Nk)
   nonce = Expand(odoh_prk, "odoh nonce", Nn)
-  return key, nonce, response_nonce
+  return key, nonce
 ~~~
 
 The `random(N)` function returns `N` cryptographically secure random bytes
@@ -490,8 +489,9 @@ and `Q.encrypted_message = Q_encrypted`.
 
 The client then sends `Q` to the Proxy according to {{oblivious-request}}.
 Once the client receives a response `R`, encrypted as specified in {{odoh-target}},
-it uses `decrypt_response_body` to decrypt `R.encrypted_message` and produce R_plain.
-Clients MUST validate `R_plain.padding` (as all zeros) before using R_plain.dns_message.
+it uses `decrypt_response_body` to decrypt `R.encrypted_message` (using `R.key_id` as
+a nonce) and produce R_plain. Clients MUST validate `R_plain.padding` (as all zeros)
+before using `R_plain.dns_message`.
 
 # Oblivious Target Behavior {#odoh-target}
 
@@ -508,7 +508,8 @@ or one chosen for trial decryption.
 was returned or the padding was invalid, return a 400 (Client Error) response to the Proxy.
 1. Create an `ObliviousDoHResponseBody` structure, carrying the message `M` and padding,
 to produce `R_plain`.
-1. Compute `aead_key, aead_nonce, response_nonce = derive_secrets(context, Q_plain)`.
+1. Create a fresh nonce `response_nonce = random(max(Nn, Nk))`.
+1. Compute `aead_key, aead_nonce = derive_secrets(context, Q_plain, response_nonce)`.
 1. Compute `R_encrypted = encrypt_response_body(R_plain, aead_key, aead_nonce, response_nonce)`.
 The `key_id` field used for encryption carries `response_nonce` in order for clients to
 derive the same secrets. Also, the `Seal` function is that which is associated with the
