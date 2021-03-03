@@ -34,6 +34,14 @@ author:
     country: United States of America
     email: tpauly@apple.com
   -
+    ins: T. Verma
+    name: Tanya Verma
+    org: Cloudflare
+    street: 101 Townsend St
+    city: San Francisco
+    country: United States of America
+    email: tverma@cloudflare.com
+  -
     ins: C. A. Wood
     name: Christopher A. Wood
     org: Cloudflare
