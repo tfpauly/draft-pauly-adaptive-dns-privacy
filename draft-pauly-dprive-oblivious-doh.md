@@ -40,7 +40,7 @@ author:
     street: 101 Townsend St
     city: San Francisco
     country: United States of America
-    email: tverma@cloudflare.com
+    email: vermatanyax@gmail.com
   -
     ins: C. A. Wood
     name: Christopher A. Wood
