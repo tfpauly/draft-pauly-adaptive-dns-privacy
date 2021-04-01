@@ -532,7 +532,7 @@ Proxy forwards the Target error to the client; see {{oblivious-response}}.
 
 # Compliance Requirements {#compliance}
 
-Oblivious DoH uses draft-08 of HPKE for public key encryption {{!I-D.irtf-cfrg-hpke}}.
+Oblivious DoH uses HPKE for public key encryption {{!I-D.irtf-cfrg-hpke}}.
 In the absence of an application profile standard specifying otherwise, a compliant
 Oblivious DoH implementation MUST support the following HPKE cipher suite:
 
@@ -541,8 +541,6 @@ Oblivious DoH implementation MUST support the following HPKE cipher suite:
 - AEAD: AES-128-GCM (see {{!I-D.irtf-cfrg-hpke}}, Section 7.3)
 
 # Security Considerations
-
-DISCLAIMER: this is a work in progress draft and has not yet seen significant security analysis.
 
 Oblivious DoH aims to keep knowledge of the true query origin and its contents known to only clients.
 As a simplified model, consider a case where there exists two clients C1 and C2, one proxy P, and
