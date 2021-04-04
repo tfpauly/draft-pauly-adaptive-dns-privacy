@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-03-14T00:27:10.597773+00:00",
+  "timestamp": "2021-04-04T00:11:10.733056+00:00",
   "repo": "tfpauly/draft-pauly-adaptive-dns-privacy",
   "labels": [
     {
@@ -12614,6 +12614,48 @@
       },
       "comments": [],
       "reviews": []
+    },
+    {
+      "number": 173,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjA3Njg4MDUz",
+      "title": "Finalize",
+      "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/pull/173",
+      "state": "MERGED",
+      "author": "chris-wood",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-04-01T21:46:19Z",
+      "updatedAt": "2021-04-01T21:49:31Z",
+      "baseRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
+      "baseRefName": "master",
+      "baseRefOid": "0f9864c369b97e445c1df06c6c4b6769f1fd1efd",
+      "headRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
+      "headRefName": "caw/final-version",
+      "headRefOid": "2ea7dc3d957602be3d3282d57a95fb07cca21d2f",
+      "closedAt": "2021-04-01T21:49:31Z",
+      "mergedAt": "2021-04-01T21:49:31Z",
+      "mergedBy": "tfpauly",
+      "mergeCommit": {
+        "oid": "688dbc3d4affd6cf7b209e9c9cdb497fd272a936"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjI2NjcwOTEy",
+          "commit": {
+            "abbreviatedOid": "2ea7dc3"
+          },
+          "author": "tfpauly",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-04-01T21:47:57Z",
+          "updatedAt": "2021-04-01T21:47:57Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
