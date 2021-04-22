@@ -5,13 +5,13 @@
 Network Working Group                                           T. Pauly
 Internet-Draft                                                E. Kinnear
 Intended status: Standards Track                              Apple Inc.
-Expires: 4 September 2021                                      C.A. Wood
+Expires: 24 October 2021                                       C.A. Wood
                                                               Cloudflare
                                                               P. McManus
                                                                   Fastly
                                                                T. Jensen
                                                                Microsoft
-                                                            3 March 2021
+                                                           22 April 2021
 
 
                     Adaptive DNS Resolver Discovery
@@ -40,7 +40,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 4 September 2021.
+   This Internet-Draft will expire on 24 October 2021.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Pauly, et al.           Expires 4 September 2021                [Page 1]
+Pauly, et al.            Expires 24 October 2021                [Page 1]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    Please review these documents carefully, as they describe your rights
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Pauly, et al.           Expires 4 September 2021                [Page 2]
+Pauly, et al.            Expires 24 October 2021                [Page 2]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    Protocols that can improve the transport security of a client when
@@ -165,9 +165,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021                [Page 3]
+Pauly, et al.            Expires 24 October 2021                [Page 3]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    this agreement asserts to clients that sending any query to the
@@ -221,9 +221,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021                [Page 4]
+Pauly, et al.            Expires 24 October 2021                [Page 4]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    The rationale for using SVCB records for resolver discovery is
@@ -277,9 +277,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021                [Page 5]
+Pauly, et al.            Expires 24 October 2021                [Page 5]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    The key "dohTemplate" is defined within the JSON dictionary
@@ -333,9 +333,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021                [Page 6]
+Pauly, et al.            Expires 24 October 2021                [Page 6]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    JSON MUST contain a "dohTemplate" key pointing to the correct DoH
@@ -389,9 +389,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021                [Page 7]
+Pauly, et al.            Expires 24 October 2021                [Page 7]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    A client MUST NOT trust a designation if the JSON content is not
@@ -445,9 +445,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021                [Page 8]
+Pauly, et al.            Expires 24 October 2021                [Page 8]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
 4.  Explicit Discovery of Local Resolvers
@@ -501,9 +501,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021                [Page 9]
+Pauly, et al.            Expires 24 October 2021                [Page 9]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    MUST be used whenever the original Direct Resolver would be used.
@@ -557,9 +557,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021               [Page 10]
+Pauly, et al.            Expires 24 October 2021               [Page 10]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    *  multiple designated DoH servers that are advertised via SVCB DNS
@@ -613,9 +613,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021               [Page 11]
+Pauly, et al.            Expires 24 October 2021               [Page 11]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
 8.  Privacy Considerations
@@ -669,9 +669,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021               [Page 12]
+Pauly, et al.            Expires 24 October 2021               [Page 12]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
     +==============+=======================+=========+===============+
@@ -725,18 +725,18 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021               [Page 13]
+Pauly, et al.            Expires 24 October 2021               [Page 13]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    [I-D.ietf-dnsop-svcb-https]
               Schwartz, B., Bishop, M., and E. Nygren, "Service binding
               and parameter specification via the DNS (DNS SVCB and
               HTTPS RRs)", Work in Progress, Internet-Draft, draft-ietf-
-              dnsop-svcb-https-03, 17 February 2021,
+              dnsop-svcb-https-05, 21 April 2021,
               <https://www.ietf.org/archive/id/draft-ietf-dnsop-svcb-
-              https-03.txt>.
+              https-05.txt>.
 
    [I-D.ietf-intarea-provisioning-domains]
               Pfister, P., Vyncke, E., Pauly, T., Schinazi, D., and W.
@@ -749,9 +749,9 @@ Internet-Draft               ADNS Discovery                   March 2021
    [I-D.ietf-tls-esni]
               Rescorla, E., Oku, K., Sullivan, N., and C. A. Wood, "TLS
               Encrypted Client Hello", Work in Progress, Internet-Draft,
-              draft-ietf-tls-esni-09, 16 December 2020,
+              draft-ietf-tls-esni-10, 8 March 2021,
               <https://www.ietf.org/archive/id/draft-ietf-tls-esni-
-              09.txt>.
+              10.txt>.
 
    [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
               Rose, "DNS Security Introduction and Requirements",
@@ -781,9 +781,9 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021               [Page 14]
+Pauly, et al.            Expires 24 October 2021               [Page 14]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
@@ -837,9 +837,9 @@ Appendix A.  Rationale for using SVCB records
 
 
 
-Pauly, et al.           Expires 4 September 2021               [Page 15]
+Pauly, et al.            Expires 24 October 2021               [Page 15]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    *  SVCB records are extensible and allow definition of parameter
@@ -893,9 +893,9 @@ Authors' Addresses
 
 
 
-Pauly, et al.           Expires 4 September 2021               [Page 16]
+Pauly, et al.            Expires 24 October 2021               [Page 16]
 
-Internet-Draft               ADNS Discovery                   March 2021
+Internet-Draft               ADNS Discovery                   April 2021
 
 
    Christopher A. Wood
@@ -949,4 +949,4 @@ Internet-Draft               ADNS Discovery                   March 2021
 
 
 
-Pauly, et al.           Expires 4 September 2021               [Page 17]
+Pauly, et al.            Expires 24 October 2021               [Page 17]

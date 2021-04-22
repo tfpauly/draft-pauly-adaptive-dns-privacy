@@ -16,12 +16,12 @@ client IP addresses via proxying encrypted DNS transactions. This improves priva
 DNS operations by not allowing any one server entity to be aware of both the client IP
 address and the content of DNS queries and answers. 
     " name="description">
-<meta content="xml2rfc 3.5.0" name="generator">
+<meta content="xml2rfc 3.7.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-pauly-dprive-oblivious-doh-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.5.0
-    Python 3.8.7
+  xml2rfc 3.7.0
+    Python 3.8.8
     appdirs 1.4.4
     ConfigArgParse 1.2.3
     google-i18n-address 2.4.0
@@ -29,7 +29,7 @@ address and the content of DNS queries and answers.
     intervaltree 3.1.0
     Jinja2 2.11.2
     kitchen 1.2.6
-    lxml 4.6.2
+    lxml 4.6.3
     pycountry 20.7.3
     pyflakes 2.2.0
     PyYAML 5.4.1
@@ -825,11 +825,11 @@ address div.right {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">Oblivious DoH</td>
-<td class="right">March 2021</td>
+<td class="right">April 2021</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Kinnear, et al.</td>
-<td class="center">Expires 4 September 2021</td>
+<td class="center">Expires 24 October 2021</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -842,12 +842,12 @@ address div.right {
 <dd class="internet-draft">draft-pauly-dprive-oblivious-doh-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2021-03-03" class="published">3 March 2021</time>
+<time datetime="2021-04-22" class="published">22 April 2021</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2021-09-04">4 September 2021</time></dd>
+<dd class="expires"><time datetime="2021-10-24">24 October 2021</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -900,7 +900,7 @@ address and the content of DNS queries and answers.<a href="#section-abstract-1"
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 4 September 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 24 October 2021.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -928,108 +928,108 @@ address and the content of DNS queries and answers.<a href="#section-abstract-1"
         <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
 <a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
         </h2>
-<nav class="toc"><ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.1">
-            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a><a href="#section-toc.1-1.1.1" class="pilcrow">¶</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.1.2.1">
-                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-specification-of-requiremen" class="xref">Specification of Requirements</a><a href="#section-toc.1-1.1.2.1.1" class="pilcrow">¶</a></p>
+<nav class="toc"><ul class="ulEmpty toc compact">
+<li class="ulEmpty toc compact" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+<ul class="ulEmpty toc compact">
+<li class="ulEmpty toc compact" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-specification-of-requiremen" class="xref">Specification of Requirements</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="xref">2</a>.  <a href="#name-terminology" class="xref">Terminology</a><a href="#section-toc.1-1.2.1" class="pilcrow">¶</a></p>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="xref">2</a>.  <a href="#name-terminology" class="xref">Terminology</a></p>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-deployment-requirements" class="xref">Deployment Requirements</a><a href="#section-toc.1-1.3.1" class="pilcrow">¶</a></p>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-deployment-requirements" class="xref">Deployment Requirements</a></p>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-http-exchange" class="xref">HTTP Exchange</a><a href="#section-toc.1-1.4.1" class="pilcrow">¶</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.4.2.1">
-                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-http-request" class="xref">HTTP Request</a><a href="#section-toc.1-1.4.2.1.1" class="pilcrow">¶</a></p>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-http-exchange" class="xref">HTTP Exchange</a></p>
+<ul class="ulEmpty toc compact">
+<li class="ulEmpty toc compact" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-http-request" class="xref">HTTP Request</a></p>
 </li>
-              <li class="compact ulEmpty toc" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-http-request-example" class="xref">HTTP Request Example</a><a href="#section-toc.1-1.4.2.2.1" class="pilcrow">¶</a></p>
+              <li class="ulEmpty toc compact" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-http-request-example" class="xref">HTTP Request Example</a></p>
 </li>
-              <li class="compact ulEmpty toc" id="section-toc.1-1.4.2.3">
-                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="xref">4.3</a>.  <a href="#name-http-response" class="xref">HTTP Response</a><a href="#section-toc.1-1.4.2.3.1" class="pilcrow">¶</a></p>
+              <li class="ulEmpty toc compact" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="xref">4.3</a>.  <a href="#name-http-response" class="xref">HTTP Response</a></p>
 </li>
-              <li class="compact ulEmpty toc" id="section-toc.1-1.4.2.4">
-                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="xref">4.4</a>.  <a href="#name-http-response-example" class="xref">HTTP Response Example</a><a href="#section-toc.1-1.4.2.4.1" class="pilcrow">¶</a></p>
+              <li class="ulEmpty toc compact" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="xref">4.4</a>.  <a href="#name-http-response-example" class="xref">HTTP Response Example</a></p>
 </li>
-              <li class="compact ulEmpty toc" id="section-toc.1-1.4.2.5">
-                <p id="section-toc.1-1.4.2.5.1"><a href="#section-4.5" class="xref">4.5</a>.  <a href="#name-http-metadata" class="xref">HTTP Metadata</a><a href="#section-toc.1-1.4.2.5.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-configuration-and-public-ke" class="xref">Configuration and Public Key Discovery</a><a href="#section-toc.1-1.5.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-configuration-and-public-key" class="xref">Configuration and Public Key Format</a><a href="#section-toc.1-1.6.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-protocol-encoding" class="xref">Protocol Encoding</a><a href="#section-toc.1-1.7.1" class="pilcrow">¶</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-message-format" class="xref">Message Format</a><a href="#section-toc.1-1.7.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="compact ulEmpty toc" id="section-toc.1-1.7.2.2">
-                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-encryption-and-decryption-r" class="xref">Encryption and Decryption Routines</a><a href="#section-toc.1-1.7.2.2.1" class="pilcrow">¶</a></p>
+              <li class="ulEmpty toc compact" id="section-toc.1-1.4.2.5">
+                <p id="section-toc.1-1.4.2.5.1"><a href="#section-4.5" class="xref">4.5</a>.  <a href="#name-http-metadata" class="xref">HTTP Metadata</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-oblivious-client-behavior" class="xref">Oblivious Client Behavior</a><a href="#section-toc.1-1.8.1" class="pilcrow">¶</a></p>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-configuration-and-public-ke" class="xref">Configuration and Public Key Discovery</a></p>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-oblivious-target-behavior" class="xref">Oblivious Target Behavior</a><a href="#section-toc.1-1.9.1" class="pilcrow">¶</a></p>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-configuration-and-public-key" class="xref">Configuration and Public Key Format</a></p>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-compliance-requirements" class="xref">Compliance Requirements</a><a href="#section-toc.1-1.10.1" class="pilcrow">¶</a></p>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-protocol-encoding" class="xref">Protocol Encoding</a></p>
+<ul class="ulEmpty toc compact">
+<li class="ulEmpty toc compact" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-message-format" class="xref">Message Format</a></p>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="xref">11</a>. <a href="#name-security-considerations" class="xref">Security Considerations</a><a href="#section-toc.1-1.11.1" class="pilcrow">¶</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.11.2.1">
-                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="xref">11.1</a>.  <a href="#name-denial-of-service" class="xref">Denial of Service</a><a href="#section-toc.1-1.11.2.1.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="compact ulEmpty toc" id="section-toc.1-1.11.2.2">
-                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="xref">11.2</a>.  <a href="#name-proxy-policies" class="xref">Proxy Policies</a><a href="#section-toc.1-1.11.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="compact ulEmpty toc" id="section-toc.1-1.11.2.3">
-                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="xref">11.3</a>.  <a href="#name-general-proxy-services" class="xref">General Proxy Services</a><a href="#section-toc.1-1.11.2.3.1" class="pilcrow">¶</a></p>
+              <li class="ulEmpty toc compact" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-encryption-and-decryption-r" class="xref">Encryption and Decryption Routines</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="xref">12</a>. <a href="#name-iana-considerations" class="xref">IANA Considerations</a><a href="#section-toc.1-1.12.1" class="pilcrow">¶</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.12.2.1">
-                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="xref">12.1</a>.  <a href="#name-oblivious-doh-message-media" class="xref">Oblivious DoH Message Media Type</a><a href="#section-toc.1-1.12.2.1.1" class="pilcrow">¶</a></p>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-oblivious-client-behavior" class="xref">Oblivious Client Behavior</a></p>
 </li>
-              <li class="compact ulEmpty toc" id="section-toc.1-1.12.2.2">
-                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="xref">12.2</a>.  <a href="#name-oblivious-doh-public-key-dn" class="xref">Oblivious DoH Public Key DNS Parameter</a><a href="#section-toc.1-1.12.2.2.1" class="pilcrow">¶</a></p>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-oblivious-target-behavior" class="xref">Oblivious Target Behavior</a></p>
 </li>
-            </ul>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-compliance-requirements" class="xref">Compliance Requirements</a></p>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#section-13" class="xref">13</a>. <a href="#name-acknowledgments" class="xref">Acknowledgments</a><a href="#section-toc.1-1.13.1" class="pilcrow">¶</a></p>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="xref">11</a>. <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+<ul class="ulEmpty toc compact">
+<li class="ulEmpty toc compact" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="xref">11.1</a>.  <a href="#name-denial-of-service" class="xref">Denial of Service</a></p>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#section-14" class="xref">14</a>. <a href="#name-references" class="xref">References</a><a href="#section-toc.1-1.14.1" class="pilcrow">¶</a></p>
-<ul class="compact ulEmpty toc">
-<li class="compact ulEmpty toc" id="section-toc.1-1.14.2.1">
-                <p id="section-toc.1-1.14.2.1.1"><a href="#section-14.1" class="xref">14.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a><a href="#section-toc.1-1.14.2.1.1" class="pilcrow">¶</a></p>
+              <li class="ulEmpty toc compact" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="xref">11.2</a>.  <a href="#name-proxy-policies" class="xref">Proxy Policies</a></p>
 </li>
-              <li class="compact ulEmpty toc" id="section-toc.1-1.14.2.2">
-                <p id="section-toc.1-1.14.2.2.1"><a href="#section-14.2" class="xref">14.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a><a href="#section-toc.1-1.14.2.2.1" class="pilcrow">¶</a></p>
+              <li class="ulEmpty toc compact" id="section-toc.1-1.11.2.3">
+                <p id="section-toc.1-1.11.2.3.1"><a href="#section-11.3" class="xref">11.3</a>.  <a href="#name-general-proxy-services" class="xref">General Proxy Services</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact ulEmpty toc" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#section-appendix.a" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a><a href="#section-toc.1-1.15.1" class="pilcrow">¶</a></p>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="xref">12</a>. <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+<ul class="ulEmpty toc compact">
+<li class="ulEmpty toc compact" id="section-toc.1-1.12.2.1">
+                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="xref">12.1</a>.  <a href="#name-oblivious-doh-message-media" class="xref">Oblivious DoH Message Media Type</a></p>
+</li>
+              <li class="ulEmpty toc compact" id="section-toc.1-1.12.2.2">
+                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="xref">12.2</a>.  <a href="#name-oblivious-doh-public-key-dn" class="xref">Oblivious DoH Public Key DNS Parameter</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="xref">13</a>. <a href="#name-acknowledgments" class="xref">Acknowledgments</a></p>
+</li>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#section-14" class="xref">14</a>. <a href="#name-references" class="xref">References</a></p>
+<ul class="ulEmpty toc compact">
+<li class="ulEmpty toc compact" id="section-toc.1-1.14.2.1">
+                <p id="section-toc.1-1.14.2.1.1"><a href="#section-14.1" class="xref">14.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+</li>
+              <li class="ulEmpty toc compact" id="section-toc.1-1.14.2.2">
+                <p id="section-toc.1-1.14.2.2.1"><a href="#section-14.2" class="xref">14.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="ulEmpty toc compact" id="section-toc.1-1.15">
+            <p id="section-toc.1-1.15.1"><a href="#section-appendix.a" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1300,11 +1300,14 @@ requests to proxies, such as HTTP cookies.<a href="#section-4.5-1" class="pilcro
       </h2>
 <p id="section-5-1">In order to use a DoH server as a Target, the client must know a public key to use
 for encrypting its queries. This document specifies one discovery mechanism for public
-keys using the SVCB or HTTPSSVC record type (<span>[<a href="#I-D.ietf-dnsop-svcb-https" class="xref">I-D.ietf-dnsop-svcb-https</a>]</span>) for a name
+keys using the SVCB or HTTPS RRtype (<span>[<a href="#I-D.ietf-dnsop-svcb-https" class="xref">I-D.ietf-dnsop-svcb-https</a>]</span>) for a name
 owned by the server.<a href="#section-5-1" class="pilcrow">¶</a></p>
-<p id="section-5-2">The Service Binding key name is "odohconfig" (<a href="#iana" class="xref">Section 12</a>). If present, this key/value
-pair contains the public key to use when encrypting Oblivious DoH messages
-that will be targeted at a DoH server. The format of the key is defined in (<a href="#publickey" class="xref">Section 6</a>).<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-2">The Service Binding SvcParamKey name is "odoh" (<a href="#iana" class="xref">Section 12</a>). If present, this key/value
+pair contains the public key configuration to use when encrypting Oblivious DoH messages
+that will be targeted at a DoH server. The wire format of the key is a ObliviousDoHConfigs
+structure as defined in (<a href="#publickey" class="xref">Section 6</a>).  In presentation format, the value is a
+ObliviousDoHConfigs structyre encoded in Base64 <span>[<a href="#base64" class="xref">base64</a>]</span>.  To enable simpler
+parsing, this SvcParam MUST NOT contain escape sequences.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <p id="section-5-3">Clients that use this discovery mechansim MUST only use keys that were retrieved from
 records protected by DNSSEC <span>[<a href="#RFC4033" class="xref">RFC4033</a>]</span> to encrypt messages to a Target.<a href="#section-5-3" class="pilcrow">¶</a></p>
 <p id="section-5-4">Servers SHOULD rotate public keys regularly. It is RECOMMENDED that servers rotate keys
@@ -1332,7 +1335,7 @@ struct {
    uint16 version;
    uint16 length;
    select (ObliviousDoHConfig.version) {
-      case 0xff06: ObliviousDoHConfigContents contents;
+      case 0x0001: ObliviousDoHConfigContents contents;
    }
 } ObliviousDoHConfig;
 
@@ -1350,7 +1353,7 @@ version  </dt>
         <dd style="margin-left: 1.5em" id="section-6-5.2">
           <p id="section-6-5.2.1">The version of Oblivious DoH for which this configuration is used. Clients MUST ignore any
 <code>ObliviousDoHConfig</code> structure with a version they do not support. The version of Oblivious DoH
-specified in this document is <code>0xff06</code>.<a href="#section-6-5.2.1" class="pilcrow">¶</a></p>
+specified in this document is <code>0x0001</code>.<a href="#section-6-5.2.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 <dt id="section-6-5.3">
@@ -1634,7 +1637,7 @@ Proxy forwards the Target error to the client; see <a href="#oblivious-response"
       <h2 id="name-compliance-requirements">
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-compliance-requirements" class="section-name selfRef">Compliance Requirements</a>
       </h2>
-<p id="section-10-1">Oblivious DoH uses draft-08 of HPKE for public key encryption <span>[<a href="#I-D.irtf-cfrg-hpke" class="xref">I-D.irtf-cfrg-hpke</a>]</span>.
+<p id="section-10-1">Oblivious DoH uses HPKE for public key encryption <span>[<a href="#I-D.irtf-cfrg-hpke" class="xref">I-D.irtf-cfrg-hpke</a>]</span>.
 In the absence of an application profile standard specifying otherwise, a compliant
 Oblivious DoH implementation MUST support the following HPKE cipher suite:<a href="#section-10-1" class="pilcrow">¶</a></p>
 <ul class="normal">
@@ -1652,8 +1655,7 @@ Oblivious DoH implementation MUST support the following HPKE cipher suite:<a hre
       <h2 id="name-security-considerations">
 <a href="#section-11" class="section-number selfRef">11. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-11-1">DISCLAIMER: this is a work in progress draft and has not yet seen significant security analysis.<a href="#section-11-1" class="pilcrow">¶</a></p>
-<p id="section-11-2">Oblivious DoH aims to keep knowledge of the true query origin and its contents known to only clients.
+<p id="section-11-1">Oblivious DoH aims to keep knowledge of the true query origin and its contents known to only clients.
 As a simplified model, consider a case where there exists two clients C1 and C2, one proxy P, and
 one target T. Oblivious DoH assumes an extended Dolev-Yao style attacker which can observe all
 network activity and can adaptively compromise either P or T, but not C1 or C2. Once compromised,
@@ -1661,31 +1663,31 @@ the attacker has access to all session information and private key material. (Th
 arbitrarily many clients, proxies, and targets, with the constraints that not all targets and proxies
 are simultaneously compromised, and at least two clients are left uncompromised.) The attacker is
 prohibited from sending client identifying information, such as IP addresses, to targets. (This would
-allow the attacker to trivially link a query to the corresponding client.)<a href="#section-11-2" class="pilcrow">¶</a></p>
-<p id="section-11-3">In this model, both C1 and C2 send an Oblivious DoH queries Q1 and Q2, respectively, through P to T,
+allow the attacker to trivially link a query to the corresponding client.)<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-11-2">In this model, both C1 and C2 send an Oblivious DoH queries Q1 and Q2, respectively, through P to T,
 and T provides answers A1 and A2. The attacker aims to link C1 to (Q1, A1) and C2 to (Q2, A2), respectively.
 The attacker succeeds if this linkability is possible without any additional interaction. (For example,
 if T is compromised, it may return a DNS answer corresponding to an entity it controls, and then observe
 the subsequent connection from a client, learning its identity in the process. Such attacks are out of
-scope for this model.)<a href="#section-11-3" class="pilcrow">¶</a></p>
-<p id="section-11-4">Oblivious DoH security prevents such linkability. Informally, this means:<a href="#section-11-4" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-11-5">
-<li id="section-11-5.1">Queries and answers are known only to clients and targets in possession of the corresponding
+scope for this model.)<a href="#section-11-2" class="pilcrow">¶</a></p>
+<p id="section-11-3">Oblivious DoH security prevents such linkability. Informally, this means:<a href="#section-11-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-11-4">
+<li id="section-11-4.1">Queries and answers are known only to clients and targets in possession of the corresponding
 response key and HPKE keying material. In particular, proxies know the origin and destination
 of an oblivious query, yet do not know the plaintext query. Likewise, targets know only the oblivious
 query origin, i.e., the proxy, and the plaintext query. Only the client knows both the plaintext
-query contents and destination.<a href="#section-11-5.1" class="pilcrow">¶</a>
+query contents and destination.<a href="#section-11-4.1" class="pilcrow">¶</a>
 </li>
-        <li id="section-11-5.2">Target resolvers cannot link queries from the same client in the absence of unique per-client
-keys.<a href="#section-11-5.2" class="pilcrow">¶</a>
+        <li id="section-11-4.2">Target resolvers cannot link queries from the same client in the absence of unique per-client
+keys.<a href="#section-11-4.2" class="pilcrow">¶</a>
 </li>
       </ol>
-<p id="section-11-6">Traffic analysis mitigations are outside the scope of this document. In particular, this document
+<p id="section-11-5">Traffic analysis mitigations are outside the scope of this document. In particular, this document
 does not recommend padding lengths for ObliviousDoHQuery and ObliviousDoHResponse messages.
-Implementations SHOULD follow the guidance for choosing padding length in <span>[<a href="#RFC8467" class="xref">RFC8467</a>]</span>.<a href="#section-11-6" class="pilcrow">¶</a></p>
-<p id="section-11-7">Oblivious DoH security does not depend on proxy and target indistinguishability. Specifically, an
+Implementations SHOULD follow the guidance for choosing padding length in <span>[<a href="#RFC8467" class="xref">RFC8467</a>]</span>.<a href="#section-11-5" class="pilcrow">¶</a></p>
+<p id="section-11-6">Oblivious DoH security does not depend on proxy and target indistinguishability. Specifically, an
 on-path attacker could determine whether a connection a specific endpoint is used for oblivious or
-direct DoH queries. However, this has no effect on confidentiality goals listed above.<a href="#section-11-7" class="pilcrow">¶</a></p>
+direct DoH queries. However, this has no effect on confidentiality goals listed above.<a href="#section-11-6" class="pilcrow">¶</a></p>
 <div id="denial-of-service">
 <section id="section-11.1">
         <h3 id="name-denial-of-service">
@@ -1786,7 +1788,7 @@ redundant length prefix. In presentation format, the value is encoded in <span>[
           <dt id="section-12.2-3.1">
 Name:  </dt>
           <dd style="margin-left: 1.5em" id="section-12.2-3.2">
-            <p id="section-12.2-3.2.1">odohconfig<a href="#section-12.2-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-12.2-3.2.1">odoh<a href="#section-12.2-3.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-12.2-3.3">
@@ -1823,9 +1825,11 @@ Nafeez Ahamed,
 Elliot Briggs,
 Marwan Fayed,
 Frederic Jacobs,
-Tommy Jensen
+Tommy Jensen,
+Jonathan Hoyland,
 Paul Schmitt,
 Brian Swander,
+Erik Nygren,
 Tanya Verma, and
 Peter Wu
 for the feedback and input.<a href="#section-13-1" class="pilcrow">¶</a></p>
@@ -1846,23 +1850,23 @@ for the feedback and input.<a href="#section-13-1" class="pilcrow">¶</a></p>
 <dd class="break"></dd>
 <dt id="I-D.ietf-dnsop-svcb-https">[I-D.ietf-dnsop-svcb-https]</dt>
         <dd>
-<span class="refAuthor">Schwartz, B.</span><span class="refAuthor">, Bishop, M.</span><span class="refAuthor">, and E. Nygren</span>, <span class="refTitle">"Service binding and parameter specification via the DNS (DNS SVCB and HTTPS RRs)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-dnsop-svcb-https-03</span>, <time datetime="2021-02-17" class="refDate">17 February 2021</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-ietf-dnsop-svcb-https-03.txt">https://www.ietf.org/archive/id/draft-ietf-dnsop-svcb-https-03.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Schwartz, B.</span>, <span class="refAuthor">Bishop, M.</span>, and <span class="refAuthor">E. Nygren</span>, <span class="refTitle">"Service binding and parameter specification via the DNS (DNS SVCB and HTTPS RRs)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-dnsop-svcb-https-05</span>, <time datetime="2021-04-21" class="refDate">21 April 2021</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-ietf-dnsop-svcb-https-05.txt">https://www.ietf.org/archive/id/draft-ietf-dnsop-svcb-https-05.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-httpbis-proxy-status">[I-D.ietf-httpbis-proxy-status]</dt>
         <dd>
-<span class="refAuthor">Nottingham, M.</span><span class="refAuthor"> and P. Sikora</span>, <span class="refTitle">"The Proxy-Status HTTP Response Header Field"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-proxy-status-04</span>, <time datetime="2021-02-09" class="refDate">9 February 2021</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-ietf-httpbis-proxy-status-04.txt">https://www.ietf.org/archive/id/draft-ietf-httpbis-proxy-status-04.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Nottingham, M.</span> and <span class="refAuthor">P. Sikora</span>, <span class="refTitle">"The Proxy-Status HTTP Response Header Field"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-httpbis-proxy-status-04</span>, <time datetime="2021-02-09" class="refDate">9 February 2021</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-ietf-httpbis-proxy-status-04.txt">https://www.ietf.org/archive/id/draft-ietf-httpbis-proxy-status-04.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.irtf-cfrg-hpke">[I-D.irtf-cfrg-hpke]</dt>
         <dd>
-<span class="refAuthor">Barnes, R. L.</span><span class="refAuthor">, Bhargavan, K.</span><span class="refAuthor">, Lipp, B.</span><span class="refAuthor">, and C. A. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-hpke-08</span>, <time datetime="2021-02-15" class="refDate">15 February 2021</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-irtf-cfrg-hpke-08.txt">https://www.ietf.org/archive/id/draft-irtf-cfrg-hpke-08.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Barnes, R. L.</span>, <span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Lipp, B.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Hybrid Public Key Encryption"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-hpke-08</span>, <time datetime="2021-02-15" class="refDate">15 February 2021</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-irtf-cfrg-hpke-08.txt">https://www.ietf.org/archive/id/draft-irtf-cfrg-hpke-08.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.pauly-add-resolver-discovery">[I-D.pauly-add-resolver-discovery]</dt>
         <dd>
-<span class="refAuthor">Pauly, T.</span><span class="refAuthor">, Kinnear, E.</span><span class="refAuthor">, Wood, C. A.</span><span class="refAuthor">, McManus, P.</span><span class="refAuthor">, and T. Jensen</span>, <span class="refTitle">"Adaptive DNS Resolver Discovery"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-pauly-add-resolver-discovery-01</span>, <time datetime="2020-07-13" class="refDate">13 July 2020</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-pauly-add-resolver-discovery-01.txt">https://www.ietf.org/archive/id/draft-pauly-add-resolver-discovery-01.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Pauly, T.</span>, <span class="refAuthor">Kinnear, E.</span>, <span class="refAuthor">Wood, C. A.</span>, <span class="refAuthor">McManus, P.</span>, and <span class="refAuthor">T. Jensen</span>, <span class="refTitle">"Adaptive DNS Resolver Discovery"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-pauly-add-resolver-discovery-01</span>, <time datetime="2020-07-13" class="refDate">13 July 2020</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-pauly-add-resolver-discovery-01.txt">https://www.ietf.org/archive/id/draft-pauly-add-resolver-discovery-01.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.pauly-dprive-adaptive-dns-privacy">[I-D.pauly-dprive-adaptive-dns-privacy]</dt>
         <dd>
-<span class="refAuthor">Kinnear, E.</span><span class="refAuthor">, Pauly, T.</span><span class="refAuthor">, Wood, C.</span><span class="refAuthor">, and P. McManus</span>, <span class="refTitle">"Adaptive DNS: Improving Privacy of Name Resolution"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-pauly-dprive-adaptive-dns-privacy-01</span>, <time datetime="2019-11-01" class="refDate">1 November 2019</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-pauly-dprive-adaptive-dns-privacy-01.txt">https://www.ietf.org/archive/id/draft-pauly-dprive-adaptive-dns-privacy-01.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Kinnear, E.</span>, <span class="refAuthor">Pauly, T.</span>, <span class="refAuthor">Wood, C.</span>, and <span class="refAuthor">P. McManus</span>, <span class="refTitle">"Adaptive DNS: Improving Privacy of Name Resolution"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-pauly-dprive-adaptive-dns-privacy-01</span>, <time datetime="2019-11-01" class="refDate">1 November 2019</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-pauly-dprive-adaptive-dns-privacy-01.txt">https://www.ietf.org/archive/id/draft-pauly-dprive-adaptive-dns-privacy-01.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
         <dd>
@@ -1870,19 +1874,19 @@ for the feedback and input.<a href="#section-13-1" class="pilcrow">¶</a></p>
 <dd class="break"></dd>
 <dt id="RFC4033">[RFC4033]</dt>
         <dd>
-<span class="refAuthor">Arends, R.</span><span class="refAuthor">, Austein, R.</span><span class="refAuthor">, Larson, M.</span><span class="refAuthor">, Massey, D.</span><span class="refAuthor">, and S. Rose</span>, <span class="refTitle">"DNS Security Introduction and Requirements"</span>, <span class="seriesInfo">RFC 4033</span>, <span class="seriesInfo">DOI 10.17487/RFC4033</span>, <time datetime="2005-03" class="refDate">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4033">https://www.rfc-editor.org/info/rfc4033</a>&gt;</span>. </dd>
+<span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Austein, R.</span>, <span class="refAuthor">Larson, M.</span>, <span class="refAuthor">Massey, D.</span>, and <span class="refAuthor">S. Rose</span>, <span class="refTitle">"DNS Security Introduction and Requirements"</span>, <span class="seriesInfo">RFC 4033</span>, <span class="seriesInfo">DOI 10.17487/RFC4033</span>, <time datetime="2005-03" class="refDate">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4033">https://www.rfc-editor.org/info/rfc4033</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC4086">[RFC4086]</dt>
         <dd>
-<span class="refAuthor">Eastlake 3rd, D.</span><span class="refAuthor">, Schiller, J.</span><span class="refAuthor">, and S. Crocker</span>, <span class="refTitle">"Randomness Requirements for Security"</span>, <span class="seriesInfo">BCP 106</span>, <span class="seriesInfo">RFC 4086</span>, <span class="seriesInfo">DOI 10.17487/RFC4086</span>, <time datetime="2005-06" class="refDate">June 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4086">https://www.rfc-editor.org/info/rfc4086</a>&gt;</span>. </dd>
+<span class="refAuthor">Eastlake 3rd, D.</span>, <span class="refAuthor">Schiller, J.</span>, and <span class="refAuthor">S. Crocker</span>, <span class="refTitle">"Randomness Requirements for Security"</span>, <span class="seriesInfo">BCP 106</span>, <span class="seriesInfo">RFC 4086</span>, <span class="seriesInfo">DOI 10.17487/RFC4086</span>, <time datetime="2005-06" class="refDate">June 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4086">https://www.rfc-editor.org/info/rfc4086</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7231">[RFC7231]</dt>
         <dd>
-<span class="refAuthor">Fielding, R., Ed.</span><span class="refAuthor"> and J. Reschke, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content"</span>, <span class="seriesInfo">RFC 7231</span>, <span class="seriesInfo">DOI 10.17487/RFC7231</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7231">https://www.rfc-editor.org/info/rfc7231</a>&gt;</span>. </dd>
+<span class="refAuthor">Fielding, R., Ed.</span> and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content"</span>, <span class="seriesInfo">RFC 7231</span>, <span class="seriesInfo">DOI 10.17487/RFC7231</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7231">https://www.rfc-editor.org/info/rfc7231</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7235">[RFC7235]</dt>
         <dd>
-<span class="refAuthor">Fielding, R., Ed.</span><span class="refAuthor"> and J. Reschke, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP/1.1): Authentication"</span>, <span class="seriesInfo">RFC 7235</span>, <span class="seriesInfo">DOI 10.17487/RFC7235</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7235">https://www.rfc-editor.org/info/rfc7235</a>&gt;</span>. </dd>
+<span class="refAuthor">Fielding, R., Ed.</span> and <span class="refAuthor">J. Reschke, Ed.</span>, <span class="refTitle">"Hypertext Transfer Protocol (HTTP/1.1): Authentication"</span>, <span class="seriesInfo">RFC 7235</span>, <span class="seriesInfo">DOI 10.17487/RFC7235</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7235">https://www.rfc-editor.org/info/rfc7235</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
         <dd>
@@ -1898,7 +1902,7 @@ for the feedback and input.<a href="#section-13-1" class="pilcrow">¶</a></p>
 <dd class="break"></dd>
 <dt id="RFC8484">[RFC8484]</dt>
       <dd>
-<span class="refAuthor">Hoffman, P.</span><span class="refAuthor"> and P. McManus</span>, <span class="refTitle">"DNS Queries over HTTPS (DoH)"</span>, <span class="seriesInfo">RFC 8484</span>, <span class="seriesInfo">DOI 10.17487/RFC8484</span>, <time datetime="2018-10" class="refDate">October 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8484">https://www.rfc-editor.org/info/rfc8484</a>&gt;</span>. </dd>
+<span class="refAuthor">Hoffman, P.</span> and <span class="refAuthor">P. McManus</span>, <span class="refTitle">"DNS Queries over HTTPS (DoH)"</span>, <span class="seriesInfo">RFC 8484</span>, <span class="seriesInfo">DOI 10.17487/RFC8484</span>, <time datetime="2018-10" class="refDate">October 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8484">https://www.rfc-editor.org/info/rfc8484</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
@@ -1909,11 +1913,11 @@ for the feedback and input.<a href="#section-13-1" class="pilcrow">¶</a></p>
 <dl class="references">
 <dt id="I-D.annee-dprive-oblivious-dns">[I-D.annee-dprive-oblivious-dns]</dt>
         <dd>
-<span class="refAuthor">Edmundson, A.</span><span class="refAuthor">, Schmitt, P.</span><span class="refAuthor">, Feamster, N.</span><span class="refAuthor">, and A. Mankin</span>, <span class="refTitle">"Oblivious DNS - Strong Privacy for DNS Queries"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-annee-dprive-oblivious-dns-00</span>, <time datetime="2018-07-02" class="refDate">2 July 2018</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-annee-dprive-oblivious-dns-00.txt">https://www.ietf.org/archive/id/draft-annee-dprive-oblivious-dns-00.txt</a>&gt;</span>. </dd>
+<span class="refAuthor">Edmundson, A.</span>, <span class="refAuthor">Schmitt, P.</span>, <span class="refAuthor">Feamster, N.</span>, and <span class="refAuthor">A. Mankin</span>, <span class="refTitle">"Oblivious DNS - Strong Privacy for DNS Queries"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-annee-dprive-oblivious-dns-00</span>, <time datetime="2018-07-02" class="refDate">2 July 2018</time>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-annee-dprive-oblivious-dns-00.txt">https://www.ietf.org/archive/id/draft-annee-dprive-oblivious-dns-00.txt</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC7239">[RFC7239]</dt>
       <dd>
-<span class="refAuthor">Petersson, A.</span><span class="refAuthor"> and M. Nilsson</span>, <span class="refTitle">"Forwarded HTTP Extension"</span>, <span class="seriesInfo">RFC 7239</span>, <span class="seriesInfo">DOI 10.17487/RFC7239</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7239">https://www.rfc-editor.org/info/rfc7239</a>&gt;</span>. </dd>
+<span class="refAuthor">Petersson, A.</span> and <span class="refAuthor">M. Nilsson</span>, <span class="refTitle">"Forwarded HTTP Extension"</span>, <span class="seriesInfo">RFC 7239</span>, <span class="seriesInfo">DOI 10.17487/RFC7239</span>, <time datetime="2014-06" class="refDate">June 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7239">https://www.rfc-editor.org/info/rfc7239</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
 </section>
