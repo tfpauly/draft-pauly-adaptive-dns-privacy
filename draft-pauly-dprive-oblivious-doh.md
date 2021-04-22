@@ -227,8 +227,8 @@ Content-Type header in the response before processing the payload. A response wi
 treated as an error and be handled appropriately. All other aspects of the HTTP response and error handling are
 inherited from standard DoH.
 
-Proxies MUST forward any Target responses with 2xx, 4xx, or 5xx response codes unmodified to the client;
-see {{response-codes}.} Target responses with 1xx response codes MUST NOT be forwarded to the client.
+Proxies MUST forward any Target responses with 2xx, 4xx, or 5xx response codes unmodified to the client.
+Target responses with 1xx response codes MUST NOT be forwarded to the client.
 If a proxy receives a successful response from a target without the "application/oblivious-dns-message"
 HTTP Content-Type header, it MUST return a 502 (Bad Gateway) response to the client request, along with
 Proxy-Status response header with an "error" parameter of type "http_protocol_error".
