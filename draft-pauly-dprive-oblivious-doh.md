@@ -269,12 +269,15 @@ requests to proxies, such as HTTP cookies.
 
 In order to use a DoH server as a Target, the client must know a public key to use
 for encrypting its queries. This document specifies one discovery mechanism for public
-keys using the SVCB or HTTPSSVC record type ({{!I-D.ietf-dnsop-svcb-https}}) for a name
+keys using the SVCB or HTTPS RRtype ({{!I-D.ietf-dnsop-svcb-https}}) for a name
 owned by the server.
 
-The Service Binding key name is "odohconfig" ({{iana}}). If present, this key/value
-pair contains the public key to use when encrypting Oblivious DoH messages
-that will be targeted at a DoH server. The format of the key is defined in ({{publickey}}).
+The Service Binding SvcParamKey name is "odoh" ({{iana}}). If present, this key/value
+pair contains the public key configuration to use when encrypting Oblivious DoH messages
+that will be targeted at a DoH server. The wire format of the key is a ObliviousDoHConfigs
+structure as defined in ({{publickey}}).  In presentation format, the value is a
+ObliviousDoHConfigs structyre encoded in Base64 [base64].  To enable simpler
+parsing, this SvcParam MUST NOT contain escape sequences.
 
 Clients that use this discovery mechansim MUST only use keys that were retrieved from
 records protected by DNSSEC {{!RFC4033}} to encrypt messages to a Target.
@@ -666,7 +669,7 @@ format, the value of the parameter is an ObliviousDoHConfigs vector, including t
 redundant length prefix. In presentation format, the value is encoded in {{!base64=RFC4648}}.
 
 Name:
-: odohconfig
+: odoh
 
 SvcParamKey:
 : 32769
@@ -689,6 +692,7 @@ Tommy Jensen,
 Jonathan Hoyland,
 Paul Schmitt,
 Brian Swander,
+Erik Nygren,
 Tanya Verma, and
 Peter Wu
 for the feedback and input.
