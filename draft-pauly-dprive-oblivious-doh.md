@@ -227,11 +227,23 @@ Content-Type header in the response before processing the payload. A response wi
 treated as an error and be handled appropriately. All other aspects of the HTTP response and error handling are
 inherited from standard DoH.
 
-Proxies MUST forward responses unmodified to clients. Specifically, the HTTP status code generated
-by Targets must be forwarded to clients unmodified. If a proxy receives a successful response from a
-target without the "application/oblivious-dns-message" HTTP Content-Type header, it MUST
-return a 502 (Bad Gateway) response to the client request, along with Proxy-Status response
-header with an "error" parameter of type "http_protocol_error".
+Proxies MUST forward any Target responses with 2xx, 4xx, or 5xx response codes unmodified to the client;
+see {{response-codes}.} Target responses with 1xx response codes MUST NOT be forwarded to the client.
+If a proxy receives a successful response from a target without the "application/oblivious-dns-message"
+HTTP Content-Type header, it MUST return a 502 (Bad Gateway) response to the client request, along with
+Proxy-Status response header with an "error" parameter of type "http_protocol_error".
+
+Requests that cannot be processed by the target result in 4xx (Client Error) responses. If the target
+and client keys do not match, it is an authorization failure (HTTP status code 401; see Section 3.1
+of {{!RFC7235}}). Otherwise, if the client's request is invalid, such as in the case of decryption
+failure, wrong message type, or deserialization failure, this is a bad request (HTTP status code 400;
+see Section 6.5.1 of {{!RFC7231}}).
+
+Even in case of DNS responses indicating failure, such as SERVFAIL or NXDOMAIN, a successful HTTP response
+with a 2xx status code is used as long as the DNS response is valid. This is similar to how DoH {{!RFC8484}}
+handles HTTP response codes.
+
+In case of server error, the usual HTTP status code 500 (see Section 6.6.1 of {{!RFC7231}}) applies.
 
 ## HTTP Response Example
 
@@ -246,24 +258,14 @@ content-length = 154
 <Bytes containing the encrypted payload for an Oblivious DNS response>
 ~~~
 
-Requests that cannot be processed by the target result in 4xx (Client Error) responses. If the target
-and client keys do not match, it is an authorization failure (HTTP status code 401; see Section 3.1
-of {{!RFC7235}}). Otherwise, if the client's request is invalid, such as in the case of decryption
-failure, wrong message type, or deserialization failure, this is a bad request (HTTP status code 400;
-see Section 6.5.1 of {{!RFC7231}}).
-
-Even in case of DNS responses indicating failure, such as SERVFAIL or NXDOMAIN, a successful HTTP response
-with a 2xx status code is used as long as the DNS response is valid. This is similar to how DoH {{!RFC8484}} handles HTTP response codes.
-
-In case of server error, the usual HTTP status code 500 (see Section 6.6.1 of {{!RFC7231}}) applies.
-
 ## HTTP Metadata
 
 Proxies forward requests and responses between clients and targets as specified in {{oblivious-request}}.
 Metadata sent with these messages may inadvertently weaken or remove Oblivious DoH privacy properties.
 Proxies MUST NOT send any client-identifying information about clients to targets, such as
 "Forwarded" HTTP headers {{?RFC7239}}. Additionally, clients MUST NOT include any private state in
-requests to proxies, such as HTTP cookies.
+requests to proxies, such as HTTP cookies. See {{authentication}} for related discussion about
+client authentication information.
 
 # Configuration and Public Key Discovery {#keydiscovery}
 
@@ -275,8 +277,8 @@ owned by the server.
 The Service Binding SvcParamKey name is "odoh" ({{iana}}). If present, this key/value
 pair contains the public key configuration to use when encrypting Oblivious DoH messages
 that will be targeted at a DoH server. The wire format of the key is a ObliviousDoHConfigs
-structure as defined in ({{publickey}}).  In presentation format, the value is a
-ObliviousDoHConfigs structyre encoded in Base64 [base64].  To enable simpler
+structure as defined in ({{publickey}}). In presentation format, the value is a
+ObliviousDoHConfigs structure encoded in Base64 {{base64}}. To enable simpler
 parsing, this SvcParam MUST NOT contain escape sequences.
 
 Clients that use this discovery mechansim MUST only use keys that were retrieved from
@@ -600,6 +602,18 @@ forward requests to known or otherwise trusted targets. Proxies that do not have
 targets can attempt to determine if the specified target is a valid Oblivious DoH target by querying
 for the target configuration as specified in {{keydiscovery}}.
 
+## Authentication {#authentication}
+
+Depending on the deployment scenario, Proxies and Targets MAY require authentication before use.
+Regardless of the authentication mechanism in place, Proxies MUST NOT reveal any client
+authentication information to Targets. This is required so targets cannot uniquely identify
+individual clients.
+
+Note that if Targets require Proxies to authenticate at the HTTP- or application-layer before use,
+this SHOULD be done before attempting to forward any client query to the Target. This will allow
+Proxies to distinguish 401 Unauthorized response codes due to authentication failure from
+401 Unauthorized response codes due to client key mismatch; see {{oblivious-response}}.
+
 ## General Proxy Services
 
 Using DoH over anonymizing proxy services such as Tor would also achieve the desired goal of separating
@@ -692,7 +706,6 @@ Tommy Jensen,
 Jonathan Hoyland,
 Paul Schmitt,
 Brian Swander,
-Erik Nygren,
-Tanya Verma, and
+Erik Nygren, and
 Peter Wu
 for the feedback and input.
