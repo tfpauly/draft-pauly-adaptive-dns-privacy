@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-04-04T00:11:10.733056+00:00",
+  "timestamp": "2021-04-25T00:11:06.697526+00:00",
   "repo": "tfpauly/draft-pauly-adaptive-dns-privacy",
   "labels": [
     {
@@ -3031,6 +3031,80 @@
           "body": "Oops!  sorry.  fixed.",
           "createdAt": "2021-03-09T15:31:50Z",
           "updatedAt": "2021-03-09T15:31:50Z"
+        }
+      ]
+    },
+    {
+      "number": 174,
+      "id": "MDU6SXNzdWU4NjQ0NzMxMjE=",
+      "title": "Provide guidance about which status codes should be forwarded",
+      "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/issues/174",
+      "state": "OPEN",
+      "author": "tfpauly",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "tfpauly",
+        "chris-wood"
+      ],
+      "labels": [
+        "odoh"
+      ],
+      "body": "Section 4.3 should clarify that only 2xx, 4xx, and 5xx response codes should be forwarded un-modified. (And even some 4xx response codes such as authentication-required may not make sense to relay but would need to be handled by the proxy.) The important one is that 1xx should never be relayed back as there-be-dragons.",
+      "createdAt": "2021-04-22T02:11:21Z",
+      "updatedAt": "2021-04-22T02:12:21Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Do you want to take this, or shall I?",
+          "createdAt": "2021-04-22T02:12:21Z",
+          "updatedAt": "2021-04-22T02:12:21Z"
+        }
+      ]
+    },
+    {
+      "number": 175,
+      "id": "MDU6SXNzdWU4NjQ0NzM1ODA=",
+      "title": "Describe allowances for proxy authentication ",
+      "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/issues/175",
+      "state": "OPEN",
+      "author": "tfpauly",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "tfpauly",
+        "chris-wood"
+      ],
+      "labels": [
+        "odoh"
+      ],
+      "body": "We should briefly mention that clients MAY authenticate to proxies, and proxies MAY authenticate to targets, but any authentication here MUST be decoupled such that it is not possible for a target to identify a client, and any authentication from the client to proxy MUST NOT be passed directly to the target.",
+      "createdAt": "2021-04-22T02:12:35Z",
+      "updatedAt": "2021-04-22T02:12:35Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 177,
+      "id": "MDU6SXNzdWU4NjQ0ODU5OTY=",
+      "title": "[ODoH] how is path specified in SVCB RR?",
+      "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/issues/177",
+      "state": "OPEN",
+      "author": "enygren",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The SVCB record specification only contains the key and not the targetpath.  Ideally we'd reuse something from one of the DoH/DPRIVE/etc SVCB specs for this rather than creating a new SvcParamKey.",
+      "createdAt": "2021-04-22T02:45:16Z",
+      "updatedAt": "2021-04-22T03:17:51Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "tfpauly",
+          "authorAssociation": "OWNER",
+          "body": "Correct, I agree this shouldn't define a new key for the path, but should rely on the encoding for DoH resolvers from draft-schwartz-svcb-dns.",
+          "createdAt": "2021-04-22T03:17:51Z",
+          "updatedAt": "2021-04-22T03:17:51Z"
         }
       ]
     }
@@ -12653,6 +12727,96 @@
           "body": "",
           "createdAt": "2021-04-01T21:47:57Z",
           "updatedAt": "2021-04-01T21:47:57Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 176,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjIwNzEzNzkz",
+      "title": "SVCB record updates",
+      "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/pull/176",
+      "state": "MERGED",
+      "author": "enygren",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Clarify the SVCB text to align better with the near-final draft.\r\nRename the param to \"odoh\" to avoid the same issue where \"odohconfig\" is actually an \"odohconfigs\".",
+      "createdAt": "2021-04-22T02:41:29Z",
+      "updatedAt": "2021-04-22T03:18:35Z",
+      "baseRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
+      "baseRefName": "master",
+      "baseRefOid": "688dbc3d4affd6cf7b209e9c9cdb497fd272a936",
+      "headRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
+      "headRefName": "enygren-svcb-odoh",
+      "headRefOid": "499ea399f4193bd233d9c621beb41bb2b63e0761",
+      "closedAt": "2021-04-22T03:18:34Z",
+      "mergedAt": "2021-04-22T03:18:34Z",
+      "mergedBy": "tfpauly",
+      "mergeCommit": {
+        "oid": "4ea5f24f109a7c188939b4d9c23ebacf611c557a"
+      },
+      "comments": [
+        {
+          "author": "enygren",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Some of this text already seems to be in 12.2 so perhaps we don't need all of this here.  It likely still makes sense to rename the svcparamkey to \"odoh\" or \"odohconfigs\"",
+          "createdAt": "2021-04-22T03:17:26Z",
+          "updatedAt": "2021-04-22T03:17:26Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjQxNzQ0NjA1",
+          "commit": {
+            "abbreviatedOid": "499ea39"
+          },
+          "author": "tfpauly",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-04-22T03:18:16Z",
+          "updatedAt": "2021-04-22T03:18:16Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 178,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjIxMTU3MTEy",
+      "title": "Clarify Proxy response behavior. Add discussion about authentication.",
+      "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/pull/178",
+      "state": "OPEN",
+      "author": "chris-wood",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #174 and #175.",
+      "createdAt": "2021-04-22T14:35:24Z",
+      "updatedAt": "2021-04-22T15:36:35Z",
+      "baseRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
+      "baseRefName": "master",
+      "baseRefOid": "4ea5f24f109a7c188939b4d9c23ebacf611c557a",
+      "headRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
+      "headRefName": "caw/clarify-response-and-auth-behavior",
+      "headRefOid": "dbbbb673420c247525b83d3b8c5d1275a2fb7bac",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjQyMzU1OTY4",
+          "commit": {
+            "abbreviatedOid": "dbbbb67"
+          },
+          "author": "tfpauly",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "Looks good!",
+          "createdAt": "2021-04-22T15:36:35Z",
+          "updatedAt": "2021-04-22T15:36:35Z",
           "comments": []
         }
       ]
