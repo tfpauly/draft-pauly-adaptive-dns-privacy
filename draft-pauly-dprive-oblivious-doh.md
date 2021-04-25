@@ -77,8 +77,8 @@ This document defines Oblivious DoH, an extension to DoH that permits proxied re
 in which DNS messages are encrypted so that no DoH server can independently read both the
 client IP address and the DNS message contents.
 
-This mechanism is intended to be used as one option for resolving privacy-sensitive content
-in the broader context of Adaptive DNS {{!I-D.pauly-dprive-adaptive-dns-privacy}}.
+This mechanism is intended to be used as one mechanism for resolving privacy-sensitive
+content in the broader context of DNS privacy.
 
 ## Specification of Requirements
 
@@ -114,8 +114,8 @@ Oblivious DoH requires, at a minimum:
 
 The mechanism for discovering and provisioning the DoH URI Templates and public keys
 is via parameters added to DNS resource records. The mechanism for discovering the public
-key is described in {{keydiscovery}}. The mechanism for discovering a DoH URI Template is
-described in {{!I-D.pauly-add-resolver-discovery}}.
+key is described in {{keydiscovery}}. One mechanism for discovering a DoH URI Template is
+described in {{!I-D.schwartz-svcb-dns}}.
 
 # HTTP Exchange
 
