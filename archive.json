@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-04-25T00:11:06.697526+00:00",
+  "timestamp": "2021-04-27T00:10:12.842388+00:00",
   "repo": "tfpauly/draft-pauly-adaptive-dns-privacy",
   "labels": [
     {
@@ -3039,7 +3039,7 @@
       "id": "MDU6SXNzdWU4NjQ0NzMxMjE=",
       "title": "Provide guidance about which status codes should be forwarded",
       "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/issues/174",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "tfpauly",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -3051,8 +3051,8 @@
       ],
       "body": "Section 4.3 should clarify that only 2xx, 4xx, and 5xx response codes should be forwarded un-modified. (And even some 4xx response codes such as authentication-required may not make sense to relay but would need to be handled by the proxy.) The important one is that 1xx should never be relayed back as there-be-dragons.",
       "createdAt": "2021-04-22T02:11:21Z",
-      "updatedAt": "2021-04-22T02:12:21Z",
-      "closedAt": null,
+      "updatedAt": "2021-04-25T21:15:32Z",
+      "closedAt": "2021-04-25T21:15:32Z",
       "comments": [
         {
           "author": "chris-wood",
@@ -3107,6 +3107,27 @@
           "updatedAt": "2021-04-22T03:17:51Z"
         }
       ]
+    },
+    {
+      "number": 179,
+      "id": "MDU6SXNzdWU4NjcwODUyMTk=",
+      "title": "Remove normative references to add-resolver-discovery and adaptive-dns-privacy",
+      "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/issues/179",
+      "state": "CLOSED",
+      "author": "tfpauly",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "tfpauly"
+      ],
+      "labels": [
+        "editorial",
+        "odoh"
+      ],
+      "body": "ODoH should remove normative references to add-resolver-discovery and adaptive-dns-privacy, to avoid blocking publishing.",
+      "createdAt": "2021-04-25T18:51:37Z",
+      "updatedAt": "2021-04-25T19:11:05Z",
+      "closedAt": "2021-04-25T19:11:05Z",
+      "comments": []
     }
   ],
   "pulls": [
@@ -12786,24 +12807,26 @@
       "id": "MDExOlB1bGxSZXF1ZXN0NjIxMTU3MTEy",
       "title": "Clarify Proxy response behavior. Add discussion about authentication.",
       "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/pull/178",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "chris-wood",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Closes #174 and #175.",
       "createdAt": "2021-04-22T14:35:24Z",
-      "updatedAt": "2021-04-22T15:36:35Z",
+      "updatedAt": "2021-04-25T21:15:33Z",
       "baseRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
       "baseRefName": "master",
       "baseRefOid": "4ea5f24f109a7c188939b4d9c23ebacf611c557a",
       "headRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
       "headRefName": "caw/clarify-response-and-auth-behavior",
       "headRefOid": "dbbbb673420c247525b83d3b8c5d1275a2fb7bac",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2021-04-25T21:15:32Z",
+      "mergedAt": "2021-04-25T21:15:32Z",
+      "mergedBy": "tfpauly",
+      "mergeCommit": {
+        "oid": "39d302c6334453be41bd61e53e8ee174456808f1"
+      },
       "comments": [],
       "reviews": [
         {
@@ -12817,6 +12840,50 @@
           "body": "Looks good!",
           "createdAt": "2021-04-22T15:36:35Z",
           "updatedAt": "2021-04-22T15:36:35Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 180,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjIyODIyMTky",
+      "title": "Remove blocking normative references",
+      "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/pull/180",
+      "state": "MERGED",
+      "author": "tfpauly",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "tfpauly"
+      ],
+      "labels": [],
+      "body": "Closes #179",
+      "createdAt": "2021-04-25T19:10:07Z",
+      "updatedAt": "2021-04-25T19:11:05Z",
+      "baseRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
+      "baseRefName": "master",
+      "baseRefOid": "4ea5f24f109a7c188939b4d9c23ebacf611c557a",
+      "headRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
+      "headRefName": "tfpauly-patch-2",
+      "headRefOid": "7990e7b6d9387380f66e68c20a3ecb42c0831603",
+      "closedAt": "2021-04-25T19:11:05Z",
+      "mergedAt": "2021-04-25T19:11:05Z",
+      "mergedBy": "chris-wood",
+      "mergeCommit": {
+        "oid": "4db6886020353938d189bed8bfae38ea93292bc0"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjQ0MTcyMDAz",
+          "commit": {
+            "abbreviatedOid": "7990e7b"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-04-25T19:11:00Z",
+          "updatedAt": "2021-04-25T19:11:00Z",
           "comments": []
         }
       ]
