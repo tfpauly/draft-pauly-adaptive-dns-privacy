@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-04-27T00:10:12.842388+00:00",
+  "timestamp": "2021-04-29T00:10:26.557668+00:00",
   "repo": "tfpauly/draft-pauly-adaptive-dns-privacy",
   "labels": [
     {
@@ -3068,7 +3068,7 @@
       "id": "MDU6SXNzdWU4NjQ0NzM1ODA=",
       "title": "Describe allowances for proxy authentication ",
       "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/issues/175",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "tfpauly",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -3080,8 +3080,8 @@
       ],
       "body": "We should briefly mention that clients MAY authenticate to proxies, and proxies MAY authenticate to targets, but any authentication here MUST be decoupled such that it is not possible for a target to identify a client, and any authentication from the client to proxy MUST NOT be passed directly to the target.",
       "createdAt": "2021-04-22T02:12:35Z",
-      "updatedAt": "2021-04-22T02:12:35Z",
-      "closedAt": null,
+      "updatedAt": "2021-04-27T23:38:37Z",
+      "closedAt": "2021-04-27T23:38:37Z",
       "comments": []
     },
     {
