@@ -5,13 +5,13 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                Apple Inc.
 Intended status: Standards Track                              P. McManus
-Expires: 27 October 2021                                          Fastly
+Expires: 1 November 2021                                          Fastly
                                                                 T. Pauly
                                                               Apple Inc.
                                                                 T. Verma
                                                                C.A. Wood
                                                               Cloudflare
-                                                           25 April 2021
+                                                           30 April 2021
 
 
                         Oblivious DNS Over HTTPS
@@ -40,7 +40,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 27 October 2021.
+   This Internet-Draft will expire on 1 November 2021.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Kinnear, et al.          Expires 27 October 2021                [Page 1]
+Kinnear, et al.          Expires 1 November 2021                [Page 1]
 
 Internet-Draft                Oblivious DoH                   April 2021
 
@@ -71,14 +71,14 @@ Table of Contents
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Deployment Requirements . . . . . . . . . . . . . . . . . . .   4
    4.  HTTP Exchange . . . . . . . . . . . . . . . . . . . . . . . .   4
-     4.1.  HTTP Request  . . . . . . . . . . . . . . . . . . . . . .   4
+     4.1.  HTTP Request  . . . . . . . . . . . . . . . . . . . . . .   5
      4.2.  HTTP Request Example  . . . . . . . . . . . . . . . . . .   6
      4.3.  HTTP Response . . . . . . . . . . . . . . . . . . . . . .   6
      4.4.  HTTP Response Example . . . . . . . . . . . . . . . . . .   7
-     4.5.  HTTP Metadata . . . . . . . . . . . . . . . . . . . . . .   7
+     4.5.  HTTP Metadata . . . . . . . . . . . . . . . . . . . . . .   8
    5.  Configuration and Public Key Discovery  . . . . . . . . . . .   8
    6.  Configuration and Public Key Format . . . . . . . . . . . . .   8
-   7.  Protocol Encoding . . . . . . . . . . . . . . . . . . . . . .   9
+   7.  Protocol Encoding . . . . . . . . . . . . . . . . . . . . . .  10
      7.1.  Message Format  . . . . . . . . . . . . . . . . . . . . .  10
      7.2.  Encryption and Decryption Routines  . . . . . . . . . . .  11
    8.  Oblivious Client Behavior . . . . . . . . . . . . . . . . . .  12
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Kinnear, et al.          Expires 27 October 2021                [Page 2]
+Kinnear, et al.          Expires 1 November 2021                [Page 2]
 
 Internet-Draft                Oblivious DoH                   April 2021
 
@@ -165,7 +165,7 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 27 October 2021                [Page 3]
+Kinnear, et al.          Expires 1 November 2021                [Page 3]
 
 Internet-Draft                Oblivious DoH                   April 2021
 
@@ -210,27 +210,36 @@ Internet-Draft                Oblivious DoH                   April 2021
 
                      Figure 1: Obvlivious DoH Exchange
 
-4.1.  HTTP Request
-
-   Oblivious DoH queries are created by the Client, and sent to the
-   Proxy.  Requests to the Proxy indicate which DoH server to use as a
-   Target by specifying two variables: "targethost", which indicates the
-   host name of the Target server, and "targetpath", which indicates the
-   path on which the Target's DoH server is running.  See Section 4.2
-   for an example request.
 
 
 
-Kinnear, et al.          Expires 27 October 2021                [Page 4]
+
+
+
+
+
+
+
+
+Kinnear, et al.          Expires 1 November 2021                [Page 4]
 
 Internet-Draft                Oblivious DoH                   April 2021
 
 
+4.1.  HTTP Request
+
+   Oblivious DoH queries are created by the Client, and sent to the
+   Proxy as an HTTP request using the POST method.  Requests to the
+   Proxy indicate which DoH server to use as a Target by specifying two
+   variables: "targethost", which indicates the host name of the Target
+   server, and "targetpath", which indicates the path on which the
+   Target's DoH server is running.  See Section 4.2 for an example
+   request.
+
    Oblivious DoH messages have no cache value since both requests and
    responses are encrypted using ephemeral key material.  Clients SHOULD
-   prefer using HTTP methods and headers that will prevent unhelpful
-   cache storage of these exchanges (i.e., preferring POST instead of
-   GET).
+   indicate this using the "Cache-Control" header with "no-cache" and
+   "no-store" specified [RFC7234].
 
    Clients MUST set the HTTP Content-Type header to "application/
    oblivious-dns-message" to indicate that this request is an Oblivious
@@ -255,7 +264,7 @@ Internet-Draft                Oblivious DoH                   April 2021
    the Target using the URI template constructed as "https://targethost/
    targetpath".
 
-   Note that "targethost" may contain a port.  Proxies MAY choose to not
+   Note that "targethost" MAY contain a port.  Proxies MAY choose to not
    forward connections to non-standard ports.  In such cases, proxies
    MUST return a 4xx (Client Error) response to the client request,
    along with Proxy-Status response header with an "error" parameter of
@@ -265,22 +274,17 @@ Internet-Draft                Oblivious DoH                   April 2021
    return a 502 (Bad Gateway) response to the client request, along with
    Proxy-Status response header with an "error" parameter whose type
    indicates the reason.  For example, if DNS resolution fails, the
-   error type might be "dns_timeout", whereas if the TLS connection
-   failed the error type might be "tls_protocol_error".  Proxies SHOULD
-   choose an error type that best captures the connection failure.
 
 
 
-
-
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021                [Page 5]
+Kinnear, et al.          Expires 1 November 2021                [Page 5]
 
 Internet-Draft                Oblivious DoH                   April 2021
 
+
+   error type might be "dns_timeout", whereas if the TLS connection
+   failed the error type might be "tls_protocol_error".  Proxies SHOULD
+   choose an error type that best captures the connection failure.
 
 4.2.  HTTP Request Example
 
@@ -326,17 +330,18 @@ content-length = 106
    "application/oblivious-dns-message" which MUST be forwarded by the
    Proxy to the Client.  A Client MUST only consider a response which
    contains the Content-Type header in the response before processing
+
+
+
+Kinnear, et al.          Expires 1 November 2021                [Page 6]
+
+Internet-Draft                Oblivious DoH                   April 2021
+
+
    the payload.  A response without the appropriate header MUST be
    treated as an error and be handled appropriately.  All other aspects
    of the HTTP response and error handling are inherited from standard
    DoH.
-
-
-
-Kinnear, et al.          Expires 27 October 2021                [Page 6]
-
-Internet-Draft                Oblivious DoH                   April 2021
-
 
    Proxies MUST forward any Target responses with 2xx, 4xx, or 5xx
    response codes unmodified to the client.  Target responses with 1xx
@@ -374,6 +379,21 @@ Internet-Draft                Oblivious DoH                   April 2021
 
   <Bytes containing the encrypted payload for an Oblivious DNS response>
 
+
+
+
+
+
+
+
+
+
+
+Kinnear, et al.          Expires 1 November 2021                [Page 7]
+
+Internet-Draft                Oblivious DoH                   April 2021
+
+
 4.5.  HTTP Metadata
 
    Proxies forward requests and responses between clients and targets as
@@ -384,15 +404,6 @@ Internet-Draft                Oblivious DoH                   April 2021
    Additionally, clients MUST NOT include any private state in requests
    to proxies, such as HTTP cookies.  See Section 11.3 for related
    discussion about client authentication information.
-
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021                [Page 7]
-
-Internet-Draft                Oblivious DoH                   April 2021
-
 
 5.  Configuration and Public Key Discovery
 
@@ -425,6 +436,20 @@ Internet-Draft                Oblivious DoH                   April 2021
    An Oblivious DNS public key configuration is a structure encoded,
    using TLS-style encoding [RFC8446], as follows:
 
+
+
+
+
+
+
+
+
+
+Kinnear, et al.          Expires 1 November 2021                [Page 8]
+
+Internet-Draft                Oblivious DoH                   April 2021
+
+
    struct {
       uint16 kem_id;
       uint16 kdf_id;
@@ -441,14 +466,6 @@ Internet-Draft                Oblivious DoH                   April 2021
    } ObliviousDoHConfig;
 
    ObliviousDoHConfig ObliviousDoHConfigs<1..2^16-1>;
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021                [Page 8]
-
-Internet-Draft                Oblivious DoH                   April 2021
-
 
    The "ObliviousDoHConfigs" structure contains one or more
    "ObliviousDoHConfig" structures in decreasing order of preference.
@@ -482,6 +499,13 @@ Internet-Draft                Oblivious DoH                   April 2021
       Clients MUST ignore any "ObliviousDoHConfig" structure with a key
       using a KEM they do not support.
 
+
+
+Kinnear, et al.          Expires 1 November 2021                [Page 9]
+
+Internet-Draft                Oblivious DoH                   April 2021
+
+
    kdf_id  The HPKE KDF identifier corresponding to "public_key".
       Clients MUST ignore any "ObliviousDoHConfig" structure with a key
       using a KDF they do not support.
@@ -494,17 +518,6 @@ Internet-Draft                Oblivious DoH                   April 2021
       Oblivious DoH queries.
 
 7.  Protocol Encoding
-
-
-
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021                [Page 9]
-
-Internet-Draft                Oblivious DoH                   April 2021
-
 
 7.1.  Message Format
 
@@ -541,6 +554,14 @@ Internet-Draft                Oblivious DoH                   April 2021
    The "ObliviousDoHMessage" structure contains the following fields:
 
    message_type  A one-byte identifier for the type of message.  Query
+
+
+
+Kinnear, et al.          Expires 1 November 2021               [Page 10]
+
+Internet-Draft                Oblivious DoH                   April 2021
+
+
       messages use "message_type" 0x01, and Response messages use
       "message_type" 0x02.
 
@@ -552,16 +573,6 @@ Internet-Draft                Oblivious DoH                   April 2021
       corresponding to "config.kdf_id".
 
    encrypted_message  An encrypted message for the Oblivious Target (for
-
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021               [Page 10]
-
-Internet-Draft                Oblivious DoH                   April 2021
-
-
       Query messages) or client (for Response messages).
       Implementations MAY enforce limits on the size of this field
       depending on the size of plaintext DNS messages.  (DNS queries,
@@ -600,6 +611,13 @@ def decrypt_response_body(context, Q_plain, R_encrypted, response_nonce):
    Targets use the following utility functions in processing queries and
    producing responses as described in Section 9.
 
+
+
+Kinnear, et al.          Expires 1 November 2021               [Page 11]
+
+Internet-Draft                Oblivious DoH                   April 2021
+
+
    setup_query_context: Set up an HPKE context used for decrypting an
    Oblivious DoH query.
 
@@ -609,14 +627,6 @@ def decrypt_response_body(context, Q_plain, R_encrypted, response_nonce):
      return context
 
    decrypt_query_body: Decrypt an Oblivious DoH query.
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021               [Page 11]
-
-Internet-Draft                Oblivious DoH                   April 2021
-
 
    def decrypt_query_body(context, key_id, Q_encrypted):
      aad = 0x01 || len(key_id) || key_id
@@ -656,6 +666,14 @@ def encrypt_response_body(R_plain, aead_key, aead_nonce, response_nonce):
    1.  Create an "ObliviousDoHQuery" structure, carrying the message M
        and padding, to produce Q_plain.
 
+
+
+
+Kinnear, et al.          Expires 1 November 2021               [Page 12]
+
+Internet-Draft                Oblivious DoH                   April 2021
+
+
    2.  Deserialize "config.public_key" to produce a public key pkR of
        type "config.kem_id".
 
@@ -663,16 +681,6 @@ def encrypt_response_body(R_plain, aead_key, aead_nonce, response_nonce):
        encrypt_query_body(pkR, key_id, Q_plain)", where "key_id" is as
        computed in Section 7.  Note also that "len(key_id)" outputs the
        length of "key_id" as a two-byte unsigned integer.
-
-
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021               [Page 12]
-
-Internet-Draft                Oblivious DoH                   April 2021
-
 
    4.  Output a ObliviousDoHMessage message "Q" where "Q.message_type =
        0x01", "Q.key_id" carries "key_id", and "Q.encrypted_message =
@@ -715,20 +723,18 @@ Internet-Draft                Oblivious DoH                   April 2021
    7.  Compute "aead_key, aead_nonce = derive_secrets(context, Q_plain,
        response_nonce)".
 
+
+
+Kinnear, et al.          Expires 1 November 2021               [Page 13]
+
+Internet-Draft                Oblivious DoH                   April 2021
+
+
    8.  Compute "R_encrypted = encrypt_response_body(R_plain, aead_key,
        aead_nonce, response_nonce)".  The "key_id" field used for
        encryption carries "response_nonce" in order for clients to
        derive the same secrets.  Also, the "Seal" function is that which
        is associated with the HPKE AEAD.
-
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021               [Page 13]
-
-Internet-Draft                Oblivious DoH                   April 2021
-
 
    9.  Output a "ObliviousDoHMessage" message "R" where "R.message_type
        = 0x02", "R.key_id = response_nonce", and "R.encrypted_message =
@@ -775,13 +781,7 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-
-
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021               [Page 14]
+Kinnear, et al.          Expires 1 November 2021               [Page 14]
 
 Internet-Draft                Oblivious DoH                   April 2021
 
@@ -837,7 +837,7 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 27 October 2021               [Page 15]
+Kinnear, et al.          Expires 1 November 2021               [Page 15]
 
 Internet-Draft                Oblivious DoH                   April 2021
 
@@ -893,7 +893,7 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 27 October 2021               [Page 16]
+Kinnear, et al.          Expires 1 November 2021               [Page 16]
 
 Internet-Draft                Oblivious DoH                   April 2021
 
@@ -949,7 +949,7 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 27 October 2021               [Page 17]
+Kinnear, et al.          Expires 1 November 2021               [Page 17]
 
 Internet-Draft                Oblivious DoH                   April 2021
 
@@ -1005,7 +1005,7 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 27 October 2021               [Page 18]
+Kinnear, et al.          Expires 1 November 2021               [Page 18]
 
 Internet-Draft                Oblivious DoH                   April 2021
 
@@ -1013,9 +1013,9 @@ Internet-Draft                Oblivious DoH                   April 2021
    [I-D.ietf-httpbis-proxy-status]
               Nottingham, M. and P. Sikora, "The Proxy-Status HTTP
               Response Header Field", Work in Progress, Internet-Draft,
-              draft-ietf-httpbis-proxy-status-04, 9 February 2021,
+              draft-ietf-httpbis-proxy-status-05, 27 April 2021,
               <https://www.ietf.org/archive/id/draft-ietf-httpbis-proxy-
-              status-04.txt>.
+              status-05.txt>.
 
    [I-D.irtf-cfrg-hpke]
               Barnes, R. L., Bhargavan, K., Lipp, B., and C. A. Wood,
@@ -1050,6 +1050,22 @@ Internet-Draft                Oblivious DoH                   April 2021
               DOI 10.17487/RFC7231, June 2014,
               <https://www.rfc-editor.org/info/rfc7231>.
 
+   [RFC7234]  Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
+              Ed., "Hypertext Transfer Protocol (HTTP/1.1): Caching",
+              RFC 7234, DOI 10.17487/RFC7234, June 2014,
+              <https://www.rfc-editor.org/info/rfc7234>.
+
+
+
+
+
+
+
+Kinnear, et al.          Expires 1 November 2021               [Page 19]
+
+Internet-Draft                Oblivious DoH                   April 2021
+
+
    [RFC7235]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
               Protocol (HTTP/1.1): Authentication", RFC 7235,
               DOI 10.17487/RFC7235, June 2014,
@@ -1058,13 +1074,6 @@ Internet-Draft                Oblivious DoH                   April 2021
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
-
-
-
-Kinnear, et al.          Expires 27 October 2021               [Page 19]
-
-Internet-Draft                Oblivious DoH                   April 2021
-
 
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
@@ -1105,6 +1114,14 @@ Authors' Addresses
    Patrick McManus
    Fastly
 
+
+
+
+Kinnear, et al.          Expires 1 November 2021               [Page 20]
+
+Internet-Draft                Oblivious DoH                   April 2021
+
+
    Email: mcmanus@ducksong.com
 
 
@@ -1113,14 +1130,6 @@ Authors' Addresses
    One Apple Park Way
    Cupertino, California 95014,
    United States of America
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021               [Page 20]
-
-Internet-Draft                Oblivious DoH                   April 2021
-
 
    Email: tpauly@apple.com
 
@@ -1164,13 +1173,4 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-
-
-
-
-
-
-
-
-
-Kinnear, et al.          Expires 27 October 2021               [Page 21]
+Kinnear, et al.          Expires 1 November 2021               [Page 21]
