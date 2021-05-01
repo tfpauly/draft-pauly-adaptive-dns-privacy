@@ -5,13 +5,13 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                Apple Inc.
 Intended status: Standards Track                              P. McManus
-Expires: 1 November 2021                                          Fastly
+Expires: 2 November 2021                                          Fastly
                                                                 T. Pauly
                                                               Apple Inc.
                                                                 T. Verma
                                                                C.A. Wood
                                                               Cloudflare
-                                                           30 April 2021
+                                                              1 May 2021
 
 
                         Oblivious DNS Over HTTPS
@@ -40,7 +40,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 1 November 2021.
+   This Internet-Draft will expire on 2 November 2021.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Kinnear, et al.          Expires 1 November 2021                [Page 1]
+Kinnear, et al.          Expires 2 November 2021                [Page 1]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    Please review these documents carefully, as they describe your rights
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Kinnear, et al.          Expires 1 November 2021                [Page 2]
+Kinnear, et al.          Expires 2 November 2021                [Page 2]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    While DoH can prevent eavesdroppers from directly reading the
@@ -165,9 +165,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021                [Page 3]
+Kinnear, et al.          Expires 2 November 2021                [Page 3]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
 3.  Deployment Requirements
@@ -221,9 +221,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021                [Page 4]
+Kinnear, et al.          Expires 2 November 2021                [Page 4]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
 4.1.  HTTP Request
@@ -277,9 +277,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021                [Page 5]
+Kinnear, et al.          Expires 2 November 2021                [Page 5]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    error type might be "dns_timeout", whereas if the TLS connection
@@ -333,9 +333,9 @@ content-length = 106
 
 
 
-Kinnear, et al.          Expires 1 November 2021                [Page 6]
+Kinnear, et al.          Expires 2 November 2021                [Page 6]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    the payload.  A response without the appropriate header MUST be
@@ -389,9 +389,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021                [Page 7]
+Kinnear, et al.          Expires 2 November 2021                [Page 7]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
 4.5.  HTTP Metadata
@@ -445,9 +445,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021                [Page 8]
+Kinnear, et al.          Expires 2 November 2021                [Page 8]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    struct {
@@ -501,9 +501,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021                [Page 9]
+Kinnear, et al.          Expires 2 November 2021                [Page 9]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    kdf_id  The HPKE KDF identifier corresponding to "public_key".
@@ -557,9 +557,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 10]
+Kinnear, et al.          Expires 2 November 2021               [Page 10]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
       messages use "message_type" 0x01, and Response messages use
@@ -613,9 +613,9 @@ def decrypt_response_body(context, Q_plain, R_encrypted, response_nonce):
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 11]
+Kinnear, et al.          Expires 2 November 2021               [Page 11]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    setup_query_context: Set up an HPKE context used for decrypting an
@@ -669,9 +669,9 @@ def encrypt_response_body(R_plain, aead_key, aead_nonce, response_nonce):
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 12]
+Kinnear, et al.          Expires 2 November 2021               [Page 12]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    2.  Deserialize "config.public_key" to produce a public key pkR of
@@ -725,9 +725,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 13]
+Kinnear, et al.          Expires 2 November 2021               [Page 13]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    8.  Compute "R_encrypted = encrypt_response_body(R_plain, aead_key,
@@ -781,9 +781,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 14]
+Kinnear, et al.          Expires 2 November 2021               [Page 14]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    In this model, both C1 and C2 send an Oblivious DoH queries Q1 and
@@ -837,9 +837,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 15]
+Kinnear, et al.          Expires 2 November 2021               [Page 15]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    stop using one or both of these servers in the event of such failure.
@@ -893,9 +893,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 16]
+Kinnear, et al.          Expires 2 November 2021               [Page 16]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    2.  As a one-hop proxy, Oblivious DoH encourages connection-less
@@ -949,9 +949,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 17]
+Kinnear, et al.          Expires 2 November 2021               [Page 17]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    Change controller: IETF
@@ -1005,9 +1005,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 18]
+Kinnear, et al.          Expires 2 November 2021               [Page 18]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    [I-D.ietf-httpbis-proxy-status]
@@ -1061,9 +1061,9 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 19]
+Kinnear, et al.          Expires 2 November 2021               [Page 19]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    [RFC7235]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
@@ -1117,9 +1117,9 @@ Authors' Addresses
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 20]
+Kinnear, et al.          Expires 2 November 2021               [Page 20]
 
-Internet-Draft                Oblivious DoH                   April 2021
+Internet-Draft                Oblivious DoH                     May 2021
 
 
    Email: mcmanus@ducksong.com
@@ -1173,4 +1173,4 @@ Internet-Draft                Oblivious DoH                   April 2021
 
 
 
-Kinnear, et al.          Expires 1 November 2021               [Page 21]
+Kinnear, et al.          Expires 2 November 2021               [Page 21]
