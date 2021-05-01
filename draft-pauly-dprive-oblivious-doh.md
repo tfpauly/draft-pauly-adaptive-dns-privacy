@@ -138,17 +138,16 @@ Unlike direct resolution, oblivious hostname resolution over DoH involves three 
 
 ## HTTP Request {#oblivious-request}
 
-Oblivious DoH queries are created by the Client, and sent to the Proxy.
-Requests to the Proxy indicate which DoH server to use as a Target by
-specifying two variables: "targethost", which indicates the host name of
-the Target server, and "targetpath", which indicates the path on which
-the Target's DoH server is running. See {{request-example}} for an
-example request.
+Oblivious DoH queries are created by the Client, and sent to the Proxy
+as an HTTP request using the POST method. Requests to the Proxy indicate
+which DoH server to use as a Target by specifying two variables: "targethost",
+which indicates the host name of the Target server, and "targetpath", which
+indicates the path on which the Target's DoH server is running. See
+{{request-example}} for an example request.
 
 Oblivious DoH messages have no cache value since both requests and responses are
-encrypted using ephemeral key material. Clients SHOULD prefer using HTTP methods and
-headers that will prevent unhelpful cache storage of these exchanges (i.e., preferring POST
-instead of GET).
+encrypted using ephemeral key material. Clients SHOULD indicate this using
+the "Cache-Control" header with "no-cache" and "no-store" specified {{!RFC7234}}.
 
 Clients MUST set the HTTP Content-Type header to "application/oblivious-dns-message"
 to indicate that this request is an Oblivious DoH query intended for proxying. Clients
@@ -168,7 +167,7 @@ If the variables are present, then the DoH server is acting as a Proxy.
 If it is a proxy, it is expected to send the request on to the Target
 using the URI template constructed as "https://targethost/targetpath".
 
-Note that "targethost" may contain a port. Proxies MAY choose to not forward
+Note that "targethost" MAY contain a port. Proxies MAY choose to not forward
 connections to non-standard ports. In such cases, proxies MUST return a 4xx (Client Error)
 response to the client request, along with Proxy-Status response header with an "error"
 parameter of type "http_request_error".
