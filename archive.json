@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2021-04-29T00:10:26.557668+00:00",
+  "timestamp": "2021-05-02T00:07:38.537449+00:00",
   "repo": "tfpauly/draft-pauly-adaptive-dns-privacy",
   "labels": [
     {
@@ -11851,25 +11851,33 @@
       "id": "MDExOlB1bGxSZXF1ZXN0NTIyNzE0MTAz",
       "title": "Proposal: Enable secure cross-IP upgrade from local resolver in DEER",
       "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/pull/147",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "bemasc",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "This proposal adjusts various aspects of the security model to enable secure upgrade from traditional local DNS forwarding equipment.\r\n\r\nIncludes CNAME idea borrowed from https://tools.ietf.org/html/draft-rescorla-doh-cdisco-00\r\n\r\nFixes #143",
       "createdAt": "2020-11-17T21:21:02Z",
-      "updatedAt": "2021-02-23T03:46:29Z",
+      "updatedAt": "2021-04-30T15:20:24Z",
       "baseRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
       "baseRefName": "master",
       "baseRefOid": "3ae62f6eb7fcd9c99e7e11bd3b81578ed94928df",
       "headRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
       "headRefName": "bemasc-local-upgrade",
       "headRefOid": "6d5e75c1f46819521e1cb3ecc23b0d625068513f",
-      "closedAt": null,
+      "closedAt": "2021-04-30T15:20:24Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "tfpauly",
+          "authorAssociation": "OWNER",
+          "body": "Closing in favor of https://github.com/ietf-wg-add/draft-ietf-add-ddr/pull/11",
+          "createdAt": "2021-04-30T15:20:24Z",
+          "updatedAt": "2021-04-30T15:20:24Z"
+        }
+      ],
       "reviews": [
         {
           "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NTMyODM3NDc1",
@@ -12884,6 +12892,52 @@
           "body": "",
           "createdAt": "2021-04-25T19:11:00Z",
           "updatedAt": "2021-04-25T19:11:00Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 181,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjI3NTg4NTkw",
+      "title": "Clarify cache control interaction",
+      "url": "https://github.com/tfpauly/draft-pauly-adaptive-dns-privacy/pull/181",
+      "state": "MERGED",
+      "author": "tfpauly",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "tfpauly"
+      ],
+      "labels": [
+        "odoh"
+      ],
+      "body": "",
+      "createdAt": "2021-04-30T15:25:11Z",
+      "updatedAt": "2021-05-01T00:19:42Z",
+      "baseRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
+      "baseRefName": "master",
+      "baseRefOid": "39d302c6334453be41bd61e53e8ee174456808f1",
+      "headRepository": "tfpauly/draft-pauly-adaptive-dns-privacy",
+      "headRefName": "tfpauly-patch-3",
+      "headRefOid": "ab9af3b47408397bdfa7a966684f322d84d7aa61",
+      "closedAt": "2021-05-01T00:19:42Z",
+      "mergedAt": "2021-05-01T00:19:42Z",
+      "mergedBy": "tfpauly",
+      "mergeCommit": {
+        "oid": "a08d75f96763f3f75d95dd256c834e97b2c360ce"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NjQ5MzU2MzU0",
+          "commit": {
+            "abbreviatedOid": "ab9af3b"
+          },
+          "author": "chris-wood",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-04-30T15:50:55Z",
+          "updatedAt": "2021-04-30T15:50:55Z",
           "comments": []
         }
       ]
