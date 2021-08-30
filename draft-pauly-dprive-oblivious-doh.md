@@ -3,7 +3,7 @@ title: "Oblivious DNS Over HTTPS"
 abbrev: Oblivious DoH
 docname: draft-pauly-dprive-oblivious-doh-latest
 date:
-category: std
+category: exp
 
 ipr: trust200902
 keyword: Internet-Draft
@@ -57,6 +57,10 @@ client IP addresses via proxying encrypted DNS transactions. This improves priva
 DNS operations by not allowing any one server entity to be aware of both the client IP
 address and the content of DNS queries and answers.
 
+This experimental extension is developed outside the IETF and is published here to
+guide implementation, ensure interoperability among implementations, and enable
+wide-scale experimentation.
+
 --- middle
 
 # Introduction
@@ -73,12 +77,16 @@ Proposals such as Oblivious DNS ({{?I-D.annee-dprive-oblivious-dns}}) increase p
 by ensuring no single DNS server is aware of both the client IP address and the message
 contents.
 
-This document defines Oblivious DoH, an extension to DoH that permits proxied resolution,
-in which DNS messages are encrypted so that no DoH server can independently read both the
-client IP address and the DNS message contents.
+This document defines Oblivious DoH, an experimental extension to DoH that permits proxied
+resolution, in which DNS messages are encrypted so that no DoH server can independently read
+both the client IP address and the DNS message contents.
 
 This mechanism is intended to be used as one mechanism for resolving privacy-sensitive
 content in the broader context of DNS privacy.
+
+This experimental extension is developed outside the IETF and is published here to
+guide implementation, ensure interoperability among implementations, and enable
+wide-scale experimentation.
 
 ## Specification of Requirements
 
@@ -115,7 +123,7 @@ Oblivious DoH requires, at a minimum:
 The mechanism for discovering and provisioning the DoH URI Templates and public keys
 is via parameters added to DNS resource records. The mechanism for discovering the public
 key is described in {{keydiscovery}}. One mechanism for discovering a DoH URI Template is
-described in {{!I-D.schwartz-svcb-dns}}.
+described in {{!I-D.ietf-dnsop-svcb-https}}.
 
 # HTTP Exchange
 
@@ -667,9 +675,9 @@ Intended usage: COMMON
 
 Restrictions on usage: None
 
-Author: IETF
+Author: Tommy Pauly <tpauly@apple.com>
 
-Change controller: IETF
+Change controller: Tommy Pauly <tpauly@apple.com>
 
 ## Oblivious DoH Public Key DNS Parameter
 
