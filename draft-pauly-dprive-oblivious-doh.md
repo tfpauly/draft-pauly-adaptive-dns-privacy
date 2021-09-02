@@ -121,9 +121,7 @@ Oblivious DoH requires, at a minimum:
   decrypt client queries.
 
 The mechanism for discovering and provisioning the DoH URI Templates and public keys
-is via parameters added to DNS resource records. The mechanism for discovering the public
-key is described in {{keydiscovery}}. One mechanism for discovering a DoH URI Template is
-described in {{!I-D.ietf-dnsop-svcb-https}}.
+is out of scope of this document.
 
 # HTTP Exchange
 
@@ -274,28 +272,15 @@ Proxies MUST NOT send any client-identifying information about clients to target
 requests to proxies, such as HTTP cookies. See {{authentication}} for related discussion about
 client authentication information.
 
-# Configuration and Public Key Discovery {#keydiscovery}
+# Configuration and Public Key Format {#publickey}
 
 In order to use a DoH server as a Target, the client must know a public key to use
-for encrypting its queries. This document specifies one discovery mechanism for public
-keys using the SVCB or HTTPS RRtype ({{!I-D.ietf-dnsop-svcb-https}}) for a name
-owned by the server.
-
-The Service Binding SvcParamKey name is "odoh" ({{iana}}). If present, this key/value
-pair contains the public key configuration to use when encrypting Oblivious DoH messages
-that will be targeted at a DoH server. The wire format of the key is a ObliviousDoHConfigs
-structure as defined in ({{publickey}}). In presentation format, the value is a
-ObliviousDoHConfigs structure encoded in Base64 {{base64}}. To enable simpler
-parsing, this SvcParam MUST NOT contain escape sequences.
-
-Clients that use this discovery mechansim MUST only use keys that were retrieved from
-records protected by DNSSEC {{!RFC4033}} to encrypt messages to a Target.
+for encrypting its queries. The mechanism for discovering this configuration is
+out of scope of this document.
 
 Servers SHOULD rotate public keys regularly. It is RECOMMENDED that servers rotate keys
 every day. Shorter rotation windows reduce the anonymity set of clients that might use
 the public key, whereas longer rotation windows widen the timeframe of possible compromise.
-
-# Configuration and Public Key Format {#publickey}
 
 An Oblivious DNS public key configuration is a structure encoded, using TLS-style
 encoding {{!RFC8446}}, as follows:
@@ -666,40 +651,20 @@ Applications that use this media type: This media type is intended
 to be used by clients wishing to hide their DNS queries when
 using DNS over HTTPS.
 
-Additional information: None
+Additional information: N/A
 
 Person and email address to contact for further information: See
 Authors' Addresses section
 
 Intended usage: COMMON
 
-Restrictions on usage: None
+Restrictions on usage: N/A
 
 Author: Tommy Pauly <tpauly@apple.com>
 
 Change controller: Tommy Pauly <tpauly@apple.com>
 
-## Oblivious DoH Public Key DNS Parameter
-
-This document adds a parameter ("odohconfig") to the "Service Binding (SVCB) Parameter"
-registry {{!I-D.ietf-dnsop-svcb-https}}. The allocation request is 32769, taken from the
-to the First Come First Served range.
-
-If present, the "odohconfig" parameter contains a ObliviousDoHConfigs structure. In wire
-format, the value of the parameter is an ObliviousDoHConfigs vector, including the
-redundant length prefix. In presentation format, the value is encoded in {{!base64=RFC4648}}.
-
-Name:
-: odoh
-
-SvcParamKey:
-: 32769
-
-Meaning:
-: An ObliviousDoHConfigs structure.
-
-Reference:
-: This document.
+Provisional registration? (standards tree only): No
 
 # Acknowledgments
 
