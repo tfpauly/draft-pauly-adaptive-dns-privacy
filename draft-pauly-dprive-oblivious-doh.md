@@ -590,9 +590,7 @@ Targets and Proxies are out of scope for the threat model.
 ## Proxy Policies
 
 Proxies are free to enforce any forwarding policy they desire for clients. For example, they may only
-forward requests to known or otherwise trusted targets. Proxies that do not have an allow list of
-targets can attempt to determine if the specified target is a valid Oblivious DoH target by querying
-for the target configuration as specified in {{keydiscovery}}.
+forward requests to known or otherwise trusted targets.
 
 ## Authentication {#authentication}
 
