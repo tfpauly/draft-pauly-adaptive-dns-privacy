@@ -489,7 +489,7 @@ When sending an Oblivious DoH Query for resolving `M` to an Oblivious Target wit
 1. Compute the encrypted message as `Q_encrypted = encrypt_query_body(pkR, key_id, Q_plain)`,
 where `key_id` is as computed in {{encryption}}. Note also that `len(key_id)` outputs the length of `key_id`
 as a two-byte unsigned integer.
-1. Output a ObliviousDoHMessage message `Q` where `Q.message_type = 0x01`, `Q.key_id` carries `key_id`,
+1. Output an ObliviousDoHMessage message `Q` where `Q.message_type = 0x01`, `Q.key_id` carries `key_id`,
 and `Q.encrypted_message = Q_encrypted`.
 
 The client then sends `Q` to the Proxy according to {{oblivious-request}}.
@@ -519,7 +519,7 @@ to produce `R_plain`.
 The `key_id` field used for encryption carries `response_nonce` in order for clients to
 derive the same secrets. Also, the `Seal` function is that which is associated with the
 HPKE AEAD.
-1. Output a `ObliviousDoHMessage` message `R` where `R.message_type = 0x02`,
+1. Output an `ObliviousDoHMessage` message `R` where `R.message_type = 0x02`,
 `R.key_id = response_nonce`, and `R.encrypted_message = R_encrypted`.
 
 The Target then sends `R` in a 2xx (Successful) response to the Proxy; see {{oblivious-response}}.
