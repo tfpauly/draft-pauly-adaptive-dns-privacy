@@ -159,31 +159,29 @@ Clients MUST set the HTTP Content-Type header to "application/oblivious-dns-mess
 to indicate that this request is an Oblivious DoH query intended for proxying. Clients
 also SHOULD set this same value for the HTTP Accept header.
 
-Proxies must check that client requests are correctly encoded, and MUST return a
+Proxies MUST check that client requests are correctly encoded, and MUST return a
 4xx (Client Error) if the check fails, along with the Proxy-Status response header
 with an "error" parameter of type "http_request_error" {{!I-D.ietf-httpbis-proxy-status}}.
 A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
-and HTTP method POST. If the proxy does not operate as a target, then the request
-must additionally contain "targethost" and "targetpath" variables.
+uses the HTTP POST method, and contains "targethost" and "targetpath" variables.
 
-Upon receiving a request that contains a "application/oblivious-dns-message" Content-Type,
-the DoH server looks for the "targethost" and "targetpath" variables. If the variables are not
-present, then it is the target of the query, and it can decrypt the query ({{encryption}}).
-If the variables are present, then the DoH server is acting as a Proxy.
-If it is a proxy, it is expected to send the request on to the Target
-using the URI template constructed as "https://targethost/targetpath".
+The "targethost" and "targetpath" variables are used to construct the request to forward to
+the Target. The Proxy is expected to send the Client's request using the URI
+constructed as "https://targethost/targetpath".
 
 Note that "targethost" MAY contain a port. Proxies MAY choose to not forward
 connections to non-standard ports. In such cases, proxies MUST return a 4xx (Client Error)
 response to the client request, along with Proxy-Status response header with an "error"
 parameter of type "http_request_error".
 
-If the proxy cannot establish a connection to "targethost", it MUST return a 502 (Bad Gateway)
+If the proxy cannot establish a connection to the Target, it MUST return a 502 (Bad Gateway)
 response to the client request, along with Proxy-Status response header with an "error" parameter
 whose type indicates the reason. For example, if DNS resolution fails, the error type might be
 "dns_timeout", whereas if the TLS connection failed the error type might be "tls_protocol_error".
-Proxies SHOULD choose an error type that best captures the connection failure.
 
+Upon receipt of requests from a Proxy, Targets MUST validate that the request has the HTTP
+Content-Type header "application/oblivious-dns-message" and uses the HTTP POST method.
+Targets MUST return 4xx (Client Error) if this check fails.
 
 ## HTTP Request Example {#request-example}
 
@@ -266,19 +264,19 @@ content-length = 154
 ## HTTP Metadata
 
 Proxies forward requests and responses between clients and targets as specified in {{oblivious-request}}.
-Metadata sent with these messages may inadvertently weaken or remove Oblivious DoH privacy properties.
-Proxies MUST NOT send any client-identifying information about clients to targets, such as
+Metadata sent with these messages could inadvertently weaken or remove Oblivious DoH privacy properties.
+Proxies MUST NOT send any client-identifying information about clients to Targets, such as
 "Forwarded" HTTP headers {{?RFC7239}}. Additionally, clients MUST NOT include any private state in
 requests to proxies, such as HTTP cookies. See {{authentication}} for related discussion about
 client authentication information.
 
 # Configuration and Public Key Format {#publickey}
 
-In order to use a DoH server as a Target, the client must know a public key to use
+In order to use a DoH server as a Target, the client needs to know a public key to use
 for encrypting its queries. The mechanism for discovering this configuration is
 out of scope of this document.
 
-Servers SHOULD rotate public keys regularly. It is RECOMMENDED that servers rotate keys
+Servers ought to rotate public keys regularly. It is RECOMMENDED that servers rotate keys
 every day. Shorter rotation windows reduce the anonymity set of clients that might use
 the public key, whereas longer rotation windows widen the timeframe of possible compromise.
 
@@ -552,7 +550,7 @@ allow the attacker to trivially link a query to the corresponding client.)
 In this model, both C1 and C2 send an Oblivious DoH queries Q1 and Q2, respectively, through P to T,
 and T provides answers A1 and A2. The attacker aims to link C1 to (Q1, A1) and C2 to (Q2, A2), respectively.
 The attacker succeeds if this linkability is possible without any additional interaction. (For example,
-if T is compromised, it may return a DNS answer corresponding to an entity it controls, and then observe
+if T is compromised, it could return a DNS answer corresponding to an entity it controls, and then observe
 the subsequent connection from a client, learning its identity in the process. Such attacks are out of
 scope for this model.)
 
@@ -576,31 +574,31 @@ direct DoH queries. However, this has no effect on confidentiality goals listed 
 
 ## Denial of Service
 
-Malicious clients (or proxies) may send bogus Oblivious DoH queries to targets as a Denial-of-Service
-(DoS) attack. Target servers may throttle processing requests if such an event occurs. Additionally,
+Malicious clients (or proxies) can send bogus Oblivious DoH queries to targets as a Denial-of-Service
+(DoS) attack. Target servers can throttle processing requests if such an event occurs. Additionally,
 since Targets provide explicit errors upon decryption failure, i.e., if ciphertext decryption fails
-or if the plaintext DNS message is malformed, Proxies may throttle specific clients in response to
+or if the plaintext DNS message is malformed, Proxies can throttle specific clients in response to
 these errors.
 
-Malicious Targets or Proxies may send bogus answers in response to Oblivious DoH queries. Response
+Malicious Targets or Proxies can send bogus answers in response to Oblivious DoH queries. Response
 decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to
 stop using one or both of these servers in the event of such failure. However, as above, malicious
 Targets and Proxies are out of scope for the threat model.
 
 ## Proxy Policies
 
-Proxies are free to enforce any forwarding policy they desire for clients. For example, they may only
-forward requests to known or otherwise trusted targets.
+Proxies are free to enforce any forwarding policy they desire for clients. For example, they can choose
+to only forward requests to known or otherwise trusted Targets.
 
 ## Authentication {#authentication}
 
-Depending on the deployment scenario, Proxies and Targets MAY require authentication before use.
+Depending on the deployment scenario, Proxies and Targets might require authentication before use.
 Regardless of the authentication mechanism in place, Proxies MUST NOT reveal any client
 authentication information to Targets. This is required so targets cannot uniquely identify
 individual clients.
 
 Note that if Targets require Proxies to authenticate at the HTTP- or application-layer before use,
-this SHOULD be done before attempting to forward any client query to the Target. This will allow
+this ought to be done before attempting to forward any client query to the Target. This will allow
 Proxies to distinguish 401 Unauthorized response codes due to authentication failure from
 401 Unauthorized response codes due to client key mismatch; see {{oblivious-response}}.
 
