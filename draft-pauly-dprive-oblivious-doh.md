@@ -539,7 +539,7 @@ Oblivious DoH implementation MUST support the following HPKE cipher suite:
 
 # Security Considerations
 
-Oblivious DoH aims to keep knowledge of the true query origin and its contents known to only clients.
+Oblivious DoH aims to keep knowledge of the true query origin and its contents known only to clients.
 As a simplified model, consider a case where there exists two clients C1 and C2, one proxy P, and
 one target T. Oblivious DoH assumes an extended Dolev-Yao style attacker which can observe all
 network activity and can adaptively compromise either P or T, but not C1 or C2. Once compromised,
@@ -567,7 +567,7 @@ query contents and destination.
 keys.
 
 Traffic analysis mitigations are outside the scope of this document. In particular, this document
-does not recommend padding lengths for ObliviousDoHQuery and ObliviousDoHResponse messages.
+does not prescribe padding lengths for ObliviousDoHQuery and ObliviousDoHResponse messages.
 Implementations SHOULD follow the guidance for choosing padding length in {{!RFC8467}}.
 
 Oblivious DoH security does not depend on proxy and target indistinguishability. Specifically, an
@@ -621,6 +621,9 @@ which means that DoH servers could track queries over the same connection. Using
 per query would incur a non-negligible penalty in connection setup time.
 
 # IANA Considerations {#iana}
+
+This document makes changes to the "Multipurpose Internet Mail Extensions (MIME) and Media Types" registry.
+The changes are described in the following subsection.
 
 ## Oblivious DoH Message Media Type
 
