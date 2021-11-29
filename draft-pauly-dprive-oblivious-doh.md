@@ -606,13 +606,13 @@ Proxies to distinguish 401 Unauthorized response codes due to authentication fai
 
 ## General Proxy Services
 
-Using DoH over anonymizing proxy services such as Tor would also achieve the desired goal of separating
+Using DoH over anonymizing proxy services such as Tor can also achieve the desired goal of separating
 query origins from their contents. However, there are several reasons why such systems are undesirable
 in comparison Oblivious DoH:
 
-1. Tor is also meant as a generic connection-level anonymity system, and thus seems overly complex
-and costly for the purpose of proxying individual DoH queries. In contrast, Oblivious DoH is a
-lightweight extension to standard DoH, implemented as an application-layer proxy, that can be enabled
+1. Tor is meant to be a generic connection-level anonymity system, and incurs higher latency costs
+and protocol complexity for the purpose of proxying individual DNS queries. In contrast, Oblivious DoH
+is a lightweight extension to standard DoH, implemented as an application-layer proxy, that can be enabled
 as a default mode for users which need increased privacy.
 
 1. As a one-hop proxy, Oblivious DoH encourages connection-less proxies to mitigate client query correlation
