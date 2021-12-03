@@ -554,7 +554,8 @@ It is anticipated that use of ODoH and the duration of this experiment to be wid
 Oblivious DoH aims to keep knowledge of the true query origin and its contents known only to clients.
 As a simplified model, consider a case where there exists two clients C1 and C2, one proxy P, and
 one target T. Oblivious DoH assumes an extended Dolev-Yao style attacker which can observe all
-network activity and can adaptively compromise either P or T, but not C1 or C2. Once compromised,
+network activity and can adaptively compromise either P or T, but not C1 or C2. Note that compromising
+both P and T is equivalent to collusion between these two parties in practice. Once compromised,
 the attacker has access to all session information and private key material. (This generalizes to
 arbitrarily many clients, proxies, and targets, with the constraints that not all targets and proxies
 are simultaneously compromised, and at least two clients are left uncompromised.) The attacker is
