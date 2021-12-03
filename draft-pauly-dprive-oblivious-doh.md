@@ -345,7 +345,7 @@ public_key
 
 # Protocol Encoding {#encryption}
 
-## Message Format
+## Message Format {#encoding}
 
 There are two types of Oblivious DoH messages: Queries (0x01) and Responses (0x02).
 Both messages carry the following information:
@@ -636,13 +636,14 @@ Required parameters: N/A
 Optional parameters: N/A
 
 Encoding considerations: This is a binary format, containing encrypted DNS
-requests and responses, as defined in this document.
+requests and responses encoded as ObliviousDoHMessage values, as defined
+in this {{encoding}}.
 
 Security considerations: See this document. The content is an encrypted DNS
 message, and not executable code.
 
 Interoperability considerations: This document specifies format of
-conforming messages and the interpretation thereof.
+conforming messages and the interpretation thereof; see {{encoding}}.
 
 Published specification: This document.
 
