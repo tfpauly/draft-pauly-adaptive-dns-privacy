@@ -100,11 +100,11 @@ Oblivious Server:
 : A DoH server that acts as either an Oblivious Proxy or Oblivious Target.
 
 Oblivious Proxy:
-: An Oblivious Server that proxies encrypted DNS queries and responses between a client and an
+: An Oblivious Server that proxies encrypted DNS queries and responses between a Client and an
 Oblivious Target.
 
 Oblivious Target:
-: An Oblivious Server that receives and decrypts encrypted client DNS queries from an Oblivious Proxy,
+: An Oblivious Server that receives and decrypts encrypted Client DNS queries from an Oblivious Proxy,
 and returns encrypted DNS responses via that same Proxy. In order to provide DNS responses, the Target
 can be a DNS resolver, be co-located with a resolver, or forward to a resolver.
 
@@ -116,9 +116,9 @@ Proxy and Oblivious Target, respectively.
 Oblivious DoH requires, at a minimum:
 
 - Two Oblivious Servers, where one can act as a Proxy, and the other can act as a Target.
-- Public keys for encrypting DNS queries that are passed from a client through a Proxy
+- Public keys for encrypting DNS queries that are passed from a Client through a Proxy
   to a Target ({{publickey}}). These keys guarantee that only the intended Target can
-  decrypt client queries.
+  decrypt Client queries.
 
 The mechanism for discovering and provisioning the DoH URI Templates and public keys
 is out of scope of this document.
@@ -128,12 +128,12 @@ is out of scope of this document.
 Unlike direct resolution, oblivious hostname resolution over DoH involves three parties:
 
 1. The Client, which generates queries.
-2. The Proxy, which receives encrypted queries from the client and passes them on to a Target.
-3. The Target, which receives proxied queries from the client via the Proxy and produces proxied
+2. The Proxy, which receives encrypted queries from the Client and passes them on to a Target.
+3. The Target, which receives proxied queries from the Client via the Proxy and produces proxied
    answers.
 
 ~~~
-     --- [ Request encrypted with target public key ] -->
+     --- [ Request encrypted with Target public key ] -->
 +---------+             +-----------+             +-----------+
 | Client  +-------------> Oblivious +-------------> Oblivious |
 |         <-------------+   Proxy   <-------------+  Target   |
@@ -159,7 +159,7 @@ Clients MUST set the HTTP Content-Type header to "application/oblivious-dns-mess
 to indicate that this request is an Oblivious DoH query intended for proxying. Clients
 also SHOULD set this same value for the HTTP Accept header.
 
-Proxies MUST check that client requests are correctly encoded, and MUST return a
+Proxies MUST check that Client requests are correctly encoded, and MUST return a
 4xx (Client Error) if the check fails, along with the Proxy-Status response header
 with an "error" parameter of type "http_request_error" {{!I-D.ietf-httpbis-proxy-status}}.
 A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
@@ -170,12 +170,12 @@ the Target. The Proxy is expected to send the Client's request using the URI
 constructed as "https://targethost/targetpath".
 
 Note that "targethost" MAY contain a port. Proxies MAY choose to not forward
-connections to non-standard ports. In such cases, proxies MUST return a 4xx (Client Error)
-response to the client request, along with Proxy-Status response header with an "error"
+connections to non-standard ports. In such cases, Proxies MUST return a 4xx (Client Error)
+response to the Client request, along with Proxy-Status response header with an "error"
 parameter of type "http_request_error".
 
-If the proxy cannot establish a connection to the Target, it MUST return a 502 (Bad Gateway)
-response to the client request, along with Proxy-Status response header with an "error" parameter
+If the Proxy cannot establish a connection to the Target, it MUST return a 502 (Bad Gateway)
+response to the Client request, along with Proxy-Status response header with an "error" parameter
 whose type indicates the reason. For example, if DNS resolution fails, the error type might be
 "dns_timeout", whereas if the TLS connection failed the error type might be "tls_protocol_error".
 
@@ -185,7 +185,7 @@ Targets MUST return 4xx (Client Error) if this check fails.
 
 ## HTTP Request Example {#request-example}
 
-The following example shows how a client requests that a Proxy, "dnsproxy.example.net",
+The following example shows how a Client requests that a Proxy, "dnsproxy.example.net",
 forwards an encrypted message to "dnstarget.example.net". The URI template for the
 Proxy is "https://dnsproxy.example.net/dns-query{?targethost,targetpath}". The URI template for
 the Target is "https://dnstarget.example.net/dns-query".
@@ -230,15 +230,15 @@ Content-Type header in the response before processing the payload. A response wi
 treated as an error and be handled appropriately. All other aspects of the HTTP response and error handling are
 inherited from standard DoH.
 
-Proxies MUST forward any Target responses with 2xx, 4xx, or 5xx response codes unmodified to the client.
-Target responses with 1xx response codes MUST NOT be forwarded to the client.
-If a proxy receives a successful response from a target without the "application/oblivious-dns-message"
-HTTP Content-Type header, it MUST return a 502 (Bad Gateway) response to the client request, along with
+Proxies MUST forward any Target responses with 2xx, 4xx, or 5xx response codes unmodified to the Client.
+Target responses with 1xx response codes MUST NOT be forwarded to the Client.
+If a Proxy receives a successful response from a Target without the "application/oblivious-dns-message"
+HTTP Content-Type header, it MUST return a 502 (Bad Gateway) response to the Client request, along with
 Proxy-Status response header with an "error" parameter of type "http_protocol_error".
 
-Requests that cannot be processed by the target result in 4xx (Client Error) responses. If the target
-and client keys do not match, it is an authorization failure (HTTP status code 401; see Section 3.1
-of {{!RFC7235}}). Otherwise, if the client's request is invalid, such as in the case of decryption
+Requests that cannot be processed by the Target result in 4xx (Client Error) responses. If the Target
+and Client keys do not match, it is an authorization failure (HTTP status code 401; see Section 3.1
+of {{!RFC7235}}). Otherwise, if the Client's request is invalid, such as in the case of decryption
 failure, wrong message type, or deserialization failure, this is a bad request (HTTP status code 400;
 see Section 6.5.1 of {{!RFC7231}}).
 
@@ -251,7 +251,7 @@ In case of server error, the usual HTTP status code 500 (see Section 6.6.1 of {{
 ## HTTP Response Example
 
 The following example shows a 2xx (Successful) response that can be sent from a Target to
-a client via a Proxy.
+a Client via a Proxy.
 
 ~~~
 :status = 200
@@ -263,21 +263,21 @@ content-length = 154
 
 ## HTTP Metadata
 
-Proxies forward requests and responses between clients and targets as specified in {{oblivious-request}}.
+Proxies forward requests and responses between Clients and Targets as specified in {{oblivious-request}}.
 Metadata sent with these messages could inadvertently weaken or remove Oblivious DoH privacy properties.
-Proxies MUST NOT send any client-identifying information about clients to Targets, such as
-"Forwarded" HTTP headers {{?RFC7239}}. Additionally, clients MUST NOT include any private state in
-requests to proxies, such as HTTP cookies. See {{authentication}} for related discussion about
-client authentication information.
+Proxies MUST NOT send any Client-identifying information about Clients to Targets, such as
+"Forwarded" HTTP headers {{?RFC7239}}. Additionally, Clients MUST NOT include any private state in
+requests to Proxies, such as HTTP cookies. See {{authentication}} for related discussion about
+Client authentication information.
 
 # Configuration and Public Key Format {#publickey}
 
-In order to use a DoH server as a Target, the client needs to know a public key to use
+In order to use a DoH server as a Target, the Client needs to know a public key to use
 for encrypting its queries. The mechanism for discovering this configuration is
 out of scope of this document.
 
 Servers ought to rotate public keys regularly. It is RECOMMENDED that servers rotate keys
-every day. Shorter rotation windows reduce the anonymity set of clients that might use
+every day. Shorter rotation windows reduce the anonymity set of Clients that might use
 the public key, whereas longer rotation windows widen the timeframe of possible compromise.
 
 An Oblivious DNS public key configuration is a structure encoded, using TLS-style
@@ -341,9 +341,12 @@ aead_id
 `ObliviousDoHConfig` structure with a key using an AEAD they do not support.
 
 public_key
-: The HPKE public key used by the client to encrypt Oblivious DoH queries.
+: The HPKE public key used by the Client to encrypt Oblivious DoH queries.
 
 # Protocol Encoding {#encryption}
+
+This section includes encoding and wire format details for Oblivious DoH, as well
+as routines for encrypting and decrypting encoded values.
 
 ## Message Format {#encoding}
 
@@ -393,7 +396,7 @@ and `Extract`, `Expand`, and `Nh` are as specified by the HPKE cipher suite KDF 
 `config.kdf_id`.
 
 encrypted_message
-: An encrypted message for the Oblivious Target (for Query messages) or client (for Response messages).
+: An encrypted message for the Oblivious Target (for Query messages) or Client (for Response messages).
 Implementations MAY enforce limits on the size of this field depending on the size of plaintext DNS
 messages. (DNS queries, for example, will not reach the size limit of 2^16-1 in practice.)
 
@@ -478,9 +481,9 @@ def encrypt_response_body(R_plain, aead_key, aead_nonce, response_nonce):
 
 # Oblivious Client Behavior {#odoh-client}
 
-Let `M` be a DNS message (query) a client wishes to protect with Oblivious DoH.
+Let `M` be a DNS message (query) a Client wishes to protect with Oblivious DoH.
 When sending an Oblivious DoH Query for resolving `M` to an Oblivious Target with
-`ObliviousDoHConfigContents` `config`, a client does the following:
+`ObliviousDoHConfigContents` `config`, a Client does the following:
 
 1. Create an `ObliviousDoHQuery` structure, carrying the message M and padding, to produce Q_plain.
 1. Deserialize `config.public_key` to produce a public key pkR of type `config.kem_id`.
@@ -490,8 +493,8 @@ as a two-byte unsigned integer.
 1. Output an ObliviousDoHMessage message `Q` where `Q.message_type = 0x01`, `Q.key_id` carries `key_id`,
 and `Q.encrypted_message = Q_encrypted`.
 
-The client then sends `Q` to the Proxy according to {{oblivious-request}}.
-Once the client receives a response `R`, encrypted as specified in {{odoh-target}},
+The Client then sends `Q` to the Proxy according to {{oblivious-request}}.
+Once the Client receives a response `R`, encrypted as specified in {{odoh-target}},
 it uses `decrypt_response_body` to decrypt `R.encrypted_message` (using `R.key_id` as
 a nonce) and produce R_plain. Clients MUST validate `R_plain.padding` (as all zeros)
 before using `R_plain.dns_message`.
@@ -514,16 +517,16 @@ to produce `R_plain`.
 1. Create a fresh nonce `response_nonce = random(max(Nn, Nk))`.
 1. Compute `aead_key, aead_nonce = derive_secrets(context, Q_plain, response_nonce)`.
 1. Compute `R_encrypted = encrypt_response_body(R_plain, aead_key, aead_nonce, response_nonce)`.
-The `key_id` field used for encryption carries `response_nonce` in order for clients to
+The `key_id` field used for encryption carries `response_nonce` in order for Clients to
 derive the same secrets. Also, the `Seal` function is that which is associated with the
 HPKE AEAD.
 1. Output an `ObliviousDoHMessage` message `R` where `R.message_type = 0x02`,
 `R.key_id = response_nonce`, and `R.encrypted_message = R_encrypted`.
 
 The Target then sends `R` in a 2xx (Successful) response to the Proxy; see {{oblivious-response}}.
-The Proxy forwards the message `R` without modification back to the client as the HTTP response
-to the client's original HTTP request. In the event of an error (non 2xx status code), the
-Proxy forwards the Target error to the client; see {{oblivious-response}}.
+The Proxy forwards the message `R` without modification back to the Client as the HTTP response
+to the Client's original HTTP request. In the event of an error (non 2xx status code), the
+Proxy forwards the Target error to the Client; see {{oblivious-response}}.
 
 # Compliance Requirements {#compliance}
 
@@ -551,71 +554,76 @@ It is anticipated that use of ODoH and the duration of this experiment to be wid
 
 # Security Considerations
 
-Oblivious DoH aims to keep knowledge of the true query origin and its contents known only to clients.
-As a simplified model, consider a case where there exists two clients C1 and C2, one proxy P, and
-one target T. Oblivious DoH assumes an extended Dolev-Yao style attacker which can observe all
+Oblivious DoH aims to keep knowledge of the true query origin and its contents known only to Clients.
+As a simplified model, consider a case where there exists two Clients C1 and C2, one proxy P, and
+one Target T. Oblivious DoH assumes an extended Dolev-Yao style attacker which can observe all
 network activity and can adaptively compromise either P or T, but not C1 or C2. Note that compromising
 both P and T is equivalent to collusion between these two parties in practice. Once compromised,
 the attacker has access to all session information and private key material. (This generalizes to
-arbitrarily many clients, proxies, and targets, with the constraints that not all targets and proxies
-are simultaneously compromised, and at least two clients are left uncompromised.) The attacker is
-prohibited from sending client identifying information, such as IP addresses, to targets. (This would
-allow the attacker to trivially link a query to the corresponding client.)
+arbitrarily many Clients, Proxies, and Targets, with the constraints that not all Targets and Proxies
+are simultaneously compromised, and at least two Clients are left uncompromised.) The attacker is
+prohibited from sending Client identifying information, such as IP addresses, to Targets. (This would
+allow the attacker to trivially link a query to the corresponding Client.)
 
 In this model, both C1 and C2 send an Oblivious DoH queries Q1 and Q2, respectively, through P to T,
 and T provides answers A1 and A2. The attacker aims to link C1 to (Q1, A1) and C2 to (Q2, A2), respectively.
 The attacker succeeds if this linkability is possible without any additional interaction. (For example,
 if T is compromised, it could return a DNS answer corresponding to an entity it controls, and then observe
-the subsequent connection from a client, learning its identity in the process. Such attacks are out of
+the subsequent connection from a Client, learning its identity in the process. Such attacks are out of
 scope for this model.)
 
 Oblivious DoH security prevents such linkability. Informally, this means:
 
-1. Queries and answers are known only to clients and targets in possession of the corresponding
-response key and HPKE keying material. In particular, proxies know the origin and destination
-of an oblivious query, yet do not know the plaintext query. Likewise, targets know only the oblivious
-query origin, i.e., the proxy, and the plaintext query. Only the client knows both the plaintext
+1. Queries and answers are known only to Clients and Targets in possession of the corresponding
+response key and HPKE keying material. In particular, Proxies know the origin and destination
+of an oblivious query, yet do not know the plaintext query. Likewise, Targets know only the oblivious
+query origin, i.e., the Proxy, and the plaintext query. Only the Client knows both the plaintext
 query contents and destination.
-1. Target resolvers cannot link queries from the same client in the absence of unique per-client
+1. Target resolvers cannot link queries from the same Client in the absence of unique per-Client
 keys.
 
 Traffic analysis mitigations are outside the scope of this document. In particular, this document
 does not prescribe padding lengths for ObliviousDoHQuery and ObliviousDoHResponse messages.
 Implementations SHOULD follow the guidance for choosing padding length in {{!RFC8467}}.
 
-Oblivious DoH security does not depend on proxy and target indistinguishability. Specifically, an
+Oblivious DoH security does not depend on Proxy and Target indistinguishability. Specifically, an
 on-path attacker could determine whether a connection a specific endpoint is used for oblivious or
 direct DoH queries. However, this has no effect on confidentiality goals listed above.
 
 ## Denial of Service
 
-Malicious clients (or proxies) can send bogus Oblivious DoH queries to targets as a Denial-of-Service
+Malicious Clients (or Proxies) can send bogus Oblivious DoH queries to Targets as a Denial-of-Service
 (DoS) attack. Target servers can throttle processing requests if such an event occurs. Additionally,
 since Targets provide explicit errors upon decryption failure, i.e., if ciphertext decryption fails
-or if the plaintext DNS message is malformed, Proxies can throttle specific clients in response to
+or if the plaintext DNS message is malformed, Proxies can throttle specific Clients in response to
 these errors.
 
 Malicious Targets or Proxies can send bogus answers in response to Oblivious DoH queries. Response
-decryption failure is a signal that either the proxy or target is misbehaving. Clients can choose to
+decryption failure is a signal that either the Proxy or Target is misbehaving. Clients can choose to
 stop using one or both of these servers in the event of such failure. However, as above, malicious
 Targets and Proxies are out of scope for the threat model.
 
 ## Proxy Policies
 
-Proxies are free to enforce any forwarding policy they desire for clients. For example, they can choose
+Proxies are free to enforce any forwarding policy they desire for Clients. For example, they can choose
 to only forward requests to known or otherwise trusted Targets.
+
+Proxies that do not reuse connections to Targets for many Clients may allow Targets to link individual
+queries to unknown Targets. To mitigate this linkability vector, it is RECOMMENDED that Proxies pool
+and reuse connections to Targets. Note that this has performance as well as privacy benefits since
+queries do not incur any delay that might otherwise result from Proxy-to-Target connection establishment.
 
 ## Authentication {#authentication}
 
 Depending on the deployment scenario, Proxies and Targets might require authentication before use.
-Regardless of the authentication mechanism in place, Proxies MUST NOT reveal any client
-authentication information to Targets. This is required so targets cannot uniquely identify
-individual clients.
+Regardless of the authentication mechanism in place, Proxies MUST NOT reveal any Client
+authentication information to Targets. This is required so Targets cannot uniquely identify
+individual Clients.
 
 Note that if Targets require Proxies to authenticate at the HTTP- or application-layer before use,
-this ought to be done before attempting to forward any client query to the Target. This will allow
+this ought to be done before attempting to forward any Client query to the Target. This will allow
 Proxies to distinguish 401 Unauthorized response codes due to authentication failure from
-401 Unauthorized response codes due to client key mismatch; see {{oblivious-response}}.
+401 Unauthorized response codes due to Client key mismatch; see {{oblivious-response}}.
 
 ## General Proxy Services
 
@@ -628,7 +636,7 @@ and protocol complexity for the purpose of proxying individual DNS queries. In c
 is a lightweight extension to standard DoH, implemented as an application-layer proxy, that can be enabled
 as a default mode for users which need increased privacy.
 
-1. As a one-hop proxy, Oblivious DoH encourages connection-less proxies to mitigate client query correlation
+1. As a one-hop proxy, Oblivious DoH encourages connection-less proxies to mitigate Client query correlation
 with few round-trips. In contrast, multi-hop systems such as Tor often run secure connections (TLS) end-to-end,
 which means that DoH servers could track queries over the same connection. Using a fresh DoH connection
 per query would incur a non-negligible penalty in connection setup time.
@@ -663,7 +671,7 @@ conforming messages and the interpretation thereof; see {{encoding}}.
 Published specification: This document.
 
 Applications that use this media type: This media type is intended
-to be used by clients wishing to hide their DNS queries when
+to be used by Clients wishing to hide their DNS queries when
 using DNS over HTTPS.
 
 Additional information: N/A
