@@ -86,7 +86,7 @@ content in the broader context of DNS privacy.
 
 This experimental extension is developed outside the IETF and is published here to
 guide implementation, ensure interoperability among implementations, and enable
-wide-scale experimentation.
+wide-scale experimentation. See {{experiment}} for more details about the experiment.
 
 ## Specification of Requirements
 
@@ -345,7 +345,7 @@ public_key
 
 # Protocol Encoding {#encryption}
 
-## Message Format
+## Message Format {#encoding}
 
 There are two types of Oblivious DoH messages: Queries (0x01) and Responses (0x02).
 Both messages carry the following information:
@@ -535,6 +535,20 @@ Oblivious DoH implementation MUST support the following HPKE cipher suite:
 - KDF: HKDF-SHA256 (see {{!I-D.irtf-cfrg-hpke}}, Section 7.2)
 - AEAD: AES-128-GCM (see {{!I-D.irtf-cfrg-hpke}}, Section 7.3)
 
+# Experiment Overview {#experiment}
+
+This document describes an experimental extension to the DoH. The purpose of this
+experiment is to assess deployment configuration viability and related performance
+impacts on DNS resolution by measuring key performance indicators such as resolution
+latency. Experiment participants will test various parameters affecting deployment
+and performance, including mechanisms for discovery and configuration of DoH Proxies
+and Targets, as well as performance implications of connection reuse and pools where
+appropriate. The results of this experiment will be used to influence future protocol
+design and deployment efforts related to Oblivious DoH, such as Oblivious HTTP
+{{?OHTP=I-D.draft-ietf-ohai-ohttp}}. Implementations of DoH are not involved in the
+Experiment will not recognize this extension and will not participate in the experiment.
+It is anticipated that use of ODoH and the duration of this experiment to be widespread.
+
 # Security Considerations
 
 Oblivious DoH aims to keep knowledge of the true query origin and its contents known only to clients.
@@ -636,13 +650,14 @@ Required parameters: N/A
 Optional parameters: N/A
 
 Encoding considerations: This is a binary format, containing encrypted DNS
-requests and responses, as defined in this document.
+requests and responses encoded as ObliviousDoHMessage values, as defined
+in this {{encoding}}.
 
 Security considerations: See this document. The content is an encrypted DNS
 message, and not executable code.
 
 Interoperability considerations: This document specifies format of
-conforming messages and the interpretation thereof.
+conforming messages and the interpretation thereof; see {{encoding}}.
 
 Published specification: This document.
 
