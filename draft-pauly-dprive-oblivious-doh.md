@@ -86,7 +86,7 @@ content in the broader context of DNS privacy.
 
 This experimental extension is developed outside the IETF and is published here to
 guide implementation, ensure interoperability among implementations, and enable
-wide-scale experimentation.
+wide-scale experimentation. See {{experiment}} for more details about the experiment.
 
 ## Specification of Requirements
 
@@ -534,6 +534,20 @@ Oblivious DoH implementation MUST support the following HPKE cipher suite:
 - KEM: DHKEM(X25519, HKDF-SHA256) (see {{!I-D.irtf-cfrg-hpke}}, Section 7.1)
 - KDF: HKDF-SHA256 (see {{!I-D.irtf-cfrg-hpke}}, Section 7.2)
 - AEAD: AES-128-GCM (see {{!I-D.irtf-cfrg-hpke}}, Section 7.3)
+
+# Experiment Overview {#experiment}
+
+This document describes an experimental extension to the DoH. The purpose of this
+experiment is to assess deployment configuration viability and related performance
+impacts on DNS resolution by measuring key performance indicators such as resolution
+latency. Experiment participants will test various parameters affecting deployment
+and performance, including mechanisms for discovery and configuration of DoH Proxies
+and Targets, as well as performance implications of connection reuse and pools where
+appropriate. The results of this experiment will be used to influence future protocol
+design and deployment efforts related to Oblivious DoH, such as Oblivious HTTP
+{{?OHTP=I-D.draft-ietf-ohai-ohttp}}. Implementations of DoH are not involved in the
+Experiment will not recognize this extension and will not participate in the experiment.
+It is anticipated that use of ODoH and the duration of this experiment to be widespread.
 
 # Security Considerations
 
