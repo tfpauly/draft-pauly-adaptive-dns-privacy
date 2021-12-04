@@ -205,7 +205,7 @@ cache-control = no-cache, no-store
 content-type = application/oblivious-dns-message
 content-length = 106
 
-<Bytes containing encrypted Oblivious DNS query>
+<Bytes containing an encrypted Oblivious DNS query>
 ~~~
 
 The Proxy then sends the following request on to the Target:
