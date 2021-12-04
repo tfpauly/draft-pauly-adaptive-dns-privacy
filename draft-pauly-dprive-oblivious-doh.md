@@ -550,14 +550,14 @@ Oblivious DoH implementation MUST support the following HPKE cipher suite:
 This document describes an experimental extension to the DoH. The purpose of this
 experiment is to assess deployment configuration viability and related performance
 impacts on DNS resolution by measuring key performance indicators such as resolution
-latency. Experiment participants will test various parameters affecting deployment
+latency. Experiment participants will test various parameters affecting service operation
 and performance, including mechanisms for discovery and configuration of DoH Proxies
 and Targets, as well as performance implications of connection reuse and pools where
 appropriate. The results of this experiment will be used to influence future protocol
 design and deployment efforts related to Oblivious DoH, such as Oblivious HTTP
-{{?OHTP=I-D.draft-ietf-ohai-ohttp}}. Implementations of DoH are not involved in the
-Experiment will not recognize this extension and will not participate in the experiment.
-It is anticipated that use of ODoH and the duration of this experiment to be widespread.
+{{?OHTP=I-D.draft-ietf-ohai-ohttp}}. Implementations of DoH that are not involved in the
+experiment will not recognize this extension and will not participate in the experiment.
+It is anticipated that use of Oblivious DoH and the duration of this experiment to be widespread.
 
 # Security Considerations
 
