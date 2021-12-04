@@ -81,6 +81,11 @@ This document defines Oblivious DoH, an experimental extension to DoH that permi
 resolution, in which DNS messages are encrypted so that no DoH server can independently read
 both the client IP address and the DNS message contents.
 
+As with DoH, DNS messages exchanged over Oblivious DoH are fully-formed DNS messages.
+Clients that want to receive answers that are relevant to the network they are on without
+revealing their exact IP address can thus use the EDNS Client Subnet option {{?RFC7871, Section 7.1.2}}
+to provide a hint to the Oblivious DoH server.
+
 This mechanism is intended to be used as one mechanism for resolving privacy-sensitive
 content in the broader context of DNS privacy.
 
