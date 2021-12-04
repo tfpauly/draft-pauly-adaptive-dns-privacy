@@ -610,7 +610,7 @@ to only forward requests to known or otherwise trusted Targets.
 
 Proxies that do not reuse connections to Targets for many Clients may allow Targets to link individual
 queries to unknown Targets. To mitigate this linkability vector, it is RECOMMENDED that Proxies pool
-and reuse connections to Targets. Note that this has performance as well as privacy benefits since
+and reuse connections to Targets. Note that this benefits performance as well as privacy since
 queries do not incur any delay that might otherwise result from Proxy-to-Target connection establishment.
 
 ## Authentication {#authentication}
