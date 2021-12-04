@@ -265,7 +265,7 @@ a Client via a Proxy.
 content-type = application/oblivious-dns-message
 content-length = 154
 
-<Bytes containing encrypted Oblivious DNS response>
+<Bytes containing an encrypted Oblivious DNS response>
 ~~~
 
 ## HTTP Metadata
