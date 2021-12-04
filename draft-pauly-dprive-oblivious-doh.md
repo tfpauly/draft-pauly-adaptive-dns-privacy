@@ -220,7 +220,7 @@ cache-control = no-cache, no-store
 content-type = application/oblivious-dns-message
 content-length = 106
 
-<Bytes containing encrypted Oblivious DNS query>
+<Bytes containing an encrypted Oblivious DNS query>
 ~~~
 
 ## HTTP Response {#oblivious-response}
