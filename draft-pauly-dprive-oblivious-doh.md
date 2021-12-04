@@ -501,7 +501,7 @@ before using `R_plain.dns_message`.
 Targets that receive a Query message Q decrypt and process it as follows:
 
 1. Look up the `ObliviousDoHConfigContents` according to `Q.key_id`. If no such key exists,
-the Target MAY discard the query, and if so, it MUST return a 401 (Client Error) response
+the Target MAY discard the query, and if so, it MUST return a 401 (Unauthorized) response
 to the Proxy. Otherwise, let `skR` be the private key corresponding to this public key,
 or one chosen for trial decryption.
 1. Compute `context = setup_query_context(skR, Q.key_id, Q.encrypted_message)`.
