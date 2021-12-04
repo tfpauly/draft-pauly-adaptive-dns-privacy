@@ -190,22 +190,22 @@ Targets MUST return 4xx (Client Error) if this check fails.
 
 ## HTTP Request Example {#request-example}
 
-The following example shows how a Client requests that a Proxy, "dnsproxy.example.net",
-forwards an encrypted message to "dnstarget.example.net". The URI template for the
-Proxy is "https://dnsproxy.example.net/dns-query{?targethost,targetpath}". The URI template for
-the Target is "https://dnstarget.example.net/dns-query".
+The following example shows how a Client requests that a Proxy, "dnsproxy.example",
+forwards an encrypted message to "dnstarget.example". The URI template for the
+Proxy is "https://dnsproxy.example/dns-query{?targethost,targetpath}". The URI template for
+the Target is "https://dnstarget.example/dns-query".
 
 ~~~
 :method = POST
 :scheme = https
-:authority = dnsproxy.example.net
-:path = /dns-query?targethost=dnstarget.example.net&targetpath=/dns-query
+:authority = dnsproxy.example
+:path = /dns-query?targethost=dnstarget.example&targetpath=/dns-query
 accept = application/oblivious-dns-message
 cache-control = no-cache, no-store
 content-type = application/oblivious-dns-message
 content-length = 106
 
-<Bytes containing the encrypted payload for an Oblivious DNS query>
+<Bytes containing encrypted Oblivious DNS query>
 ~~~
 
 The Proxy then sends the following request on to the Target:
@@ -213,14 +213,14 @@ The Proxy then sends the following request on to the Target:
 ~~~
 :method = POST
 :scheme = https
-:authority = dnstarget.example.net
+:authority = dnstarget.example
 :path = /dns-query
 accept = application/oblivious-dns-message
 cache-control = no-cache, no-store
 content-type = application/oblivious-dns-message
 content-length = 106
 
-<Bytes containing the encrypted payload for an Oblivious DNS query>
+<Bytes containing encrypted Oblivious DNS query>
 ~~~
 
 ## HTTP Response {#oblivious-response}
@@ -265,7 +265,7 @@ a Client via a Proxy.
 content-type = application/oblivious-dns-message
 content-length = 154
 
-<Bytes containing the encrypted payload for an Oblivious DNS response>
+<Bytes containing encrypted Oblivious DNS response>
 ~~~
 
 ## HTTP Metadata
@@ -430,9 +430,9 @@ def encrypt_query_body(pkR, key_id, Q_plain):
 decrypt_response_body: Decrypt an Oblivious DoH response.
 
 ~~~
-def decrypt_response_body(context, Q_plain, R_encrypted, response_nonce):
-  aead_key, aead_nonce = derive_secrets(context, Q_plain, response_nonce)
-  aad = 0x02 || len(response_nonce) || response_nonce
+def decrypt_response_body(context, Q_plain, R_encrypted, resp_nonce):
+  aead_key, aead_nonce = derive_secrets(context, Q_plain, resp_nonce)
+  aad = 0x02 || len(resp_nonce) || resp_nonce
   R_plain, error = Open(key, nonce, aad, R_encrypted)
   return R_plain, error
 ~~~
@@ -464,9 +464,9 @@ def decrypt_query_body(context, key_id, Q_encrypted):
 derive_secrets: Derive keying material used for encrypting an Oblivious DoH response.
 
 ~~~
-def derive_secrets(context, Q_plain, response_nonce):
+def derive_secrets(context, Q_plain, resp_nonce):
   secret = context.Export("odoh response", Nk)
-  salt = Q_plain || len(response_nonce) || response_nonce
+  salt = Q_plain || len(resp_nonce) || resp_nonce
   prk = Extract(salt, secret)
   key = Expand(odoh_prk, "odoh key", Nk)
   nonce = Expand(odoh_prk, "odoh nonce", Nn)
@@ -480,8 +480,8 @@ from a good source of entropy {{!RFC4086}}. The `max(A, B)` function returns
 encrypt_response_body: Encrypt an Oblivious DoH response.
 
 ~~~
-def encrypt_response_body(R_plain, aead_key, aead_nonce, response_nonce):
-  aad = 0x02 || len(response_nonce) || response_nonce
+def encrypt_response_body(R_plain, aead_key, aead_nonce, resp_nonce):
+  aad = 0x02 || len(resp_nonce) || resp_nonce
   R_encrypted = Seal(aead_key, aead_nonce, aad, R_plain)
   return R_encrypted
 ~~~
@@ -521,14 +521,14 @@ or one chosen for trial decryption.
 was returned or the padding was invalid, return a 400 (Client Error) response to the Proxy.
 1. Create an `ObliviousDoHResponseBody` structure, carrying the message `M` and padding,
 to produce `R_plain`.
-1. Create a fresh nonce `response_nonce = random(max(Nn, Nk))`.
-1. Compute `aead_key, aead_nonce = derive_secrets(context, Q_plain, response_nonce)`.
-1. Compute `R_encrypted = encrypt_response_body(R_plain, aead_key, aead_nonce, response_nonce)`.
-The `key_id` field used for encryption carries `response_nonce` in order for Clients to
+1. Create a fresh nonce `resp_nonce = random(max(Nn, Nk))`.
+1. Compute `aead_key, aead_nonce = derive_secrets(context, Q_plain, resp_nonce)`.
+1. Compute `R_encrypted = encrypt_response_body(R_plain, aead_key, aead_nonce, resp_nonce)`.
+The `key_id` field used for encryption carries `resp_nonce` in order for Clients to
 derive the same secrets. Also, the `Seal` function is that which is associated with the
 HPKE AEAD.
 1. Output an `ObliviousDoHMessage` message `R` where `R.message_type = 0x02`,
-`R.key_id = response_nonce`, and `R.encrypted_message = R_encrypted`.
+`R.key_id = resp_nonce`, and `R.encrypted_message = R_encrypted`.
 
 The Target then sends `R` in a 2xx (Successful) response to the Proxy; see {{oblivious-response}}.
 The Proxy forwards the message `R` without modification back to the Client as the HTTP response
