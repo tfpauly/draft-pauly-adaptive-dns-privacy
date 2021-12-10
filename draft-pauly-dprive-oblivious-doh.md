@@ -154,7 +154,13 @@ as an HTTP request using the POST method. Requests to the Proxy indicate
 which DoH server to use as a Target by specifying two variables: "targethost",
 which indicates the host name of the Target server, and "targetpath", which
 indicates the path on which the Target's DoH server is running. See
-{{request-example}} for an example request.
+{{request-example}} for an example request. Clients are configured with a Proxy
+URI Template which contains these two variables. Examples are shown below:
+
+~~~
+https://dnsproxy.example/dns-query{?targethost,targetpath}
+https://dnsproxy.example/{targethost}/{targetpath}
+~~~
 
 Oblivious DoH messages have no cache value since both requests and responses are
 encrypted using ephemeral key material. Clients SHOULD indicate this using
@@ -166,8 +172,7 @@ also SHOULD set this same value for the HTTP Accept header.
 
 A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
 uses the HTTP POST method, and contains "targethost" and "targetpath" variables.
-The "targethost" and "targetpath" variables are used to construct the request to forward to
-the Target. The Proxy MUST validate these parameters and construct this request as follows:
+The Proxy MUST validate these parameters and construct a URI Template as follows:
 
 1. Let $TARGET be the "targethost" parameter from the Client's request, encoded as the
 concatenation of a "host" value (Section 3.2.2 of {{!RFC3986}}) and, optionally, the
@@ -176,7 +181,9 @@ be encoded as such, the Client's request is incorrectly encoded.
 1. Let $PATH be the "targetpath" parameter from the Client's request, which MUST be a URI
 Template {{!RFC6570}}. If this parameter is not a valid URI Template, the Client's request
 is incorrectly encoded.
-1. The Target request HTTPS URI template is "https://$TARGET$PATH".
+1. The Target request HTTPS URI Template is "https://$TARGET$PATH".
+
+The resulting URI from this Template is used to forward the Client's request to the Target.
 
 Proxies MUST check that Client requests are correctly encoded, and MUST return a
 4xx (Client Error) if the check fails, along with the Proxy-Status response header
@@ -198,7 +205,7 @@ Targets MUST return 4xx (Client Error) if this check fails.
 ## HTTP Request Example {#request-example}
 
 The following example shows how a Client requests that a Proxy, "dnsproxy.example",
-forwards an encrypted message to "dnstarget.example". The URI template for the
+forwards an encrypted message to "dnstarget.example". The URI Template for the
 Proxy is "https://dnsproxy.example/dns-query{?targethost,targetpath}". The URI template for
 the Target is "https://dnstarget.example/dns-query".
 
