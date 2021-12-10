@@ -149,18 +149,23 @@ Unlike direct resolution, oblivious hostname resolution over DoH involves three 
 
 ## HTTP Request {#oblivious-request}
 
-Oblivious DoH queries are created by the Client, and sent to the Proxy
-as an HTTP request using the POST method. Requests to the Proxy indicate
-which DoH server to use as a Target by specifying two variables: "targethost",
-which indicates the host name of the Target server, and "targetpath", which
-indicates the path on which the Target's DoH server is running. See
-{{request-example}} for an example request. Clients are configured with a Proxy
-URI Template {{!RFC6570}} which contains these two variables. Examples are shown below:
+Oblivious DoH queries are created by the Client, and sent to the Proxy as an HTTP
+request using the POST method. Clients are configured with a Proxy URI Template
+{{!RFC6570}} which contains two variables: "targethost", which indicates the host
+name of the Target server, and "targetpath", which indicates the path on which the
+Target's DoH server is running. Examples of URI templates are shown below:
 
 ~~~
 https://dnsproxy.example/dns-query{?targethost,targetpath}
 https://dnsproxy.example/{targethost}/{targetpath}
 ~~~
+
+The URI template MUST contain both the "targethost" and "targetpath" variables exactly
+once, and MUST NOT contain any other variables. The variables MUST be within the path
+component of the URI. The "targethost" parameter MUST be encoded as the concatenation
+of a "host" value (Section 3.2.2 of {{!RFC3986}}) and, optionally, the ":" character
+followed by a "port" value (Section 3.2.3 of {{!RFC3986}}). The "targetpath" parameter
+MUST be a percent-encoded URI path. See {{request-example}} for an example request.
 
 Oblivious DoH messages have no cache value since both requests and responses are
 encrypted using ephemeral key material. Clients SHOULD indicate this using
@@ -171,19 +176,10 @@ to indicate that this request is an Oblivious DoH query intended for proxying. C
 also SHOULD set this same value for the HTTP Accept header.
 
 A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
-uses the HTTP POST method, and contains "targethost" and "targetpath" variables.
-The Proxy MUST validate these parameters and construct a URI Template as follows:
-
-1. Let $TARGET be the "targethost" parameter from the Client's request, encoded as the
-concatenation of a "host" value (Section 3.2.2 of {{!RFC3986}}) and, optionally, the
-":" character followed by port (Section 3.2.3 of {{!RFC3986}}). If this parameter cannot
-be encoded as such, the Client's request is incorrectly encoded.
-1. Let $PATH be the "targetpath" parameter from the Client's request, which MUST be a URI
-Template {{!RFC6570}}. If this parameter is not a valid URI Template, the Client's request
-is incorrectly encoded.
-1. The Target request HTTPS URI Template is "https://$TARGET$PATH".
-
-The resulting URI from this Template is used to forward the Client's request to the Target.
+uses the HTTP POST method, and contains "targethost" and "targetpath" variables. Let
+$TARGET be the "targethost" variable and $PATH be the "targetpath" variable from this
+request, encoded as described above. The Proxy constructs a HTTP request to forward the
+Client request to the Target using the URI Template "https://$TARGET$PATH".
 
 Proxies MUST check that Client requests are correctly encoded, and MUST return a
 4xx (Client Error) if the check fails, along with the Proxy-Status response header
