@@ -155,7 +155,7 @@ which DoH server to use as a Target by specifying two variables: "targethost",
 which indicates the host name of the Target server, and "targetpath", which
 indicates the path on which the Target's DoH server is running. See
 {{request-example}} for an example request. Clients are configured with a Proxy
-URI Template which contains these two variables. Examples are shown below:
+URI Template {{!RFC6570}} which contains these two variables. Examples are shown below:
 
 ~~~
 https://dnsproxy.example/dns-query{?targethost,targetpath}
