@@ -177,7 +177,7 @@ also SHOULD set this same value for the HTTP Accept header.
 
 A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
 uses the HTTP POST method, and contains "targethost" and "targetpath" variables. Let
-$TARGET be the "targethost" variable and $PATH be the "targetpath" variable from this
+$TARGET be the "targethost" variable and $PATH be the "targetpath" variable percent-decoded from this
 request. The Proxy constructs a HTTP request to forward the
 Client request to the Target using the URI Template "https://$TARGET$PATH".
 
