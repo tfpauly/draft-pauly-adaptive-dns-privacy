@@ -342,7 +342,7 @@ An `ObliviousDoHConfigContents` contains the information needed to encrypt a mes
 `ObliviousDoHConfigContents.public_key` such that only the owner of the corresponding private
 key can decrypt the message. The values for `ObliviousDoHConfigContents.kem_id`,
 `ObliviousDoHConfigContents.kdf_id`, and `ObliviousDoHConfigContents.aead_id`
-are described in Section 7 or {{!HPKE=I-D.irtf-cfrg-hpke}}. The fields in this structure
+are described in Section 7 of {{!HPKE=I-D.irtf-cfrg-hpke}}. The fields in this structure
 are as follows:
 
 kem_id
