@@ -176,11 +176,8 @@ to indicate that this request is an Oblivious DoH query intended for proxying. C
 also SHOULD set this same value for the HTTP Accept header.
 
 A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
-uses the HTTP POST method, and contains "targethost" and "targetpath" variables. Let
-$TARGET be the "targethost" variable and $PATH be the "targetpath" variable percent-decoded from this
-request. The Proxy constructs a HTTP request to forward the
-Client request to the Target using the URI Template "https://$TARGET$PATH".
-
+uses the HTTP POST method, and contains "targethost" and "targetpath" variables. The Proxy constructs 
+the URI of the Target with the "https" scheme, using the value of "targethost" as the URI host the percent-decoded value of "targetpath" as the URI path.
 Proxies MUST check that Client requests are correctly encoded, and MUST return a
 4xx (Client Error) if the check fails, along with the Proxy-Status response header
 with an "error" parameter of type "http_request_error" {{!I-D.ietf-httpbis-proxy-status}}.
