@@ -52,8 +52,8 @@ author:
 
 --- abstract
 
-This document describes a protocol built on DNS Over HTTPS (DoH) that allows hiding
-client IP addresses via proxying encrypted DNS transactions. This improves privacy of
+This document describes a protocol that allows clients to hide their IP addresses from DNS resolvers
+via proxying encrypted DNS over HTTPS (DoH) messages. This improves privacy of
 DNS operations by not allowing any one server entity to be aware of both the client IP
 address and the content of DNS queries and answers.
 
