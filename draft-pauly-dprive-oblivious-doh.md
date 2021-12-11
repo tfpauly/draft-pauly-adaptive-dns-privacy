@@ -149,8 +149,8 @@ Unlike direct resolution, oblivious hostname resolution over DoH involves three 
 
 ## HTTP Request {#oblivious-request}
 
-Oblivious DoH queries are created by the Client, and sent to the Proxy as an HTTP
-request using the POST method. Clients are configured with a Proxy URI Template
+Oblivious DoH queries are created by the Client, and sent to the Proxy as HTTP
+requests using the POST method. Clients are configured with a Proxy URI Template
 {{!RFC6570}} which contains two variables: "targethost", which indicates the host
 name of the Target server, and "targetpath", which indicates the path on which the
 Target's DoH server is running. Examples of URI templates are shown below:
