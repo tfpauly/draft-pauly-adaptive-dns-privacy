@@ -125,7 +125,7 @@ Oblivious DoH requires, at a minimum:
   to a Target ({{publickey}}). These keys guarantee that only the intended Target can
   decrypt Client queries.
 
-The mechanism for discovering and provisioning the DoH URI Templates and public keys
+The mechanism for discovering and provisioning the Proxy URI Templates and public keys
 is out of scope of this document.
 
 # HTTP Exchange
@@ -151,21 +151,25 @@ Unlike direct resolution, oblivious hostname resolution over DoH involves three 
 
 Oblivious DoH queries are created by the Client, and sent to the Proxy as HTTP
 requests using the POST method. Clients are configured with a Proxy URI Template
-{{!RFC6570}} which contains two variables: "targethost", which indicates the host
-name of the Target server, and "targetpath", which indicates the path on which the
-Target's DoH server is running. Examples of URI templates are shown below:
+{{!RFC6570}} and the Target URI. The scheme for both the Proxy URI Template and
+the Target URI MUST be "https". The Proxy URI Template contains two variables: 
+"targethost", which indicates the host name of the Target server, and "targetpath",
+which indicates the path on which the Target's DoH server is running. Examples of
+URI templates are shown below:
 
 ~~~
 https://dnsproxy.example/dns-query{?targethost,targetpath}
 https://dnsproxy.example/{targethost}/{targetpath}
 ~~~
 
-The URI template MUST contain both the "targethost" and "targetpath" variables exactly
+The URI Template MUST contain both the "targethost" and "targetpath" variables exactly
 once, and MUST NOT contain any other variables. The variables MUST be within the path
 component of the URI. The "targethost" parameter MUST be encoded as the concatenation
 of a "host" value (Section 3.2.2 of {{!RFC3986}}) and, optionally, the ":" character
 followed by a "port" value (Section 3.2.3 of {{!RFC3986}}). The "targetpath" parameter
-MUST be a percent-encoded URI path. See {{request-example}} for an example request.
+MUST be a percent-encoded URI path. Clients MUST ignore configurations wherein either
+the Proxy URI Template or Target URI do not abide by these rules. See
+{{request-example}} for an example request.
 
 Oblivious DoH messages have no cache value since both requests and responses are
 encrypted using ephemeral key material. Clients SHOULD indicate this using
@@ -176,9 +180,11 @@ to indicate that this request is an Oblivious DoH query intended for proxying. C
 also SHOULD set this same value for the HTTP Accept header.
 
 A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
-uses the HTTP POST method, and contains "targethost" and "targetpath" variables. The Proxy constructs 
-the URI of the Target with the "https" scheme, using the value of "targethost" as the URI host the percent-decoded value of "targetpath" as the URI path.
-Proxies MUST check that Client requests are correctly encoded, and MUST return a
+uses the HTTP POST method, and contains "targethost" and "targetpath" variables. If the Proxy
+fails to match the "targethost" and "targetpath" variables from the path, it MUST treat the
+request as malformed. The Proxy constructs the URI of the Target with the "https" scheme, 
+using the value of "targethost" as the URI host the percent-decoded value of "targetpath" as the
+URI path. Proxies MUST check that Client requests are correctly encoded, and MUST return a
 4xx (Client Error) if the check fails, along with the Proxy-Status response header
 with an "error" parameter of type "http_request_error" {{!I-D.ietf-httpbis-proxy-status}}.
 
@@ -199,7 +205,7 @@ Targets MUST return 4xx (Client Error) if this check fails.
 
 The following example shows how a Client requests that a Proxy, "dnsproxy.example",
 forwards an encrypted message to "dnstarget.example". The URI Template for the
-Proxy is "https://dnsproxy.example/dns-query{?targethost,targetpath}". The URI template for
+Proxy is "https://dnsproxy.example/dns-query{?targethost,targetpath}". The URI for
 the Target is "https://dnstarget.example/dns-query".
 
 ~~~
