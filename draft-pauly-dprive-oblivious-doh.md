@@ -155,7 +155,7 @@ requests using the POST method. Clients are configured with a Proxy URI Template
 the Target URI MUST be "https". The Proxy URI Template contains two variables: 
 "targethost", which indicates the host name of the Target server, and "targetpath",
 which indicates the path on which the Target's DoH server is running. Examples of
-URI templates are shown below:
+Proxy URI Templates are shown below:
 
 ~~~
 https://dnsproxy.example/dns-query{?targethost,targetpath}
