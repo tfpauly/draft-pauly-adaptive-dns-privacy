@@ -52,12 +52,12 @@ author:
 
 --- abstract
 
-This document describes an extension to DNS Over HTTPS (DoH) that allows hiding
-client IP addresses via proxying encrypted DNS transactions. This improves privacy of
+This document describes a protocol that allows clients to hide their IP addresses from DNS resolvers
+via proxying encrypted DNS over HTTPS (DoH) messages. This improves privacy of
 DNS operations by not allowing any one server entity to be aware of both the client IP
 address and the content of DNS queries and answers.
 
-This experimental extension is developed outside the IETF and is published here to
+This experimental protocol is developed outside the IETF and is published here to
 guide implementation, ensure interoperability among implementations, and enable
 wide-scale experimentation.
 
@@ -77,7 +77,7 @@ Proposals such as Oblivious DNS ({{?I-D.annee-dprive-oblivious-dns}}) increase p
 by ensuring no single DNS server is aware of both the client IP address and the message
 contents.
 
-This document defines Oblivious DoH, an experimental extension to DoH that permits proxied
+This document defines Oblivious DoH, an experimental protocol built on DoH that permits proxied
 resolution, in which DNS messages are encrypted so that no DoH server can independently read
 both the client IP address and the DNS message contents.
 
@@ -89,7 +89,7 @@ to provide a hint to the Oblivious DoH server.
 This mechanism is intended to be used as one mechanism for resolving privacy-sensitive
 content in the broader context of DNS privacy.
 
-This experimental extension is developed outside the IETF and is published here to
+This experimental protocol is developed outside the IETF and is published here to
 guide implementation, ensure interoperability among implementations, and enable
 wide-scale experimentation. See {{experiment}} for more details about the experiment.
 
@@ -125,7 +125,7 @@ Oblivious DoH requires, at a minimum:
   to a Target ({{publickey}}). These keys guarantee that only the intended Target can
   decrypt Client queries.
 
-The mechanism for discovering and provisioning the DoH URI Templates and public keys
+The mechanism for discovering and provisioning the Proxy URI Templates and public keys
 is out of scope of this document.
 
 # HTTP Exchange
@@ -149,11 +149,26 @@ Unlike direct resolution, oblivious hostname resolution over DoH involves three 
 
 ## HTTP Request {#oblivious-request}
 
-Oblivious DoH queries are created by the Client, and sent to the Proxy
-as an HTTP request using the POST method. Requests to the Proxy indicate
-which DoH server to use as a Target by specifying two variables: "targethost",
-which indicates the host name of the Target server, and "targetpath", which
-indicates the path on which the Target's DoH server is running. See
+Oblivious DoH queries are created by the Client, and sent to the Proxy as HTTP
+requests using the POST method. Clients are configured with a Proxy URI Template
+{{!RFC6570}} and the Target URI. The scheme for both the Proxy URI Template and
+the Target URI MUST be "https". The Proxy URI Template contains two variables: 
+"targethost", which indicates the host name of the Target server, and "targetpath",
+which indicates the path on which the Target's DoH server is running. Examples of
+Proxy URI Templates are shown below:
+
+~~~
+https://dnsproxy.example/dns-query{?targethost,targetpath}
+https://dnsproxy.example/{targethost}/{targetpath}
+~~~
+
+The URI Template MUST contain both the "targethost" and "targetpath" variables exactly
+once, and MUST NOT contain any other variables. The variables MUST be within the path
+component of the URI. The "targethost" parameter MUST be encoded as the concatenation
+of a "host" value (Section 3.2.2 of {{!RFC3986}}) and, optionally, the ":" character
+followed by a "port" value (Section 3.2.3 of {{!RFC3986}}). The "targetpath" parameter
+MUST be a percent-encoded URI path. Clients MUST ignore configurations wherein either
+the Proxy URI Template or Target URI do not abide by these rules. See
 {{request-example}} for an example request.
 
 Oblivious DoH messages have no cache value since both requests and responses are
@@ -164,20 +179,18 @@ Clients MUST set the HTTP Content-Type header to "application/oblivious-dns-mess
 to indicate that this request is an Oblivious DoH query intended for proxying. Clients
 also SHOULD set this same value for the HTTP Accept header.
 
-Proxies MUST check that Client requests are correctly encoded, and MUST return a
+A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
+uses the HTTP POST method, and contains "targethost" and "targetpath" variables. If the Proxy
+fails to match the "targethost" and "targetpath" variables from the path, it MUST treat the
+request as malformed. The Proxy constructs the URI of the Target with the "https" scheme, 
+using the value of "targethost" as the URI host the percent-decoded value of "targetpath" as the
+URI path. Proxies MUST check that Client requests are correctly encoded, and MUST return a
 4xx (Client Error) if the check fails, along with the Proxy-Status response header
 with an "error" parameter of type "http_request_error" {{!I-D.ietf-httpbis-proxy-status}}.
-A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
-uses the HTTP POST method, and contains "targethost" and "targetpath" variables.
 
-The "targethost" and "targetpath" variables are used to construct the request to forward to
-the Target. The Proxy is expected to send the Client's request using the URI
-constructed as "https://targethost/targetpath".
-
-Note that "targethost" MAY contain a port. Proxies MAY choose to not forward
-connections to non-standard ports. In such cases, Proxies MUST return a 4xx (Client Error)
-response to the Client request, along with Proxy-Status response header with an "error"
-parameter of type "http_request_error".
+Proxies MAY choose to not forward connections to non-standard ports. In such cases, Proxies MUST
+return a 4xx (Client Error) response to the Client request, along with Proxy-Status response
+header with an "error" parameter of type "http_request_error".
 
 If the Proxy cannot establish a connection to the Target, it MUST return a 502 (Bad Gateway)
 response to the Client request, along with Proxy-Status response header with an "error" parameter
@@ -191,8 +204,8 @@ Targets MUST return 4xx (Client Error) if this check fails.
 ## HTTP Request Example {#request-example}
 
 The following example shows how a Client requests that a Proxy, "dnsproxy.example",
-forwards an encrypted message to "dnstarget.example". The URI template for the
-Proxy is "https://dnsproxy.example/dns-query{?targethost,targetpath}". The URI template for
+forwards an encrypted message to "dnstarget.example". The URI Template for the
+Proxy is "https://dnsproxy.example/dns-query{?targethost,targetpath}". The URI for
 the Target is "https://dnstarget.example/dns-query".
 
 ~~~
@@ -237,7 +250,7 @@ inherited from standard DoH.
 
 Proxies MUST forward any Target responses with 2xx, 3xx, 4xx, or 5xx status codes unmodified to the Client.
 Note that if a Client receives a 3xx status code and chooses to follow a redirect, the subsequent request
-MUST also be performed through a Proxy in order to avoid directly exposing requests to the Target. 
+MUST also be performed through a Proxy in order to avoid directly exposing requests to the Target.
 Target responses with 1xx status codes MUST NOT be forwarded to the Client.
 If a Proxy receives a successful response from a Target without the "application/oblivious-dns-message"
 HTTP Content-Type header, it MUST return a 502 (Bad Gateway) response to the Client request, along with
@@ -250,7 +263,7 @@ failure, wrong message type, or deserialization failure, this is a bad request (
 see Section 6.5.1 of {{!RFC7231}}).
 
 Even in case of DNS responses indicating failure, such as SERVFAIL or NXDOMAIN, a successful HTTP response
-with a 2xx status code is used as long as the DNS response is valid. This is similar to how DoH {{!RFC8484}}
+with a 2xx status code is used as long as the DNS response is valid. This is identical to how DoH {{!RFC8484}}
 handles HTTP response codes.
 
 In case of server error, the usual HTTP status code 500 (see Section 6.6.1 of {{!RFC7231}}) applies.
@@ -332,7 +345,7 @@ An `ObliviousDoHConfigContents` contains the information needed to encrypt a mes
 `ObliviousDoHConfigContents.public_key` such that only the owner of the corresponding private
 key can decrypt the message. The values for `ObliviousDoHConfigContents.kem_id`,
 `ObliviousDoHConfigContents.kdf_id`, and `ObliviousDoHConfigContents.aead_id`
-are described in {{!I-D.irtf-cfrg-hpke}} Section 7. The fields in this structure
+are described in Section 7 of {{!HPKE=I-D.irtf-cfrg-hpke}}. The fields in this structure
 are as follows:
 
 kem_id
@@ -537,17 +550,17 @@ Proxy forwards the Target error to the Client; see {{oblivious-response}}.
 
 # Compliance Requirements {#compliance}
 
-Oblivious DoH uses HPKE for public key encryption {{!I-D.irtf-cfrg-hpke}}.
+Oblivious DoH uses HPKE for public key encryption {{!HPKE}}.
 In the absence of an application profile standard specifying otherwise, a compliant
 Oblivious DoH implementation MUST support the following HPKE cipher suite:
 
-- KEM: DHKEM(X25519, HKDF-SHA256) (see {{!I-D.irtf-cfrg-hpke}}, Section 7.1)
-- KDF: HKDF-SHA256 (see {{!I-D.irtf-cfrg-hpke}}, Section 7.2)
-- AEAD: AES-128-GCM (see {{!I-D.irtf-cfrg-hpke}}, Section 7.3)
+- KEM: DHKEM(X25519, HKDF-SHA256) (see {{!HPKE}}, Section 7.1)
+- KDF: HKDF-SHA256 (see {{!HPKE}}, Section 7.2)
+- AEAD: AES-128-GCM (see {{!HPKE}}, Section 7.3)
 
 # Experiment Overview {#experiment}
 
-This document describes an experimental extension to the DoH. The purpose of this
+This document describes an experimental protocol built on DoH. The purpose of this
 experiment is to assess deployment configuration viability and related performance
 impacts on DNS resolution by measuring key performance indicators such as resolution
 latency. Experiment participants will test various parameters affecting service operation
@@ -556,7 +569,7 @@ and Targets, as well as performance implications of connection reuse and pools w
 appropriate. The results of this experiment will be used to influence future protocol
 design and deployment efforts related to Oblivious DoH, such as Oblivious HTTP
 {{?OHTP=I-D.draft-ietf-ohai-ohttp}}. Implementations of DoH that are not involved in the
-experiment will not recognize this extension and will not participate in the experiment.
+experiment will not recognize this protocol and will not participate in the experiment.
 It is anticipated that use of Oblivious DoH and the duration of this experiment to be widespread.
 
 # Security Considerations
@@ -642,7 +655,7 @@ in comparison Oblivious DoH:
 
 1. Tor is meant to be a generic connection-level anonymity system, and incurs higher latency costs
 and protocol complexity for the purpose of proxying individual DNS queries. In contrast, Oblivious DoH
-is a lightweight extension to standard DoH, implemented as an application-layer proxy, that can be enabled
+is a lightweight protocol built on DoH, implemented as an application-layer proxy, that can be enabled
 as a default mode for users which need increased privacy.
 
 1. As a one-hop proxy, Oblivious DoH encourages connection-less proxies to mitigate Client query correlation
@@ -669,7 +682,7 @@ Optional parameters: N/A
 
 Encoding considerations: This is a binary format, containing encrypted DNS
 requests and responses encoded as ObliviousDoHMessage values, as defined
-in this {{encoding}}.
+in {{encoding}}.
 
 Security considerations: See this document. The content is an encrypted DNS
 message, and not executable code.
