@@ -187,7 +187,7 @@ with an "error" parameter of type "http_request_error" {{!I-D.ietf-httpbis-proxy
 
 Proxies MAY choose to not forward connections to non-standard ports. In such cases, Proxies
 can indicate the error with a 403 response status code, along with a Proxy-Status response
-header with an "error" parameter of type "http_request_defined", along with an appropriate
+header with an "error" parameter of type "http_request_denied", along with an appropriate
 explanation in "details".
 
 If the Proxy cannot establish a connection to the Target, it can indicate the error with a 
