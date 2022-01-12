@@ -180,7 +180,7 @@ A correctly encoded request has the HTTP Content-Type header "application/oblivi
 uses the HTTP POST method, and contains "targethost" and "targetpath" variables. If the Proxy
 fails to match the "targethost" and "targetpath" variables from the path, it MUST treat the
 request as malformed. The Proxy constructs the URI of the Target with the "https" scheme, 
-using the value of "targethost" as the URI host the percent-decoded value of "targetpath" as the
+using the value of "targethost" as the URI host, and the percent-decoded value of "targetpath" as the
 URI path. Proxies MUST check that Client requests are correctly encoded, and MUST return a
 4xx (Client Error) if the check fails, along with the Proxy-Status response header
 with an "error" parameter of type "http_request_error" {{!I-D.ietf-httpbis-proxy-status}}.
