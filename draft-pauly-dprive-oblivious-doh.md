@@ -684,7 +684,7 @@ Restrictions on usage: N/A
 
 Author: Tommy Pauly <tpauly@apple.com>
 
-Change controller: Tommy Pauly <tpauly@apple.com>
+Change controller: IETF
 
 Provisional registration? (standards tree only): No
 
