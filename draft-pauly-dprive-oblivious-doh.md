@@ -70,7 +70,7 @@ transmitted in HTTP messages protected with TLS. This provides improved confiden
 and authentication for DNS interactions in various circumstances.
 
 While DoH can prevent eavesdroppers from directly reading the contents of DNS exchanges,
-clients cannot send DNS queries and receive answers from servers without revealing
+clients cannot send DNS queries to and receive answers from servers without revealing
 their local IP address (and thus information about the identity or location of the client)
 to the server.
 
@@ -84,7 +84,7 @@ both the client IP address and the DNS message contents.
 
 As with DoH, DNS messages exchanged over Oblivious DoH are fully-formed DNS messages.
 Clients that want to receive answers that are relevant to the network they are on without
-revealing their exact IP address can thus use the EDNS Client Subnet option {{?RFC7871, Section 7.1.2}}
+revealing their exact IP address can thus use the EDNS0 Client Subnet option {{?RFC7871, Section 7.1.2}}
 to provide a hint to the resolver using Oblivious DoH.
 
 This mechanism is intended to be used as one mechanism for resolving privacy-sensitive
@@ -166,8 +166,8 @@ https://dnsproxy.example/{targethost}/{targetpath}
 
 The URI Template MUST contain both the "targethost" and "targetpath" variables exactly
 once, and MUST NOT contain any other variables. The variables MUST be within the path
-component of the URI. Clients MUST ignore configurations that do not conform to this
-template. See {{request-example}} for an example request.
+or query components of the URI. Clients MUST ignore configurations that do not conform
+to this template. See {{request-example}} for an example request.
 
 Oblivious DoH messages have no cache value since both requests and responses are
 encrypted using ephemeral key material. Requests and responses MUST NOT be cached.
