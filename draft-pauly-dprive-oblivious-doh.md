@@ -710,7 +710,7 @@ for the feedback and input.
 
 Using DoH over anonymizing proxy services such as Tor can also achieve the desired goal of separating
 query origins from their contents. However, there are several reasons why such systems are undesirable
-in comparison Oblivious DoH:
+in comparison to Oblivious DoH:
 
 1. Tor is meant to be a generic connection-level anonymity system, and incurs higher latency costs
 and protocol complexity for the purpose of proxying individual DNS queries. In contrast, Oblivious DoH
