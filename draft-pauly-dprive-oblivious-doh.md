@@ -102,26 +102,30 @@ wide-scale experimentation. See {{experiment}} for more details about the experi
 
 This document defines the following terms:
 
+Oblivious Client:
+A client that sends DNS queries to an Oblivious Target, through an Oblivious Proxy. The client
+is responsible for selecting the combination of Proxy and Target to use for a given query.
+
 Oblivious Proxy:
-: An HTTP server that proxies encrypted DNS queries and responses between a Client and an
+: An HTTP server that proxies encrypted DNS queries and responses between an Oblivious Client and an
 Oblivious Target, and is identified by a URI template {{!RFC6570}} (see {{oblivious-request}}).
 Note that this Oblivious Proxy is not acting as a full HTTP proxy, but is instead a specialized
-server used to forward oblivious DNS messages. 
+server used to forward oblivious DNS messages.
 
 Oblivious Target:
-: An HTTP server that receives and decrypts encrypted Client DNS queries from an Oblivious Proxy,
-and returns encrypted DNS responses via that same Proxy. In order to provide DNS responses, the Target
-can be a DNS resolver, be co-located with a resolver, or forward to a resolver.
+: An HTTP server that receives and decrypts encrypted Oblivious Client DNS queries from an Oblivious
+Proxy, and returns encrypted DNS responses via that same Proxy. In order to provide DNS responses,
+the Target can be a DNS resolver, be co-located with a resolver, or forward to a resolver.
 
-Throughout the rest of this document, we use the terms Proxy and Target to refer to an Oblivious
-Proxy and Oblivious Target, respectively.
+Throughout the rest of this document, we use the terms Client, Proxy, and Target to refer to an
+Oblivious Client, Oblivious Proxy, and Oblivious Target, respectively.
 
 # Deployment Requirements
 
 Oblivious DoH requires, at a minimum:
 
 - An Oblivious Proxy server, identified by a URI template.
-- An Oblivious Target server. The Target and Proxy are expected to be non-colluding (see 
+- An Oblivious Target server. The Target and Proxy are expected to be non-colluding (see
   {{security-considerations}}).
 - One or more Target public keys for encrypting DNS queries send to a Target via a Proxy
   ({{publickey}}). These keys guarantee that only the intended Target can decrypt Client queries.
@@ -179,7 +183,7 @@ also SHOULD set this same value for the HTTP Accept header.
 A correctly encoded request has the HTTP Content-Type header "application/oblivious-dns-message",
 uses the HTTP POST method, and contains "targethost" and "targetpath" variables. If the Proxy
 fails to match the "targethost" and "targetpath" variables from the path, it MUST treat the
-request as malformed. The Proxy constructs the URI of the Target with the "https" scheme, 
+request as malformed. The Proxy constructs the URI of the Target with the "https" scheme,
 using the value of "targethost" as the URI host, and the percent-decoded value of "targetpath" as the
 URI path. Proxies MUST check that Client requests are correctly encoded, and MUST return a
 4xx (Client Error) if the check fails, along with the Proxy-Status response header
@@ -190,7 +194,7 @@ can indicate the error with a 403 response status code, along with a Proxy-Statu
 header with an "error" parameter of type "http_request_denied", along with an appropriate
 explanation in "details".
 
-If the Proxy cannot establish a connection to the Target, it can indicate the error with a 
+If the Proxy cannot establish a connection to the Target, it can indicate the error with a
 502 response status code, along with a Proxy-Status response header with an "error" parameter
 whose type indicates the reason. For example, if DNS resolution fails, the error type might be
 "dns_timeout", whereas if the TLS connection failed the error type might be "tls_protocol_error".
