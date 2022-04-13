@@ -5,13 +5,13 @@
 Network Working Group                                           T. Pauly
 Internet-Draft                                                E. Kinnear
 Intended status: Standards Track                              Apple Inc.
-Expires: 26 August 2022                                       C. A. Wood
+Expires: 15 October 2022                                      C. A. Wood
                                                               Cloudflare
                                                               P. McManus
                                                                   Fastly
                                                                T. Jensen
                                                                Microsoft
-                                                        22 February 2022
+                                                           13 April 2022
 
 
                     Adaptive DNS Resolver Discovery
@@ -40,7 +40,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 August 2022.
+   This Internet-Draft will expire on 15 October 2022.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Pauly, et al.            Expires 26 August 2022                 [Page 1]
+Pauly, et al.            Expires 15 October 2022                [Page 1]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    Please review these documents carefully, as they describe your rights
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Pauly, et al.            Expires 26 August 2022                 [Page 2]
+Pauly, et al.            Expires 15 October 2022                [Page 2]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    Protocols that can improve the transport security of a client when
@@ -165,9 +165,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                 [Page 3]
+Pauly, et al.            Expires 15 October 2022                [Page 3]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    this agreement asserts to clients that sending any query to the
@@ -221,9 +221,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                 [Page 4]
+Pauly, et al.            Expires 15 October 2022                [Page 4]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    The rationale for using SVCB records for resolver discovery is
@@ -277,9 +277,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                 [Page 5]
+Pauly, et al.            Expires 15 October 2022                [Page 5]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    The key "dohTemplate" is defined within the JSON dictionary
@@ -333,9 +333,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                 [Page 6]
+Pauly, et al.            Expires 15 October 2022                [Page 6]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    JSON MUST contain a "dohTemplate" key pointing to the correct DoH
@@ -389,9 +389,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                 [Page 7]
+Pauly, et al.            Expires 15 October 2022                [Page 7]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    A client MUST NOT trust a designation if the JSON content is not
@@ -445,9 +445,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                 [Page 8]
+Pauly, et al.            Expires 15 October 2022                [Page 8]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
 4.  Explicit Discovery of Local Resolvers
@@ -501,9 +501,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                 [Page 9]
+Pauly, et al.            Expires 15 October 2022                [Page 9]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    MUST be used whenever the original Direct Resolver would be used.
@@ -557,9 +557,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                [Page 10]
+Pauly, et al.            Expires 15 October 2022               [Page 10]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    *  multiple designated DoH servers that are advertised via SVCB DNS
@@ -613,9 +613,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                [Page 11]
+Pauly, et al.            Expires 15 October 2022               [Page 11]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
 8.  Privacy Considerations
@@ -669,9 +669,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                [Page 12]
+Pauly, et al.            Expires 15 October 2022               [Page 12]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
     +==============+=======================+=========+===============+
@@ -725,9 +725,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                [Page 13]
+Pauly, et al.            Expires 15 October 2022               [Page 13]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    [I-D.ietf-dnsop-svcb-https]
@@ -781,9 +781,9 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                [Page 14]
+Pauly, et al.            Expires 15 October 2022               [Page 14]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
@@ -837,9 +837,9 @@ Appendix A.  Rationale for using SVCB records
 
 
 
-Pauly, et al.            Expires 26 August 2022                [Page 15]
+Pauly, et al.            Expires 15 October 2022               [Page 15]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    *  SVCB records are extensible and allow definition of parameter
@@ -893,9 +893,9 @@ Authors' Addresses
 
 
 
-Pauly, et al.            Expires 26 August 2022                [Page 16]
+Pauly, et al.            Expires 15 October 2022               [Page 16]
 
-Internet-Draft               ADNS Discovery                February 2022
+Internet-Draft               ADNS Discovery                   April 2022
 
 
    Patrick McManus
@@ -949,4 +949,4 @@ Internet-Draft               ADNS Discovery                February 2022
 
 
 
-Pauly, et al.            Expires 26 August 2022                [Page 17]
+Pauly, et al.            Expires 15 October 2022               [Page 17]

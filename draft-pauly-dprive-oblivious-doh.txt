@@ -5,13 +5,13 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                Apple Inc.
 Intended status: Experimental                                 P. McManus
-Expires: 26 August 2022                                           Fastly
+Expires: 15 October 2022                                          Fastly
                                                                 T. Pauly
                                                               Apple Inc.
                                                                 T. Verma
                                                               C. A. Wood
                                                               Cloudflare
-                                                        22 February 2022
+                                                           13 April 2022
 
 
                         Oblivious DNS Over HTTPS
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 August 2022.
+   This Internet-Draft will expire on 15 October 2022.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 1]
+Kinnear, et al.          Expires 15 October 2022                [Page 1]
 
-Internet-Draft                Oblivious DoH                February 2022
+Internet-Draft                Oblivious DoH                   April 2022
 
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -76,18 +76,18 @@ Table of Contents
    4.  HTTP Exchange . . . . . . . . . . . . . . . . . . . . . . . .   4
      4.1.  HTTP Request  . . . . . . . . . . . . . . . . . . . . . .   5
      4.2.  HTTP Request Example  . . . . . . . . . . . . . . . . . .   6
-     4.3.  HTTP Response . . . . . . . . . . . . . . . . . . . . . .   6
-     4.4.  HTTP Response Example . . . . . . . . . . . . . . . . . .   7
+     4.3.  HTTP Response . . . . . . . . . . . . . . . . . . . . . .   7
+     4.4.  HTTP Response Example . . . . . . . . . . . . . . . . . .   8
      4.5.  HTTP Metadata . . . . . . . . . . . . . . . . . . . . . .   8
    5.  Configuration and Public Key Format . . . . . . . . . . . . .   8
-   6.  Protocol Encoding . . . . . . . . . . . . . . . . . . . . . .   9
-     6.1.  Message Format  . . . . . . . . . . . . . . . . . . . . .   9
+   6.  Protocol Encoding . . . . . . . . . . . . . . . . . . . . . .  10
+     6.1.  Message Format  . . . . . . . . . . . . . . . . . . . . .  10
      6.2.  Encryption and Decryption Routines  . . . . . . . . . . .  11
    7.  Oblivious Client Behavior . . . . . . . . . . . . . . . . . .  12
    8.  Oblivious Target Behavior . . . . . . . . . . . . . . . . . .  13
    9.  Compliance Requirements . . . . . . . . . . . . . . . . . . .  14
    10. Experiment Overview . . . . . . . . . . . . . . . . . . . . .  14
-   11. Security Considerations . . . . . . . . . . . . . . . . . . .  14
+   11. Security Considerations . . . . . . . . . . . . . . . . . . .  15
      11.1.  Denial of Service  . . . . . . . . . . . . . . . . . . .  16
      11.2.  Proxy Policies . . . . . . . . . . . . . . . . . . . . .  16
      11.3.  Authentication . . . . . . . . . . . . . . . . . . . . .  16
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 2]
+Kinnear, et al.          Expires 15 October 2022                [Page 2]
 
-Internet-Draft                Oblivious DoH                February 2022
+Internet-Draft                Oblivious DoH                   April 2022
 
 
    While DoH can prevent eavesdroppers from directly reading the
@@ -155,30 +155,36 @@ Internet-Draft                Oblivious DoH                February 2022
 
    This document defines the following terms:
 
+   Oblivious Client: A client that sends DNS queries to an Oblivious
+   Target, through an Oblivious Proxy.  The client is responsible for
+   selecting the combination of Proxy and Target to use for a given
+   query.
+
    Oblivious Proxy:  An HTTP server that proxies encrypted DNS queries
-      and responses between a Client and an Oblivious Target, and is
-      identified by a URI template [RFC6570] (see Section 4.1).  Note
-      that this Oblivious Proxy is not acting as a full HTTP proxy, but
-      is instead a specialized server used to forward oblivious DNS
+
+
+
+
+Kinnear, et al.          Expires 15 October 2022                [Page 3]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
+      and responses between an Oblivious Client and an Oblivious Target,
+      and is identified by a URI template [RFC6570] (see Section 4.1).
+      Note that this Oblivious Proxy is not acting as a full HTTP proxy,
+      but is instead a specialized server used to forward oblivious DNS
       messages.
 
-
-
-
-Kinnear, et al.          Expires 26 August 2022                 [Page 3]
-
-Internet-Draft                Oblivious DoH                February 2022
-
-
    Oblivious Target:  An HTTP server that receives and decrypts
-      encrypted Client DNS queries from an Oblivious Proxy, and returns
-      encrypted DNS responses via that same Proxy.  In order to provide
-      DNS responses, the Target can be a DNS resolver, be co-located
-      with a resolver, or forward to a resolver.
+      encrypted Oblivious Client DNS queries from an Oblivious Proxy,
+      and returns encrypted DNS responses via that same Proxy.  In order
+      to provide DNS responses, the Target can be a DNS resolver, be co-
+      located with a resolver, or forward to a resolver.
 
-   Throughout the rest of this document, we use the terms Proxy and
-   Target to refer to an Oblivious Proxy and Oblivious Target,
-   respectively.
+   Throughout the rest of this document, we use the terms Client, Proxy,
+   and Target to refer to an Oblivious Client, Oblivious Proxy, and
+   Oblivious Target, respectively.
 
 3.  Deployment Requirements
 
@@ -209,6 +215,17 @@ Internet-Draft                Oblivious DoH                February 2022
    3.  The Target, which receives proxied queries from the Client via
        the Proxy and produces proxied answers.
 
+
+
+
+
+
+
+Kinnear, et al.          Expires 15 October 2022                [Page 4]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
         --- [ Request encrypted with Target public key ] -->
    +---------+             +-----------+             +-----------+
    | Client  +-------------> Oblivious +-------------> Oblivious |
@@ -217,14 +234,6 @@ Internet-Draft                Oblivious DoH                February 2022
        <-- [   Response encrypted with symmetric key   ] ---
 
                      Figure 1: Obvlivious DoH Exchange
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                 [Page 4]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
 4.1.  HTTP Request
 
@@ -265,6 +274,14 @@ Internet-Draft                Oblivious DoH                February 2022
    "targethost" as the URI host, and the percent-decoded value of
    "targetpath" as the URI path.  Proxies MUST check that Client
    requests are correctly encoded, and MUST return a 4xx (Client Error)
+
+
+
+Kinnear, et al.          Expires 15 October 2022                [Page 5]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    if the check fails, along with the Proxy-Status response header with
    an "error" parameter of type "http_request_error"
    [I-D.ietf-httpbis-proxy-status].
@@ -274,13 +291,6 @@ Internet-Draft                Oblivious DoH                February 2022
    status code, along with a Proxy-Status response header with an
    "error" parameter of type "http_request_denied", along with an
    appropriate explanation in "details".
-
-
-
-Kinnear, et al.          Expires 26 August 2022                 [Page 5]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
    If the Proxy cannot establish a connection to the Target, it can
    indicate the error with a 502 response status code, along with a
@@ -314,6 +324,20 @@ Internet-Draft                Oblivious DoH                February 2022
 
    The Proxy then sends the following request on to the Target:
 
+
+
+
+
+
+
+
+
+
+Kinnear, et al.          Expires 15 October 2022                [Page 6]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    :method = POST
    :scheme = https
    :authority = dnstarget.example
@@ -330,13 +354,6 @@ Internet-Draft                Oblivious DoH                February 2022
    It MUST set the Content-Type HTTP header to "application/oblivious-
    dns-message" for all successful responses.  The body of the response
    contains an encrypted DNS message; see Section 6.
-
-
-
-Kinnear, et al.          Expires 26 August 2022                 [Page 6]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
    The response from a Target MUST set the Content-Type HTTP header to
    "application/oblivious-dns-message" which MUST be forwarded by the
@@ -370,6 +387,13 @@ Internet-Draft                Oblivious DoH                February 2022
    as long as the DNS response is valid.  This is identical to how DoH
    [RFC8484] handles HTTP response codes.
 
+
+
+Kinnear, et al.          Expires 15 October 2022                [Page 7]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
 4.4.  HTTP Response Example
 
    The following example shows a 2xx (Successful) response that can be
@@ -380,19 +404,6 @@ Internet-Draft                Oblivious DoH                February 2022
    content-length = 154
 
    <Bytes containing an encrypted Oblivious DNS response>
-
-
-
-
-
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                 [Page 7]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
 4.5.  HTTP Metadata
 
@@ -419,6 +430,26 @@ Internet-Draft                Oblivious DoH                February 2022
    An Oblivious DNS public key configuration is a structure encoded,
    using TLS-style encoding [RFC8446], as follows:
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kinnear, et al.          Expires 15 October 2022                [Page 8]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    struct {
       uint16 kem_id;
       uint16 kdf_id;
@@ -440,15 +471,6 @@ Internet-Draft                Oblivious DoH                February 2022
    ObliviousDoHConfig structures in decreasing order of preference.
    This allows a server to support multiple versions of Oblivious DoH
    and multiple sets of Oblivious DoH parameters.
-
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                 [Page 8]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
    An ObliviousDoHConfig contains a versioned representation of an
    Oblivious DoH configuration, with the following fields.
@@ -476,6 +498,14 @@ Internet-Draft                Oblivious DoH                February 2022
       MUST ignore any ObliviousDoHConfig structure with a key using a
       KEM they do not support.
 
+
+
+
+Kinnear, et al.          Expires 15 October 2022                [Page 9]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    kdf_id  The HPKE KDF identifier corresponding to public_key.  Clients
       MUST ignore any ObliviousDoHConfig structure with a key using a
       KDF they do not support.
@@ -497,14 +527,6 @@ Internet-Draft                Oblivious DoH                February 2022
 
    There are two types of Oblivious DoH messages: Queries (0x01) and
    Responses (0x02).  Both messages carry the following information:
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                 [Page 9]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
    1.  A DNS message, which is either a Query or Response, depending on
        context.
@@ -533,6 +555,13 @@ Internet-Draft                Oblivious DoH                February 2022
       opaque encrypted_message<1..2^16-1>;
    } ObliviousDoHMessage;
 
+
+
+Kinnear, et al.          Expires 15 October 2022               [Page 10]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    The ObliviousDoHMessage structure contains the following fields:
 
    message_type  A one-byte identifier for the type of message.  Query
@@ -551,16 +580,6 @@ Internet-Draft                Oblivious DoH                February 2022
       Implementations MAY enforce limits on the size of this field
       depending on the size of plaintext DNS messages.  (DNS queries,
       for example, will not reach the size limit of 2^16-1 in practice.)
-
-
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                [Page 10]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
    The contents of ObliviousDoHMessage.encrypted_message depend on
    ObliviousDoHMessage.message_type.  In particular,
@@ -592,6 +611,13 @@ Internet-Draft                Oblivious DoH                February 2022
 
    The derive_secrets function is described below.
 
+
+
+Kinnear, et al.          Expires 15 October 2022               [Page 11]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    Targets use the following utility functions in processing queries and
    producing responses as described in Section 8.
 
@@ -610,13 +636,6 @@ Internet-Draft                Oblivious DoH                February 2022
      enc || ct = Q_encrypted
      Q_plain, error = context.Open(aad, ct)
      return Q_plain, error
-
-
-
-Kinnear, et al.          Expires 26 August 2022                [Page 11]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
    derive_secrets: Derive keying material used for encrypting an
    Oblivious DoH response.
@@ -647,6 +666,14 @@ Internet-Draft                Oblivious DoH                February 2022
    to an Oblivious Target with ObliviousDoHConfigContents config, a
    Client does the following:
 
+
+
+
+Kinnear, et al.          Expires 15 October 2022               [Page 12]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    1.  Create an ObliviousDoHQuery structure, carrying the message M and
        padding, to produce Q_plain.
 
@@ -661,18 +688,6 @@ Internet-Draft                Oblivious DoH                February 2022
    4.  Output an ObliviousDoHMessage message Q where Q.message_type =
        0x01, Q.key_id carries key_id, and Q.encrypted_message =
        Q_encrypted.
-
-
-
-
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                [Page 12]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
    The Client then sends Q to the Proxy according to Section 4.1.  Once
    the Client receives a response R, encrypted as specified in
@@ -708,6 +723,13 @@ Internet-Draft                Oblivious DoH                February 2022
 
    6.  Create a fresh nonce resp_nonce = random(max(Nn, Nk)).
 
+
+
+Kinnear, et al.          Expires 15 October 2022               [Page 13]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    7.  Compute aead_key, aead_nonce = derive_secrets(context, Q_plain,
        resp_nonce).
 
@@ -720,15 +742,6 @@ Internet-Draft                Oblivious DoH                February 2022
    9.  Output an ObliviousDoHMessage message R where R.message_type =
        0x02, R.key_id = resp_nonce, and R.encrypted_message =
        R_encrypted.
-
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                [Page 13]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
    The Target then sends R in a 2xx (Successful) response to the Proxy;
    see Section 4.3.  The Proxy forwards the message R without
@@ -765,6 +778,14 @@ Internet-Draft                Oblivious DoH                February 2022
    Oblivious HTTP [OHTP].  Implementations of DoH that are not involved
    in the experiment will not recognize this protocol and will not
    participate in the experiment.  It is anticipated that use of
+
+
+
+Kinnear, et al.          Expires 15 October 2022               [Page 14]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    Oblivious DoH and the duration of this experiment to be widespread.
 
 11.  Security Considerations
@@ -778,14 +799,6 @@ Internet-Draft                Oblivious DoH                February 2022
    is equivalent to collusion between these two parties in practice.
    Once compromised, the attacker has access to all session information
    and private key material.  (This generalizes to arbitrarily many
-
-
-
-Kinnear, et al.          Expires 26 August 2022                [Page 14]
-
-Internet-Draft                Oblivious DoH                February 2022
-
-
    Clients, Proxies, and Targets, with the constraints that not all
    Targets and Proxies are simultaneously compromised, and at least two
    Clients are left uncompromised.)  The attacker is prohibited from
@@ -822,25 +835,18 @@ Internet-Draft                Oblivious DoH                February 2022
    ObliviousDoHQuery and ObliviousDoHResponse messages.  Implementations
    SHOULD follow the guidance for choosing padding length in [RFC8467].
 
+
+
+Kinnear, et al.          Expires 15 October 2022               [Page 15]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    Oblivious DoH security does not depend on Proxy and Target
    indistinguishability.  Specifically, an on-path attacker could
    determine whether a connection a specific endpoint is used for
    oblivious or direct DoH queries.  However, this has no effect on
    confidentiality goals listed above.
-
-
-
-
-
-
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                [Page 15]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
 11.1.  Denial of Service
 
@@ -884,19 +890,20 @@ Internet-Draft                Oblivious DoH                February 2022
    information to Targets.  This is required so Targets cannot uniquely
    identify individual Clients.
 
+
+
+
+Kinnear, et al.          Expires 15 October 2022               [Page 16]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    Note that if Targets require Proxies to authenticate at the HTTP- or
    application-layer before use, this ought to be done before attempting
    to forward any Client query to the Target.  This will allow Proxies
    to distinguish 401 Unauthorized response codes due to authentication
    failure from 401 Unauthorized response codes due to Client key
    mismatch; see Section 4.3.
-
-
-
-Kinnear, et al.          Expires 26 August 2022                [Page 16]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
 12.  IANA Considerations
 
@@ -940,19 +947,18 @@ Internet-Draft                Oblivious DoH                February 2022
 
    Intended usage: COMMON
 
+
+
+Kinnear, et al.          Expires 15 October 2022               [Page 17]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    Restrictions on usage: N/A
 
    Author: Tommy Pauly tpauly@apple.com (mailto:tpauly@apple.com)
 
    Change controller: IETF
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                [Page 17]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
    Provisional registration? (standards tree only): No
 
@@ -996,19 +1002,18 @@ Internet-Draft                Oblivious DoH                February 2022
               DOI 10.17487/RFC6570, March 2012,
               <https://www.rfc-editor.org/info/rfc6570>.
 
+
+
+
+Kinnear, et al.          Expires 15 October 2022               [Page 18]
+
+Internet-Draft                Oblivious DoH                   April 2022
+
+
    [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
               Protocol (HTTP/1.1): Semantics and Content", RFC 7231,
               DOI 10.17487/RFC7231, June 2014,
               <https://www.rfc-editor.org/info/rfc7231>.
-
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                [Page 18]
-
-Internet-Draft                Oblivious DoH                February 2022
-
 
    [RFC7235]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
               Protocol (HTTP/1.1): Authentication", RFC 7235,
@@ -1056,14 +1061,9 @@ Internet-Draft                Oblivious DoH                February 2022
 
 
 
-
-
-
-
-
-Kinnear, et al.          Expires 26 August 2022                [Page 19]
+Kinnear, et al.          Expires 15 October 2022               [Page 19]
 
-Internet-Draft                Oblivious DoH                February 2022
+Internet-Draft                Oblivious DoH                   April 2022
 
 
 Appendix A.  Use of Generic Proxy Services
@@ -1117,9 +1117,9 @@ Authors' Addresses
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 20]
+Kinnear, et al.          Expires 15 October 2022               [Page 20]
 
-Internet-Draft                Oblivious DoH                February 2022
+Internet-Draft                Oblivious DoH                   April 2022
 
 
    Tanya Verma
@@ -1173,4 +1173,4 @@ Internet-Draft                Oblivious DoH                February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 21]
+Kinnear, et al.          Expires 15 October 2022               [Page 21]

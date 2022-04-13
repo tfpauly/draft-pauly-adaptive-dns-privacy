@@ -5,10 +5,10 @@
 Network Working Group                                         E. Kinnear
 Internet-Draft                                                  T. Pauly
 Intended status: Standards Track                              C. A. Wood
-Expires: 26 August 2022                                       Apple Inc.
+Expires: 15 October 2022                                      Apple Inc.
                                                               P. McManus
                                                                   Fastly
-                                                        22 February 2022
+                                                           13 April 2022
 
 
            Adaptive DNS: Improving Privacy of Name Resolution
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 August 2022.
+   This Internet-Draft will expire on 15 October 2022.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 1]
+Kinnear, et al.          Expires 15 October 2022                [Page 1]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    and restrictions with respect to this document.  Code Components
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 2]
+Kinnear, et al.          Expires 15 October 2022                [Page 2]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
 1.  Introduction
@@ -165,9 +165,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 3]
+Kinnear, et al.          Expires 15 October 2022                [Page 3]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    3.  Only use locally-provisioned resolvers, and opportunistically use
@@ -221,9 +221,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 4]
+Kinnear, et al.          Expires 15 October 2022                [Page 4]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    Designated DoH Server:  A DNS resolver that provides connectivity
@@ -277,9 +277,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 5]
+Kinnear, et al.          Expires 15 October 2022                [Page 5]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    2.  Only a designated DNS resolver associated with the deployment
@@ -333,9 +333,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 6]
+Kinnear, et al.          Expires 15 October 2022                [Page 6]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    In order to designate a DoH server for a domain, a SVCB record can
@@ -389,9 +389,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 7]
+Kinnear, et al.          Expires 15 October 2022                [Page 7]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    *  Support for acting as an Oblivious Target.  Each Designated DoH
@@ -445,9 +445,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 8]
+Kinnear, et al.          Expires 15 October 2022                [Page 8]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    The client sends:
@@ -501,9 +501,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                 [Page 9]
+Kinnear, et al.          Expires 15 October 2022                [Page 9]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
 3.3.  Hostname Resolution Algorithm
@@ -557,9 +557,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 10]
+Kinnear, et al.          Expires 15 October 2022               [Page 10]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    5.  The default Direct Resolver, generally the resolver provisioned
@@ -613,9 +613,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 11]
+Kinnear, et al.          Expires 15 October 2022               [Page 11]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    Clients that are performing Oblivious DoH resolution SHOULD fall back
@@ -669,9 +669,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 12]
+Kinnear, et al.          Expires 15 October 2022               [Page 12]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
 4.1.2.  Oblivious DoH Target
@@ -725,9 +725,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 13]
+Kinnear, et al.          Expires 15 October 2022               [Page 13]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    If present, the PvD JSON configuration MUST be made available to
@@ -781,9 +781,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 14]
+Kinnear, et al.          Expires 15 October 2022               [Page 14]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    Beyond providing resolution configuration, the Web PvD configuration
@@ -837,9 +837,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 15]
+Kinnear, et al.          Expires 15 October 2022               [Page 15]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
 5.3.  Avoid Narrow Deployments
@@ -893,9 +893,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 16]
+Kinnear, et al.          Expires 15 October 2022               [Page 16]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    In order to validate that a local resolver is designated for a given
@@ -949,9 +949,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 17]
+Kinnear, et al.          Expires 15 October 2022               [Page 17]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    *  "private.example.org" does have a DNSSEC-signed SVCB record that
@@ -1005,9 +1005,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 18]
+Kinnear, et al.          Expires 15 October 2022               [Page 18]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    Note that having a DNSSEC-signed designation to the local resolver
@@ -1061,9 +1061,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 19]
+Kinnear, et al.          Expires 15 October 2022               [Page 19]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    indicates the network requires filtering for all domains.  If
@@ -1117,9 +1117,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 20]
+Kinnear, et al.          Expires 15 October 2022               [Page 20]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    Based on these properties, clients SHOULD prefer lookups via
@@ -1173,9 +1173,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 21]
+Kinnear, et al.          Expires 15 October 2022               [Page 21]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    An adversary able to see traffic on each path segment of a DoH or
@@ -1229,9 +1229,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 22]
+Kinnear, et al.          Expires 15 October 2022               [Page 22]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    +=====================+========================+=========+=========+
@@ -1285,9 +1285,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 23]
+Kinnear, et al.          Expires 15 October 2022               [Page 23]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
 12.  References
@@ -1341,9 +1341,9 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 24]
+Kinnear, et al.          Expires 15 October 2022               [Page 24]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    [RFC7231]  Fielding, R., Ed. and J. Reschke, Ed., "Hypertext Transfer
@@ -1397,9 +1397,9 @@ Authors' Addresses
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 25]
+Kinnear, et al.          Expires 15 October 2022               [Page 25]
 
-Internet-Draft                ADNS Privacy                 February 2022
+Internet-Draft                ADNS Privacy                    April 2022
 
 
    Email: ekinnear@apple.com
@@ -1453,4 +1453,4 @@ Internet-Draft                ADNS Privacy                 February 2022
 
 
 
-Kinnear, et al.          Expires 26 August 2022                [Page 26]
+Kinnear, et al.          Expires 15 October 2022               [Page 26]
